@@ -1,0 +1,13 @@
+:root {
+    /* 프로젝트 메인 컬러 */
+    --dango-orange: #FF8A00;
+
+    /* 다크모드 대응 배경/글자색 (UI_006) */
+    --bg-color: #FFFFFF;
+    --text-color: #2F3542;
+}
+
+[data-theme='dark'] {
+    --bg-color: #1E1E1E;
+    --text-color: #F1F2F6;
+}
