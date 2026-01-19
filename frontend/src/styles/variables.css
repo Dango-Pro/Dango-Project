@@ -1,0 +1,13 @@
+:root {
+    --dango-orange: #FF8A00;
+    --bg-color: #FFFFFF;
+    --text-color: #2F3542;
+    --card-bg: #F1F2F6; /* <--- 이 줄이 있는지 확인하고 추가하세요! */
+}
+
+/* 다크모드 설정에도 추가해주면 더 완벽합니다 */
+[data-theme='dark'] {
+    --bg-color: #1E1E1E;
+    --text-color: #F1F2F6;
+    --card-bg: #2F3542; /* <--- 다크모드용 색상 */
+}

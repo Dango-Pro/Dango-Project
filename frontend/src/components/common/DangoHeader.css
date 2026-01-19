@@ -1,0 +1,56 @@
+.dango-header {
+    width: 100%;
+    height: 64px;
+    background-color: var(--bg-color);
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    position: sticky; /* 스크롤 내려도 상단에 고정 */
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.header-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--dango-orange);
+    cursor: pointer;
+}
+
+.nav-menu ul {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+
+.nav-menu li {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.nav-menu li:hover {
+    color: var(--dango-orange);
+}
+
+.login-btn {
+    background: none;
+    border: 1px solid var(--dango-orange);
+    color: var(--dango-orange);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
