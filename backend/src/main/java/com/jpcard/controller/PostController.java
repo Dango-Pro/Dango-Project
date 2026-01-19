@@ -18,10 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.validation.annotation.Validated;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +25,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
-@Validated
 public class PostController {
 
     private final PostService postService;
@@ -57,46 +52,23 @@ public class PostController {
 
     @PostMapping(consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PostResponse> create(
-            @RequestParam("title") @NotBlank @Size(max=255) String title,
-            @RequestParam("content") @NotBlank String content,
             @RequestParam(value = "isNotice", required = false, defaultValue = "false") boolean isNotice,
             @RequestParam(value = "files", required = false) List<org.springframework.web.multipart.MultipartFile> files,
             HttpServletRequest httpRequest) {
-
-        com.jpcard.domain.user.User author = null;
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof com.jpcard.domain.user.User) {
-            author = (com.jpcard.domain.user.User) authentication.getPrincipal();
-        }
-
         String authorName = determineAuthorName(httpRequest);
         String ipAddress = httpRequest.getRemoteAddr();
 
-        var post = postService.create(title, content, isNotice, authorName, ipAddress, files, author);
         return ResponseEntity.ok(mapToResponse(post));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PostResponse> update(@PathVariable Long id, @Valid @RequestBody PostRequest request) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		com.jpcard.domain.user.User user = (auth != null && auth.getPrincipal() instanceof com.jpcard.domain.user.User)
-				? (com.jpcard.domain.user.User) auth.getPrincipal() : null;
-		
-		// 서비스의 update 메서드가 User 타입을 받게 되었으므로 이제 정상 동작합니다.
-		var post = postService.update(id, request.title(), request.content(), request.isNotice(), user);
-		return ResponseEntity.ok(mapToResponse(post));
+        return ResponseEntity.ok(mapToResponse(post));
     }
-	
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> delete(@PathVariable Long id) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		com.jpcard.domain.user.User user = (auth != null && auth.getPrincipal() instanceof com.jpcard.domain.user.User)
-				? (com.jpcard.domain.user.User) auth.getPrincipal() : null;
-		
-		// 서비스의 delete 메서드가 User 타입을 받게 수정되었으므로 이제 정상 동작합니다.
-		postService.delete(id, user);
-		return ResponseEntity.noContent().build();
-	}
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        return ResponseEntity.noContent().build();
+    }
 
     @PostMapping("/{id}/like")
     public ResponseEntity<PostResponse> like(@PathVariable Long id) {

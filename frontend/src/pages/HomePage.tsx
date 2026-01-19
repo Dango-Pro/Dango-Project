@@ -1,18 +1,11 @@
 import { useState, useEffect } from "react";
 import Layout from "../components/Layout";
-import { Link } from "react-router-dom";
 import { api } from "../libs/api";
 import type { Post } from "../types/post";
-import { useTranslation } from "react-i18next";
 
 const Carousel = () => {
-    const { t } = useTranslation();
     const [current, setCurrent] = useState(0);
     const slides = [
-        "/26dc3940-d441-4480-9171-20361974c915.jpg",
-        "/26dc3940-d441-4480-9171-20361974c915.jpg",
-        "/26dc3940-d441-4480-9171-20361974c915.jpg",
-        "/26dc3940-d441-4480-9171-20361974c915.jpg"
     ];
 
     useEffect(() => {
@@ -34,7 +27,6 @@ const Carousel = () => {
                 >
                     <img src={src} alt={`Slide ${idx + 1}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     <div style={{ position: "absolute", bottom: 20, left: 20, background: "rgba(0,0,0,0.5)", padding: "10px 20px", borderRadius: "8px" }}>
-                         <h2 style={{ fontSize: "1.5rem", color: "#fff", margin: 0 }}>{t("home.event")} {idx + 1}</h2>
                     </div>
                 </div>
             ))}
@@ -57,7 +49,6 @@ const Carousel = () => {
 };
 
 const NoticeWidget = () => {
-    const { t } = useTranslation();
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -70,19 +61,13 @@ const NoticeWidget = () => {
 
     return (
         <div className="glass-card" style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-            <h3 className="card-title" style={{ fontSize: "1.2rem", marginBottom: "16px", color: "#000" }}>{t("home.notices_title")}</h3>
             <div style={{ flex: 1 }}>
-                {loading ? <p className="muted">{t("common.loading")}</p> : (
                     <ul style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                        {posts.length === 0 && <li style={{ color: "#333" }}>{t("home.no_notices")}</li>}
                         {posts.map(p => (
                             <li key={p.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <Link to={`/posts/${p.id}`} style={{ textDecoration: "none", color: "#333", fontSize: "0.95rem", flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginRight: "10px" }}>
-                                    <span style={{ color: "#ff6b6b", marginRight: "6px", fontWeight: "bold" }}>{t("home.notice_tag")}</span>
                                     {p.title}
                                 </Link>
                                 <span className="muted" style={{ fontSize: "0.8rem", whiteSpace: "nowrap" }}>
-                                    {t("home.new_tag")}
                                 </span>
                             </li>
                         ))}
@@ -90,14 +75,12 @@ const NoticeWidget = () => {
                 )}
             </div>
             <div style={{ marginTop: "16px", textAlign: "right" }}>
-                <Link to="/posts" className="muted" style={{ fontSize: "0.85rem", textDecoration: "underline" }}>{t("home.view_all")}</Link>
             </div>
         </div>
     );
 };
 
 const LoginWidget = () => {
-    const { t } = useTranslation();
     const token = localStorage.getItem("token");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -112,24 +95,18 @@ const LoginWidget = () => {
             window.location.reload();
         } catch (err) {
             console.error(err);
-            setError(t("auth.login_fail"));
         }
     };
 
     if (token) {
         return (
              <div className="glass-card" style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center" }}>
-                 <h3 className="card-title" style={{ marginBottom: "10px", color: "#000" }}>{t("home.welcome_back")}</h3>
-                 <p className="muted" style={{ marginBottom: "20px" }}>{t("home.logged_in_msg")}</p>
                  <div style={{ display: "flex", gap: "10px" }}>
-                     <Link to="/dashboard" className="primary-btn">{t("nav.dashboard")}</Link>
                      <button className="secondary-btn" onClick={() => {
-                         if(window.confirm(t("common.confirm") + "?")) {
                              localStorage.removeItem("token");
                              localStorage.removeItem("refreshToken");
                              window.location.reload();
                          }
-                     }}>{t("nav.logout")}</button>
                  </div>
              </div>
         );
@@ -137,11 +114,9 @@ const LoginWidget = () => {
 
     return (
         <div className="glass-card" style={{ height: "100%" }}>
-            <h3 className="card-title" style={{ fontSize: "1.2rem", marginBottom: "16px", color: "#000" }}>{t("home.quick_login")}</h3>
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                 <input
                     className="text-input"
-                    placeholder={t("auth.username_placeholder")}
                     value={username}
                     onChange={e => setUsername(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleLogin()}
@@ -149,15 +124,12 @@ const LoginWidget = () => {
                 <input
                     className="text-input"
                     type="password"
-                    placeholder={t("auth.password_placeholder")}
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleLogin()}
                 />
-                <button className="primary-btn" onClick={handleLogin}>{t("auth.login_btn")}</button>
                 {error && <p style={{ color: "#ff6b6b", fontSize: "0.85rem", margin: 0 }}>{error}</p>}
                 <div style={{ textAlign: "center", fontSize: "0.85rem" }}>
-                    <Link to="/register" className="muted" style={{ textDecoration: "underline" }}>{t("auth.create_account")}</Link>
                 </div>
             </div>
         </div>
@@ -165,11 +137,7 @@ const LoginWidget = () => {
 };
 
 export default function HomePage() {
-  const { t } = useTranslation();
   const shortcuts = [
-    { label: t("nav.my_decks"), to: "/decks" },
-    { label: t("nav.study"), to: "/study" },
-    { label: t("nav.community"), to: "/posts" },
   ];
 
   return (

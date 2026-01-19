@@ -11,12 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import tools.jackson.databind.ObjectMapper;
-import tools.jackson.core.type.TypeReference;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -26,7 +22,6 @@ public class StudyController {
 
     private final StudyService studyService;
     private final UserService userService;
-    private final ObjectMapper objectMapper;
 
     private User getUser(Authentication authentication) {
         Object principal = authentication.getPrincipal();
@@ -47,7 +42,6 @@ public class StudyController {
         StudySessionResult result = studyService.getDueCards(user.getId(), deckId, studyMore);
 
         List<CardResponse> cardResponses = result.cards().stream()
-                .map(card -> new CardResponse(card.getId(), card.getTerm(), card.getMeaning(), false, card.getDeck().getId(), parseContent(card.getContentJson())))
                 .collect(Collectors.toList());
 
         StudySessionResponse response = new StudySessionResponse(
@@ -69,14 +63,5 @@ public class StudyController {
 
         studyService.processReview(user.getId(), request.cardId(), request.rating());
         return ResponseEntity.ok().build();
-    }
-
-    private Map<String, String> parseContent(String json) {
-        if (json == null || json.isEmpty()) return Collections.emptyMap();
-        try {
-            return objectMapper.readValue(json, new TypeReference<Map<String, String>>() {});
-        } catch (Exception e) {
-            return Collections.emptyMap();
-        }
     }
 }

@@ -38,9 +38,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/cards/**", "/api/decks/**", "/api/comments/**", "/api/stats/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/posts", "/api/posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
-                        // POST requires authentication
-                        .requestMatchers(HttpMethod.POST, "/api/posts", "/api/posts/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/comments/**").authenticated()
                         .requestMatchers("/api/study/**").authenticated() // Study endpoints require auth
                         .requestMatchers("/", "/index.html", "/assets/**", "/favicon.ico").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -56,7 +53,6 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:3000"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("*"));
 

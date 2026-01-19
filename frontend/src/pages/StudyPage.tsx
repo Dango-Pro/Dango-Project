@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { api } from "../libs/api";
 import Layout from "../components/Layout";
-import FlashCard from "../components/FlashCard";
 import type { Card } from "../types/card";
 import type { Deck } from "../types/deck";
 import { useSearchParams, Link } from "react-router-dom";
 import "../App.css";
-import { useTranslation } from "react-i18next";
 
 interface StudySessionResponse {
   cards: Card[];
@@ -18,7 +16,6 @@ interface StudySessionResponse {
 }
 
 export default function StudyPage() {
-  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const deckId = searchParams.get("deckId");
 
@@ -85,15 +82,6 @@ export default function StudyPage() {
         await api.post("/study/review", { cardId: currentCard.id, rating });
 
         setIsFlipped(false);
-
-        // If 'FAIL', re-queue the card at the end of the session
-        let nextCards = [...cards];
-        if (rating === 'FAIL') {
-            nextCards.push(currentCard);
-        }
-
-        if (currentIndex < nextCards.length - 1) {
-            setCards(nextCards); // Update queue if we added something (or just to be safe)
             setCurrentIndex(prev => prev + 1);
         } else {
             setCards([]); // Trigger session complete
@@ -103,16 +91,12 @@ export default function StudyPage() {
     }
   };
 
-  if (loading) return <Layout pageTitle={t("study.title")}><p className="muted">{t("common.loading")}</p></Layout>;
 
   // Deck Selection View
   if (!deckId) {
       return (
-        <Layout pageTitle={t("study.choose_deck")}>
             <div className="glass-card">
-                <h2 className="card-title" style={{ marginBottom: 20 }}>{t("study.choose_deck")}</h2>
                 {decks.length === 0 ? (
-                    <p className="muted">{t("study.no_decks")} <Link to="/decks/create" style={{ textDecoration: "underline" }}>{t("study.create_deck_link")}</Link></p>
                 ) : (
                     <div className="card-grid">
                         {decks.map(d => (
@@ -120,7 +104,6 @@ export default function StudyPage() {
                                 <h3 className="item-title">{d.name}</h3>
                                 <p className="item-subtitle">{d.description}</p>
                                 <div style={{ marginTop: 10, color: '#1890ff', fontSize: '0.9rem' }}>
-                                    {t("study.start_session")} &rarr;
                                 </div>
                             </Link>
                         ))}
@@ -134,23 +117,15 @@ export default function StudyPage() {
   // Session Complete View
   if (cards.length === 0) {
     return (
-      <Layout pageTitle={t("study.title")}>
          <section className="glass-card" style={{ textAlign: "center", padding: "40px 20px" }}>
             {stats.limitReached ? (
                 <>
-                    <h2 className="card-title">{t("study.daily_goal")} ({stats.newCardsStudiedToday}/{stats.dailyLimit})</h2>
-                    <p className="muted">{t("study.daily_goal_msg")}</p>
                     <div style={{ marginTop: 20, display: 'flex', gap: 10, justifyContent: 'center' }}>
-                        <button className="secondary-btn" onClick={() => window.location.href = '/dashboard'}>{t("study.finish_btn")}</button>
-                        <button className="primary-btn" onClick={() => fetchCards(true)}>{t("study.study_more")}</button>
                     </div>
                 </>
             ) : (
                 <>
-                    <h2 className="card-title">{t("study.caught_up")}</h2>
-                    <p className="muted">{t("study.no_due_cards")}</p>
                     <div style={{ marginTop: 20 }}>
-                        <button className="secondary-btn" onClick={() => window.location.href = '/dashboard'}>{t("study.return_dashboard")}</button>
                     </div>
                 </>
             )}
@@ -160,20 +135,10 @@ export default function StudyPage() {
   }
 
   return (
-    <Layout pageTitle={t("study.title")}>
       {/* Counters */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginBottom: 10, fontSize: '0.9rem', color: '#333' }}>
-         <span>{t("study.due_label")}: {stats.dueCardsCount}</span>
          <span>|</span>
-         <span>{t("study.new_label")}: {stats.newCardsCount}</span>
       </div>
 
-      <FlashCard
-        card={currentCard}
-        isFlipped={isFlipped}
-        onFlip={() => setIsFlipped(!isFlipped)}
-        onReview={handleReview}
-      />
     </Layout>
   );
 }

@@ -69,8 +69,6 @@ export default function PostDetailPage() {
   const renderComments = (list: Comment[], depth = 0) => {
       return list.map(c => (
           <div key={c.id} style={{ marginLeft: depth * 20, marginTop: 10 }}>
-              <div style={{ background: "rgba(0,0,0,0.03)", padding: 10, borderRadius: 8 }}>
-                  <div style={{ fontSize: "0.8rem", color: "#666", marginBottom: 4 }}>
                       {c.authorName || "Unknown"}
                   </div>
                   <div style={{ whiteSpace: "pre-wrap" }}>{c.content}</div>
@@ -111,7 +109,6 @@ export default function PostDetailPage() {
     <Layout pageTitle={post.title}>
       <section className="glass-card">
         <h1 style={{ fontSize: "2rem", fontWeight: 700, marginBottom: "10px", lineHeight: 1.2 }}>{post.title}</h1>
-        <div style={{ marginBottom: 20, fontSize: "0.9rem", color: "#666" }}>
             By {post.authorName || "Unknown"}
         </div>
         <div
@@ -134,7 +131,6 @@ export default function PostDetailPage() {
                                   <img src={url} alt={fileName} style={{ maxWidth: 200, maxHeight: 200, display: 'block' }} />
                                 </a>
                             ) : (
-                                <a href={url} target="_blank" rel="noreferrer" style={{ color: '#0066cc', textDecoration: 'underline' }}>{fileName}</a>
                             )}
                         </div>
                     );
@@ -150,7 +146,6 @@ export default function PostDetailPage() {
            <Link to="/posts" className="muted" style={{ textDecoration: 'underline' }}>Back to List</Link>
         </div>
 
-        <hr style={{ borderColor: 'rgba(0,0,0,0.1)', margin: "20px 0" }} />
 
         <h3 className="item-title" style={{ marginBottom: 15 }}>Comments</h3>
 

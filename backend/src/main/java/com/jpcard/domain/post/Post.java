@@ -1,6 +1,5 @@
 package com.jpcard.domain.post;
 
-import com.jpcard.domain.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +20,6 @@ public class Post {
     @Column(nullable = false)
     private String title;
 
-    @Lob
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
@@ -36,10 +34,6 @@ public class Post {
 
     @Column(nullable = false)
     private boolean isNotice = false;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User author;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostAttachment> attachments = new ArrayList<>();

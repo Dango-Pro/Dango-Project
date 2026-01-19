@@ -9,9 +9,6 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user_card_progress", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"user_id", "card_id"})
-})
 @Getter
 @Setter
 public class UserCardProgress {
@@ -50,12 +47,4 @@ public class UserCardProgress {
 
     // To track daily limits
     private LocalDateTime firstStudiedAt;
-
-    // For multi-step learning (0 = 1min, 1 = 10min, etc)
-    @Column(nullable = false)
-    private int learningStep = 0;
-
-    // Count of times the card was failed (FAIL rating)
-    @Column(nullable = false)
-    private int lapses = 0;
 }

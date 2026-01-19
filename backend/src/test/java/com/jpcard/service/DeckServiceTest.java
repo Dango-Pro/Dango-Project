@@ -1,7 +1,6 @@
 package com.jpcard.service;
 
 import com.jpcard.domain.deck.Deck;
-import com.jpcard.domain.user.User;
 import com.jpcard.repository.CardTemplateRepository;
 import com.jpcard.repository.DeckRepository;
 import org.junit.jupiter.api.Test;
@@ -38,7 +37,6 @@ class DeckServiceTest {
 
         when(deckRepository.save(any(Deck.class))).thenReturn(deck);
 
-        Deck created = deckService.create("Test Deck", "Description", null, false, null, new User());
 
         assertNotNull(created);
         assertEquals("Test Deck", created.getName());

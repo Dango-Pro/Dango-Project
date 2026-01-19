@@ -3,14 +3,11 @@ package com.jpcard.service;
 import com.jpcard.controller.dto.DashboardStatsResponse;
 import com.jpcard.domain.post.Post;
 import com.jpcard.domain.study.StudyStatus;
-import com.jpcard.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +17,6 @@ public class StatsService {
     private final DeckRepository deckRepository;
     private final PostRepository postRepository;
     private final UserCardProgressRepository progressRepository;
-    private final StudyLogRepository studyLogRepository;
 
     @Transactional(readOnly = true)
     public DashboardStatsResponse getDashboardStats(Long userId) {
@@ -37,10 +33,5 @@ public class StatsService {
         long dueCards = progressRepository.countByUserIdAndNextReviewLessThanEqual(userId, LocalDateTime.now());
 
         return new DashboardStatsResponse(totalCards, memorizedCards, totalDecks, totalPosts, totalLikes, dueCards);
-    }
-
-    @Transactional(readOnly = true)
-    public List<StudyLogCount> getStudyActivity(Long userId) {
-        return studyLogRepository.countByDate(userId);
     }
 }
