@@ -1,0 +1,31 @@
+.dango-btn {
+    padding: 10px 20px;
+    border-radius: 8px; /* 조장님이 정한 공통 둥글기 */
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 16px;
+}
+
+/* 메인 오렌지 버튼 */
+.dango-btn.primary {
+    background-color: var(--dango-orange);
+    color: white;
+}
+
+.dango-btn.primary:hover {
+    background-color: #e67e00; /* 살짝 어두운 오렌지 */
+}
+
+/* 보조 버튼 (회색 등) */
+.dango-btn.secondary {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border: 1px solid #ddd;
+}
+
+.dango-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
