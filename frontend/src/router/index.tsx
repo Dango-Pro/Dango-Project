@@ -17,10 +17,12 @@ import UserPage from "../pages/UserPage";
 import HomePage from "../pages/HomePage";
 import DashboardPage from "../pages/DashboardPage";
 import ErrorPage from "../components/ErrorPage";
+import RootLayout from "../components/layout/RootLayout";
 
 export const router = createBrowserRouter([
   {
     path: "/",
+    element: <RootLayout />, // 1. 여기서 모든 페이지를 감싸줍니다!
     errorElement: <ErrorPage />,
     children: [
       { index: true, element: <HomePage /> },
