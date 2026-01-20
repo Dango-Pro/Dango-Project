@@ -40,6 +40,7 @@ public class User {
     private String refreshToken;
 
     @Column(nullable = false)
+    private int dailyLimit = 20; // Default 20
 
     public void addRole(Role role) { roles.add(role); }
 }

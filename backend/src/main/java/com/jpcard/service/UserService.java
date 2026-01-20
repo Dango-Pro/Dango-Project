@@ -18,7 +18,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public User signup(String username, String rawPassword) {
+    public User signup(String username, String rawPassword, String nickname) {
 
         userRepository.findByUsername(username)
                 .ifPresent(u -> { throw new IllegalArgumentException("이미 존재하는 사용자"); });

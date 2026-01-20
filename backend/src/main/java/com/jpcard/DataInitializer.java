@@ -18,10 +18,12 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if (userRepository.findByUsername("manager").isEmpty()) {
+            User manager = new User();
             manager.setUsername("manager");
             manager.setPassword(passwordEncoder.encode("password"));
             manager.addRole(Role.ROLE_USER);
             manager.addRole(Role.ROLE_MANAGER);
+            userRepository.save(manager);
             System.out.println("Manager account created: manager / password");
         }
     }
