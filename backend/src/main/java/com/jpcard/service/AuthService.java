@@ -1,5 +1,6 @@
 package com.jpcard.service;
 
+import com.jpcard.repository.RefreshTokenRepository;
 import com.jpcard.repository.UserRepository;
 import com.jpcard.util.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -74,5 +75,26 @@ public class AuthService {
 
         return jwtUtil.createAccessToken(userId, roles);
     }
+	
+	// 재발급 로직
+	private final RefreshTokenRepository refreshTokenRepository;
+	
+	public String reissueAccessToken(String refreshTokenValue) {
+		// 토큰 유효성 검사
+		if (!jwtUtil.validateToken(refreshTokenValue)) {
+			throw new RuntimeException("유효하지 않은 리프레시 토큰입니다.");
+		}
+		// DB에 있는지 확인
+		RefreshToken foundToken = refreshTokenRepository.findByTokenValue(refreshTokenValue)
+				.orElseThrow(()-> new RuntimeException("DB에 없는 토큰입니다. (로그아웃됨)"));
+		// 토큰 주인의 이메일 알아내기
+		String email = foundToken.getUserEmail();
+		User user = userRepository.findByEmail(email)
+				.orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+		// 새 토큰 발급 및 반환
+		return jwtUtil.createAccessToken(user.getEmail(), user.getRoles());
+		
+		
+	}
 }
 

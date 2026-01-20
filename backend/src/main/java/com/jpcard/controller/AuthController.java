@@ -49,5 +49,12 @@ public class AuthController {
         SecurityContextHolder.clearContext();
         return ResponseEntity.ok("logout");
     }
+	
+	@PostMapping("/refresh")
+	public ResponseEntity<String> refresh(@RequestHeader("RefreshToken") String refreshToken) {
+		// 헤더에서 RefreshToken 이라는 이름으로 토큰 꺼냄
+		String newAccessToken = authService.reissueAccessToken(refreshToken);
+		return ResponseEntity.ok(newAccessToken);
+	}
 }
 
