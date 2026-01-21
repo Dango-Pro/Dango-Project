@@ -42,6 +42,7 @@ public class StudyController {
         StudySessionResult result = studyService.getDueCards(user.getId(), deckId, studyMore);
 
         List<CardResponse> cardResponses = result.cards().stream()
+                .map(card -> new CardResponse(card.getId(), card.getTerm(), card.getMeaning(), false, card.getDeck().getId()))
                 .collect(Collectors.toList());
 
         StudySessionResponse response = new StudySessionResponse(

@@ -23,10 +23,16 @@ public class StatsController {
     public ResponseEntity<DashboardStatsResponse> getDashboardStats(Authentication authentication) {
         if (authentication == null) return ResponseEntity.status(401).build();
 
+        User user;
         Object principal = authentication.getPrincipal();
+
         if (principal instanceof User) {
+            user = (User) principal;
         } else {
+            user = userService.findByUsername(authentication.getName())
                     .orElseThrow(() -> new java.util.NoSuchElementException("User not found"));
         }
+
+        return ResponseEntity.ok(statsService.getDashboardStats(user.getId()));
     }
 }

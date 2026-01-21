@@ -42,6 +42,7 @@ public class UserService {
     }
 
     @Transactional
+    public User updateSettings(Long userId, int dailyLimit) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         user.setDailyLimit(dailyLimit);

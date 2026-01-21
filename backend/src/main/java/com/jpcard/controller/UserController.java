@@ -36,12 +36,16 @@ public class UserController {
                 : Collections.emptySet();
 
         return ResponseEntity.ok(
+                new UserInfoResponse(user.getId(), user.getUsername(), roles, user.getDailyLimit())
         );
     }
 
     @PatchMapping("/me")
     public ResponseEntity<?> updateMe(@RequestBody UserSettingsRequest request, Authentication auth) {
+        if (auth == null) return ResponseEntity.status(401).build();
+        User principal = (User) auth.getPrincipal();
 
+        User updated = userService.updateSettings(principal.getId(), request.dailyLimit());
 
         return ResponseEntity.ok().build();
     }
