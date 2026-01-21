@@ -25,11 +25,21 @@ public class User {
 	@Column(nullable = false)
 	private String role; // Set<Role> 대신 String 하나로 통일
 	
+	
 	// 생성자 (DataInitializer에서 쓰기 위해 필요)
 	public User(String email, String password, String nickname, String role) {
 		this.email = email;
 		this.password = password;
 		this.nickname = nickname;
 		this.role = role;
+	}
+	
+	@Column(nullable = false)
+	private int dailyLimit = 20;
+	public void updateDailyLimit(int newLimit) {
+		this.dailyLimit = newLimit;
+	}
+	public int getDailyLimit() {
+		return dailyLimit;
 	}
 }
