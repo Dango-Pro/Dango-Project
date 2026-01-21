@@ -15,24 +15,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/stats")
 @RequiredArgsConstructor
 public class StatsController {
-
-    private final StatsService statsService;
-    private final UserService userService;
-
-    @GetMapping("/dashboard")
-    public ResponseEntity<DashboardStatsResponse> getDashboardStats(Authentication authentication) {
-        if (authentication == null) return ResponseEntity.status(401).build();
-
-        User user;
-        Object principal = authentication.getPrincipal();
-
-        if (principal instanceof User) {
-            user = (User) principal;
-        } else {
-            user = userService.findByUsername(authentication.getName())
-                    .orElseThrow(() -> new java.util.NoSuchElementException("User not found"));
-        }
-
-        return ResponseEntity.ok(statsService.getDashboardStats(user.getId()));
-    }
+	
+	private final StatsService statsService;
+	private final UserService userService;
+	
+	@GetMapping("/dashboard")
+	public ResponseEntity<DashboardStatsResponse> getDashboardStats(Authentication authentication) {
+		if (authentication == null) return ResponseEntity.status(401).build();
+		
+		User user;
+		Object principal = authentication.getPrincipal();
+		
+		if (principal instanceof User) {
+			user = (User) principal;
+		} else {
+			// [수정] findByUsername -> findByEmail 로 변경
+			// authentication.getName()에는 이제 이메일이 들어있습니다.
+			user = userService.findByEmail(authentication.getName())
+					.orElseThrow(() -> new java.util.NoSuchElementException("User not found"));
+		}
+		
+		return ResponseEntity.ok(statsService.getDashboardStats(user.getId()));
+	}
 }

@@ -3,7 +3,6 @@ package com.jpcard.domain.auth;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 
 @Entity
 @Table(name = "refreshToken")

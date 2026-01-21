@@ -89,20 +89,27 @@ public class PostController {
                         .collect(Collectors.toList());
         return new PostResponse(post.getId(), post.getTitle(), post.getContent(), post.getLikeCount(), post.getAuthorName(), attachmentUrls, post.isNotice());
     }
-
-    private String determineAuthorName(HttpServletRequest request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
-            Object principal = authentication.getPrincipal();
-            if (principal instanceof com.jpcard.domain.user.User) {
-                return ((com.jpcard.domain.user.User) principal).getUsername();
-            }
-            return authentication.getName();
-        }
-
-        String ip = request.getRemoteAddr();
-        return maskIpAddress(ip);
-    }
+	
+	private String determineAuthorName(HttpServletRequest request) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		
+		// 로그인한 사용자라면?
+		if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+			Object principal = authentication.getPrincipal();
+			
+			if (principal instanceof com.jpcard.domain.user.User) {
+				// [수정] getUsername()은 이제 없습니다.
+				// 작성자 이름으로 쓸 'getNickname()' 또는 아이디인 'getEmail()'을 써야 합니다.
+				// 여기선 닉네임을 추천합니다.
+				return ((com.jpcard.domain.user.User) principal).getNickname();
+			}
+			return authentication.getName();
+		}
+		
+		// 로그인 안 한 사용자(익명)라면 IP 주소 마스킹
+		String ip = request.getRemoteAddr();
+		return maskIpAddress(ip);
+	}
 
     private String maskIpAddress(String ip) {
         if (ip == null) return "Unknown";

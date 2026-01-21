@@ -21,6 +21,18 @@ public class AuthService {
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final PasswordEncoder encoder;
 	private final JwtUtil jwtUtil;
+	private final NicknameFilterService nicknameFilterService;
+	
+	@Transactional
+	public void signup(String email, String password, String nickname) {
+		// [보안 기능] 1. 악성 닉네임 필터링 (필터에 걸리면 에러 출력 및 가입 중단)
+		nicknameFilterService.validateNickname(nickname);
+		
+		// 2. 이메일 중복 검사 (기존 코드)
+		if (userRepository.existsByEmail(email)) {
+			throw new IllegalArgumentException("이미 가입된 이메일 입니다");
+		}
+	}
 	
 	@Transactional
 	public Map<String, String> login(String email, String password) {
