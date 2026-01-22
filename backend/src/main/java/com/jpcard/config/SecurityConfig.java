@@ -43,7 +43,10 @@ public class SecurityConfig {
 								"/h2-console/**",
 								"/uploads/**",
 								"/favicon.ico",
-								"/error"
+								"/error",
+								
+								"/swagger-ui/**",     // Swagger 화면(HTML) 접근 허용
+								"/v3/api-docs/**"     // Swagger가 사용하는 데이터(JSON) 접근 허용
 						).permitAll()
 						
 						// (2) 그 외 모든 요청은 인증 필요 (★ 무조건 맨 마지막에!)
