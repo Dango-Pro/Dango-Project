@@ -1,25 +1,44 @@
 spring:
   application:
     name: jpcard
+  profiles:
+    active: dev # 기본은 'dev'(H2) 모드로 실행
 
+jwt:
+  secret: ${JWT_SECRET_KEY} # 아까 설정한 환경변수 사용
+
+---
+# [모드 1] 개발용 (dev) - H2 메모리 DB
+spring:
+  config:
+    activate:
+      on-profile: dev
   datasource:
-    url: jdbc:h2:mem:jpcard;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    url: jdbc:h2:mem:jpcard;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
     username: sa
     password:
-    driver-class-name: org.h2.Driver
-
   jpa:
     hibernate:
       ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.H2Dialect
-    open-in-view: true
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
 
-logging:
-  level:
-    org.hibernate.SQL: debug
-
-jwt:
-  secret: bT9fV0l6S1p3N2xqYThRMnRFS1pYbG1yUTZ6c2pHa2l4d0tEdTN5b0Z6Y0V1cGJvYjF4M1E3Z1E=
+---
+# [모드 2] 배포용/MySQL (prod)
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:mysql://localhost:3306/jpcard?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root # 필요하면 이것도 환경변수(${DB_PASSWORD})로 변경 가능
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
