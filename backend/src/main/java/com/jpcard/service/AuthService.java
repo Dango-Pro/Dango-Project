@@ -32,6 +32,15 @@ public class AuthService {
 		if (userRepository.existsByEmail(email)) {
 			throw new IllegalArgumentException("이미 가입된 이메일 입니다");
 		}
+		
+		//  3. 유저 객체 생성 및 저장
+		User user = new User(
+				email,
+				encoder.encode(password), // 비밀번호 암호화 필수!
+				nickname,
+				"ROLE_USER" // 기본 권한 부여
+		);
+		userRepository.save(user); // DB에 저장
 	}
 	
 	@Transactional
