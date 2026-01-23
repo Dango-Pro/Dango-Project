@@ -22,7 +22,7 @@ public class AuthController {
 	@PostMapping("/signup")
 	public ResponseEntity<?> signup(@RequestBody SignupRequest req) {
 		// DTO에 email, password, nickname, role이 있다고 가정
-		userService.signup(req.email(), req.password(), req.nickname());
+		authService.signup(req.email(), req.password(), req.nickname());
 		return ResponseEntity.ok("회원가입 성공");
 	}
 	
