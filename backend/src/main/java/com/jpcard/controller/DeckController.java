@@ -19,6 +19,8 @@ public class DeckController {
     private final DeckService deckService;
 
     @GetMapping
+    public ResponseEntity<List<DeckResponse>> list() {
+        List<DeckResponse> responses = deckService.findAll().stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(responses);
@@ -31,14 +33,20 @@ public class DeckController {
     }
 
     @PostMapping
+    public ResponseEntity<DeckResponse> create(@RequestBody DeckRequest request) {
+        var d = deckService.create(request.name(), request.description(), request.templateId());
         return ResponseEntity.ok(mapToResponse(d));
     }
 
     @PutMapping("/{id}")
+    public ResponseEntity<DeckResponse> update(@PathVariable Long id, @RequestBody DeckRequest request) {
+        var d = deckService.update(id, request.name(), request.description());
         return ResponseEntity.ok(mapToResponse(d));
     }
 
     @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        deckService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -46,5 +54,6 @@ public class DeckController {
         Long templateId = d.getCardTemplate() != null ? d.getCardTemplate().getId() : null;
         String templateName = d.getCardTemplate() != null ? d.getCardTemplate().getName() : null;
         List<String> fieldNames = d.getCardTemplate() != null ? d.getCardTemplate().getFieldNames() : java.util.Collections.emptyList();
+        return new DeckResponse(d.getId(), d.getName(), d.getDescription(), templateId, templateName, fieldNames);
     }
 }

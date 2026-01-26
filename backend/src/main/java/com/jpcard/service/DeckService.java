@@ -23,6 +23,8 @@ public class DeckService {
     private final UserCardProgressRepository progressRepository;
 
     @Transactional(readOnly = true)
+    public List<Deck> findAll() {
+        return deckRepository.findAll();
     }
 
     @Transactional(readOnly = true)
@@ -32,6 +34,7 @@ public class DeckService {
     }
 
     @Transactional
+    public Deck create(String name, String description, Long templateId) {
         Deck deck = new Deck();
         deck.setName(name);
         deck.setDescription(description);
@@ -44,6 +47,7 @@ public class DeckService {
     }
 
     @Transactional
+    public Deck update(Long id, String name, String description) {
         Deck deck = findById(id);
         deck.setName(name);
         deck.setDescription(description);
@@ -51,6 +55,7 @@ public class DeckService {
     }
 
     @Transactional
+    public void delete(Long id) {
         // Cascade delete progress and cards
         progressRepository.deleteByCardDeckId(id);
         cardRepository.deleteByDeckId(id);
