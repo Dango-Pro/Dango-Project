@@ -2,6 +2,7 @@ package com.jpcard.service;
 
 import com.jpcard.domain.auth.RefreshToken;
 import com.jpcard.domain.user.User;
+import com.jpcard.domain.user.UserStatus;
 import com.jpcard.repository.RefreshTokenRepository;
 import com.jpcard.repository.UserRepository;
 import com.jpcard.util.JwtUtil;
@@ -48,6 +49,11 @@ public class AuthService {
 		// 1. 유저 확인
 		User user = userRepository.findByEmail(email)
 				.orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
+		
+		// 탈퇴한 회원의 로그인 막기
+		if (user.getStatus() == UserStatus.WITHDRAWN) {
+			throw new IllegalArgumentException("탈퇴한 계정입니다.");
+		}
 		
 		// 2. 비밀번호 확인
 		if (!encoder.matches(password, user.getPassword())) {
