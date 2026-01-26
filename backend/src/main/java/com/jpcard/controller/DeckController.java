@@ -7,6 +7,8 @@ import com.jpcard.service.DeckService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.jpcard.domain.user.User;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,8 +35,10 @@ public class DeckController {
     }
 
     @PostMapping
-    public ResponseEntity<DeckResponse> create(@RequestBody DeckRequest request) {
-        var d = deckService.create(request.name(), request.description(), request.templateId());
+    public ResponseEntity<DeckResponse> create(
+			@RequestBody DeckRequest request,
+			@AuthenticationPrincipal User user) {
+        var d = deckService.create(request.name(), request.description(), request.templateId(), user);
         return ResponseEntity.ok(mapToResponse(d));
     }
 
