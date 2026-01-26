@@ -10,6 +10,7 @@ import com.jpcard.util.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.jpcard.domain.user.User;
 
 import java.util.List;
 
@@ -34,10 +35,11 @@ public class DeckService {
     }
 
     @Transactional
-    public Deck create(String name, String description, Long templateId) {
+    public Deck create(String name, String description, Long templateId, User user) {
         Deck deck = new Deck();
         deck.setName(name);
         deck.setDescription(description);
+		deck.setUser(user);
         if (templateId != null) {
             CardTemplate template = cardTemplateRepository.findById(templateId)
                     .orElseThrow(() -> new ResourceNotFoundException("Template not found: " + templateId));
