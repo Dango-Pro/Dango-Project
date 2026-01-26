@@ -37,6 +37,7 @@ class DeckServiceTest {
 
         when(deckRepository.save(any(Deck.class))).thenReturn(deck);
 
+        Deck created = deckService.create("Test Deck", "Description", null);
 
         assertNotNull(created);
         assertEquals("Test Deck", created.getName());
