@@ -19,9 +19,9 @@ import java.util.stream.Collectors;
 @Service
 public class NicknameFilterService {
 
-	// 1. 금지어 리스트 (욕설 + 운영자 사칭)
+	// 금지어 리스트 (욕설 + 운영자 사칭)
 	private List<String> BAD_WORDS = new ArrayList<>();
-	// 2. 유사도 계산기
+	// 유사도 계산기
 	private final JaroWinklerSimilarity similarity = new JaroWinklerSimilarity();
 	
 	// 서버가 켜질 때 한 번 실행되어 파일 읽어옴 (메모리 절약!)
@@ -47,17 +47,17 @@ public class NicknameFilterService {
 		String normalized = nickname.replace(" ", "").toLowerCase();
 		
 		for (String badWord : BAD_WORDS) {
-			// 3. 유사도 점수 계산 (0.0 ~ 1.0 사이, 1.0이면 똑같은 글자)
+			// 유사도 점수 계산 (0.0 ~ 1.0 사이, 1.0이면 똑같은 글자)
 			Double score = similarity.apply(normalized, badWord);
 			
-			// 4. 판단 기준: 85% 이상 비슷하면 차단 (수치는 테스트하며 조절)
+			// 판단 기준: 85% 이상 비슷하면 차단 (수치는 테스트하며 조절)
 			if (score > 0.85) {
 				throw new IllegalArgumentException(
 						"부적절한 단어('" + badWord + "')와 유사한 닉네임입니다. 보안정책에 의해 사용할 수 없습니다."
 				);
 			}
 			
-			// 5. 포함 여부 검사 (단순 포함도 차단)
+			// 포함 여부 검사 (단순 포함도 차단)
 			if (normalized.contains(badWord)) {
 				throw new IllegalArgumentException("사용할 수 없는 단어가 포함되어 있습니다.");
 			}
