@@ -2,6 +2,7 @@ package com.jpcard.controller;
 
 import com.jpcard.controller.dto.UserInfoResponse;
 import com.jpcard.controller.dto.UserSettingsRequest;
+import com.jpcard.controller.dto.UserUpdateRequest;
 import com.jpcard.domain.user.User;
 import com.jpcard.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -64,5 +65,14 @@ public class UserController {
 	public ResponseEntity<String> withdraw(@AuthenticationPrincipal User user) {
 		userService.withdraw(user.getEmail());
 		return ResponseEntity.ok("회원탈퇴가 완료되었습니다.");
+	}
+	
+	@PatchMapping("/profile")
+	public ResponseEntity<String> updateProfile(
+			@AuthenticationPrincipal User user,	// 현재 로그인한 사람
+			@RequestBody UserUpdateRequest request
+			) {
+		userService.updateProfile(user.getId(), request);
+		return ResponseEntity.ok("회원 정보가 수정되었습니다.");
 	}
 }
