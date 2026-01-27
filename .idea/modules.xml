@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Dango-Project.iml" filepath="$PROJECT_DIR$/.idea/Dango-Project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/dango.main.iml" filepath="$PROJECT_DIR$/.idea/modules/dango.main.iml" />
     </modules>
   </component>
 </project>
