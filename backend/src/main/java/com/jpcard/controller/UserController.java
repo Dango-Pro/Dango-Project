@@ -7,6 +7,8 @@ import com.jpcard.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -56,5 +58,11 @@ public class UserController {
 		userService.updateStudySettings(user.getId(), request.dailyLimit());
 		
 		return ResponseEntity.ok().build();
+	}
+	
+	@PostMapping("/withdraw")
+	public ResponseEntity<String> withdraw(@AuthenticationPrincipal User user) {
+		userService.withdraw(user.getEmail());
+		return ResponseEntity.ok("회원탈퇴가 완료되었습니다.");
 	}
 }
