@@ -8,6 +8,7 @@ export default function DeckCreatePage() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [isPublic, setIsPublic] = useState(false);
   const [status, setStatus] = useState("");
 
   const [templates, setTemplates] = useState<CardTemplate[]>([]);
@@ -58,7 +59,7 @@ export default function DeckCreatePage() {
     e.preventDefault();
     try {
       if (selectedTemplateId) localStorage.setItem("lastTemplateId", String(selectedTemplateId));
-      await api.post("/decks", { name, description, templateId: selectedTemplateId });
+      await api.post("/decks", { name, description, templateId: selectedTemplateId, isPublic });
       navigate("/decks");
     } catch (err) {
       console.error(err);
@@ -100,6 +101,20 @@ export default function DeckCreatePage() {
                 onChange={(e) => setDescription(e.target.value)}
                 style={{ resize: "vertical" }}
               />
+            </div>
+
+            <div className="input-group" style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                <input
+                    type="checkbox"
+                    id="is-public"
+                    checked={isPublic}
+                    onChange={e => setIsPublic(e.target.checked)}
+                    style={{ width: 18, height: 18, cursor: "pointer" }}
+                />
+                <label htmlFor="is-public" className="input-label" style={{ cursor: "pointer", marginBottom: 0 }}>
+                    Make Public
+                </label>
+                <span className="muted" style={{ fontSize: "0.8rem" }}>(Visible to community)</span>
             </div>
 
             {/* Template Selection */}

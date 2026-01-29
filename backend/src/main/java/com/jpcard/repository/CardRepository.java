@@ -22,4 +22,6 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     List<Card> findNewCards(@Param("deckId") Long deckId, @Param("userId") Long userId, Pageable pageable);
 
     void deleteByDeckId(Long deckId);
+
+    List<Card> findByDeckId(Long deckId);
 }

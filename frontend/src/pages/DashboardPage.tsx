@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../libs/api";
 import Layout from "../components/Layout";
+import StudyHeatmap from "../components/StudyHeatmap";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -43,6 +44,11 @@ export default function DashboardPage() {
             <div style={{ width: '100%', height: 10, background: 'rgba(255,255,255,0.1)', borderRadius: 5, overflow: 'hidden' }}>
                <div style={{ width: `${memorizedPercent}%`, height: '100%', background: 'white', transition: 'width 0.5s ease' }} />
             </div>
+         </div>
+
+         <div style={{ marginTop: 30 }}>
+             <h3 className="item-title" style={{ fontSize: '1rem', marginBottom: 10 }}>Study Activity</h3>
+             <StudyHeatmap />
          </div>
       </div>
 

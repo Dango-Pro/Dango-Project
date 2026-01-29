@@ -9,12 +9,14 @@ export default function DeckEditPage() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [isPublic, setIsPublic] = useState(false);
   const [status, setStatus] = useState("");
 
   useEffect(() => {
     api.get<Deck>(`/decks/${id}`).then(res => {
         setName(res.data.name);
         setDescription(res.data.description || "");
+        setIsPublic(res.data.isPublic || false);
     }).catch(err => {
         console.error(err);
         setStatus("Failed to load deck.");
@@ -24,7 +26,7 @@ export default function DeckEditPage() {
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.put(`/decks/${id}`, { name, description });
+      await api.put(`/decks/${id}`, { name, description, isPublic });
       navigate(`/decks/${id}`);
     } catch (err) {
       console.error(err);
@@ -84,6 +86,20 @@ export default function DeckEditPage() {
                 onChange={(e) => setDescription(e.target.value)}
                 style={{ resize: "vertical" }}
               />
+            </div>
+
+            <div className="input-group" style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                <input
+                    type="checkbox"
+                    id="is-public"
+                    checked={isPublic}
+                    onChange={e => setIsPublic(e.target.checked)}
+                    style={{ width: 18, height: 18, cursor: "pointer" }}
+                />
+                <label htmlFor="is-public" className="input-label" style={{ cursor: "pointer", marginBottom: 0 }}>
+                    Make Public
+                </label>
+                <span className="muted" style={{ fontSize: "0.8rem" }}>(Visible to community)</span>
             </div>
 
             <button type="submit" className="primary-btn" style={{ marginTop: 10, padding: "14px", fontSize: "1.1rem" }}>

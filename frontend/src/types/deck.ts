@@ -5,4 +5,6 @@ export interface Deck {
   templateId?: number;
   templateName?: string;
   fieldNames?: string[];
+  ownerId?: number;
+  isPublic?: boolean;
 }

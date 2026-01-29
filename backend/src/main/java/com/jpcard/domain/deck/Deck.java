@@ -1,5 +1,6 @@
 package com.jpcard.domain.deck;
 
+import com.jpcard.domain.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,4 +24,11 @@ public class Deck {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "card_template_id")
     private CardTemplate cardTemplate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User owner;
+
+    @Column(nullable = false)
+    private boolean isPublic = false;
 }

@@ -5,6 +5,7 @@ import com.jpcard.domain.study.StudyStatus;
 import com.jpcard.domain.study.UserCardProgress;
 import com.jpcard.domain.user.User;
 import com.jpcard.repository.CardRepository;
+import com.jpcard.repository.StudyLogRepository;
 import com.jpcard.repository.UserCardProgressRepository;
 import com.jpcard.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,7 @@ class StudyServiceTest {
     @Mock private UserCardProgressRepository progressRepository;
     @Mock private CardRepository cardRepository;
     @Mock private UserRepository userRepository;
+    @Mock private StudyLogRepository studyLogRepository;
 
     @InjectMocks private StudyService studyService;
 

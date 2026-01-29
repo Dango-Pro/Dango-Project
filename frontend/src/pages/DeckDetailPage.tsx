@@ -1,20 +1,26 @@
 import { useEffect, useState } from "react";
-import { api } from "../libs/api";
+import { api, DeckApi } from "../libs/api";
 import { speak } from "../libs/tts";
 import Layout from "../components/Layout";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import type { Card } from "../types/card";
 import type { Deck } from "../types/deck";
+import type { User } from "../types/user";
 import { useTranslation } from "react-i18next";
 
 export default function DeckDetailPage() {
   const { t } = useTranslation();
   const { id } = useParams();
+  const navigate = useNavigate();
   const [deck, setDeck] = useState<Deck | null>(null);
   const [cards, setCards] = useState<Card[]>([]);
   const [status, setStatus] = useState(t("common.loading"));
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   useEffect(() => {
+    // Fetch user to check ownership
+    api.get<User>("/users/me").then(res => setCurrentUser(res.data)).catch(() => {});
+
     api.get<Deck>(`/decks/${id}`).then(res => setDeck(res.data)).catch(console.error);
     api.get<Card[]>(`/cards?deckId=${id}`).then(res => {
         setCards(res.data);
@@ -22,7 +28,33 @@ export default function DeckDetailPage() {
     }).catch(() => setStatus(t("deck.load_cards_fail")));
   }, [id, t]);
 
+  const onFork = async () => {
+      if (!confirm(t("deck.fork_confirm", { defaultValue: "Copy this deck to your library?" }))) return;
+      try {
+          const res = await DeckApi.fork(id!);
+          alert(t("deck.fork_success", { defaultValue: "Deck copied successfully!" }));
+          navigate(`/decks/${res.data.id}`);
+      } catch (e) {
+          console.error(e);
+          alert(t("deck.fork_fail", { defaultValue: "Failed to copy deck." }));
+      }
+  };
+
+  const onDelete = async () => {
+      if (!confirm(t("common.delete_confirm", { defaultValue: "Are you sure?" }))) return;
+      try {
+          await DeckApi.delete(id!);
+          navigate("/decks");
+      } catch (e) {
+          console.error(e);
+          alert("Failed to delete");
+      }
+  };
+
   if (!deck) return <Layout><p className="muted">{t("common.loading")}</p></Layout>;
+
+  // Check ownership
+  const isOwner = currentUser && deck.ownerId === currentUser.id;
 
   return (
     <Layout pageTitle={deck.name}>
@@ -30,18 +62,39 @@ export default function DeckDetailPage() {
         <div className="card-header">
           <h2 className="card-title">{deck.name}</h2>
           <div style={{ display: 'flex', gap: 10 }}>
-             <Link to={`/study?deckId=${id}`} className="primary-btn" style={{ background: 'linear-gradient(135deg, #1890ff, #096dd9)', borderColor: 'transparent' }}>
-               {t("deck.study_now")}
-             </Link>
-             <Link to={`/cards/create?deckId=${id}`} className="secondary-btn">
-               {t("deck.add_card")}
-             </Link>
-             <Link to={`/decks/${id}/edit`} className="secondary-btn">
-               {t("common.edit")}
-             </Link>
+             {/* Study Button: Available to everyone? Or only owner? Public decks can be studied?
+                 Ideally, users should fork public decks to study them properly (save progress).
+                 But let's allow studying public decks in "Guest Mode" or just hide it?
+                 The prompt says "Fork functionality is essential because modifying original ruins it".
+                 So for public decks, we should encourage Fork.
+             */}
+
+             {isOwner ? (
+                 <>
+                    <Link to={`/study?deckId=${id}`} className="primary-btn" style={{ background: 'linear-gradient(135deg, #1890ff, #096dd9)', borderColor: 'transparent' }}>
+                       {t("deck.study_now")}
+                    </Link>
+                    <Link to={`/cards/create?deckId=${id}`} className="secondary-btn">
+                       {t("deck.add_card")}
+                    </Link>
+                    <Link to={`/decks/${id}/edit`} className="secondary-btn">
+                       {t("common.edit")}
+                    </Link>
+                    <button className="secondary-btn" onClick={onDelete} style={{ color: '#ff4d4f', borderColor: '#ff4d4f' }}>
+                       {t("common.delete")}
+                    </button>
+                 </>
+             ) : (
+                 <button className="primary-btn" onClick={onFork}>
+                    {t("deck.fork_btn", { defaultValue: "Copy to My Decks" })}
+                 </button>
+             )}
           </div>
         </div>
-        <p className="item-subtitle" style={{ marginBottom: 20 }}>{deck.description}</p>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 20 }}>
+            {deck.isPublic && <span className="pill" style={{ background: '#52c41a', color: 'white' }}>Public</span>}
+            <p className="item-subtitle">{deck.description}</p>
+        </div>
 
         {status && <p className="muted" style={{marginTop: 10}}>{status}</p>}
 
@@ -56,9 +109,11 @@ export default function DeckDetailPage() {
                   </div>
                   <p className="item-subtitle">{c.meaning}</p>
                 </div>
-                <div style={{ display: "flex", gap: 8 }}>
-                   <Link to={`/cards/${c.id}/edit`} className="muted" style={{ fontSize: "0.8rem", textDecoration: 'underline' }}>{t("common.edit")}</Link>
-                </div>
+                {isOwner && (
+                    <div style={{ display: "flex", gap: 8 }}>
+                       <Link to={`/cards/${c.id}/edit`} className="muted" style={{ fontSize: "0.8rem", textDecoration: 'underline' }}>{t("common.edit")}</Link>
+                    </div>
+                )}
               </div>
             </article>
           ))}

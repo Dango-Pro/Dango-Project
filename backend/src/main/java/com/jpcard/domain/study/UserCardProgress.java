@@ -54,4 +54,8 @@ public class UserCardProgress {
     // For multi-step learning (0 = 1min, 1 = 10min, etc)
     @Column(nullable = false)
     private int learningStep = 0;
+
+    // Count of times the card was failed (FAIL rating)
+    @Column(nullable = false)
+    private int lapses = 0;
 }

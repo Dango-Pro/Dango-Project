@@ -1,10 +1,12 @@
 package com.jpcard.service;
 
 import com.jpcard.domain.card.Card;
+import com.jpcard.domain.study.StudyLog;
 import com.jpcard.domain.study.StudyStatus;
 import com.jpcard.domain.study.UserCardProgress;
 import com.jpcard.domain.user.User;
 import com.jpcard.repository.CardRepository;
+import com.jpcard.repository.StudyLogRepository;
 import com.jpcard.repository.UserCardProgressRepository;
 import com.jpcard.repository.UserRepository;
 import com.jpcard.util.ResourceNotFoundException;
@@ -31,20 +33,26 @@ public class StudyService {
     private final UserCardProgressRepository progressRepository;
     private final CardRepository cardRepository;
     private final UserRepository userRepository;
+    private final StudyLogRepository studyLogRepository;
     private final Random random = new Random();
 
     // Learning steps in minutes: 1min -> 10min -> Graduation (1 day)
     private static final int[] LEARNING_STEPS = {1, 10};
     private static final int GRADUATING_INTERVAL = 1440; // 1 day in minutes
     private static final int EASY_INTERVAL = 4 * 1440;   // 4 days
+    private static final int LEECH_THRESHOLD = 8; // Fail count to suspend
 
     @Transactional(readOnly = true)
     public StudySessionResult getDueCards(Long userId, Long deckId, boolean studyMore) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        // 1. Get existing progress that is due
-        List<UserCardProgress> dueProgress = progressRepository.findDueCards(userId, deckId, LocalDateTime.now());
+        // 1. Get existing progress that is due (Exclude SUSPENDED)
+        List<UserCardProgress> dueProgress = progressRepository.findDueCards(userId, deckId, LocalDateTime.now())
+                .stream()
+                .filter(p -> p.getStatus() != StudyStatus.SUSPENDED)
+                .collect(Collectors.toList());
+
         List<Card> dueCards = dueProgress.stream().map(UserCardProgress::getCard).collect(Collectors.toList());
 
         // 2. Get NEW cards with limits (Timezone Aware)
@@ -53,17 +61,8 @@ public class StudyService {
         ZoneId zoneId = ZoneId.of(userZone);
 
         ZonedDateTime nowZoned = ZonedDateTime.now(zoneId);
-        LocalDateTime startOfDay = nowZoned.toLocalDate().atStartOfDay(zoneId).toLocalDateTime(); // Convert back to server local time for DB query?
-        // Wait, DB stores LocalDateTime without zone (usually UTC).
-        // If we want "User's Start of Day", we must convert User's 00:00 to Server's LocalDateTime.
-        // Assuming Server is UTC.
-
         ZonedDateTime userStartOfDay = nowZoned.toLocalDate().atStartOfDay(zoneId);
         ZonedDateTime userEndOfDay = nowZoned.toLocalDate().atTime(23, 59, 59).atZone(zoneId);
-
-        // Convert to System Default Zone (Server Time) for DB comparison
-        // Assuming DB stores in System Default (or UTC).
-        // Best practice: Store UTC. Let's assume the DB values are comparable to LocalDateTime.now(ZoneId.systemDefault()).
 
         LocalDateTime startParam = userStartOfDay.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
         LocalDateTime endParam = userEndOfDay.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
@@ -133,18 +132,30 @@ public class StudyService {
                 progress.setFirstStudiedAt(LocalDateTime.now());
             }
 
+            // Save History Log
+            StudyLog log = new StudyLog();
+            log.setUser(user);
+            log.setCard(card);
+            log.setRating(rating);
+            log.setStudiedAt(LocalDateTime.now());
+            studyLogRepository.save(log);
+
             applyAlgorithm(progress, rating);
-            progressRepository.save(progress); // This might throw DataIntegrityViolationException if duplicate
+
+            // Leech Check
+            if ("FAIL".equalsIgnoreCase(rating)) {
+                progress.setLapses(progress.getLapses() + 1);
+                if (progress.getLapses() >= LEECH_THRESHOLD) {
+                    progress.setStatus(StudyStatus.SUSPENDED);
+                }
+            }
+
+            progressRepository.save(progress);
 
             // 4. Sibling Burying
             burySiblings(user.getId(), card);
 
         } catch (DataIntegrityViolationException e) {
-            // Handle concurrency: Duplicate entry.
-            // We can either ignore it (user double clicked, first one won)
-            // or retry (fetch again and update).
-            // Ignoring is safer for "Review" logic as the first click was valid.
-            // Logging it would be good.
             System.out.println("Concurrency conflict handled for User " + userId + " Card " + cardId);
         }
     }
