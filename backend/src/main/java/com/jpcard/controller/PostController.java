@@ -18,6 +18,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +29,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
+@Validated
 public class PostController {
 
     private final PostService postService;
@@ -52,8 +57,8 @@ public class PostController {
 
     @PostMapping(consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PostResponse> create(
-            @RequestParam("title") String title,
-            @RequestParam("content") String content,
+            @RequestParam("title") @NotBlank @Size(max=255) String title,
+            @RequestParam("content") @NotBlank String content,
             @RequestParam(value = "isNotice", required = false, defaultValue = "false") boolean isNotice,
             @RequestParam(value = "files", required = false) List<org.springframework.web.multipart.MultipartFile> files,
             HttpServletRequest httpRequest) {
@@ -65,7 +70,7 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PostResponse> update(@PathVariable Long id, @RequestBody PostRequest request) {
+    public ResponseEntity<PostResponse> update(@PathVariable Long id, @RequestBody @Valid PostRequest request) {
         var post = postService.update(id, request.title(), request.content(), request.isNotice());
         return ResponseEntity.ok(mapToResponse(post));
     }

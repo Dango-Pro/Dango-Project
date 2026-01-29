@@ -13,10 +13,18 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Arrays;
 
 @Service
 @RequiredArgsConstructor
 public class PostService {
+
+    private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    private static final Set<String> ALLOWED_CONTENT_TYPES = new HashSet<>(Arrays.asList(
+            "image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf", "text/plain"
+    ));
 
     private final PostRepository postRepository;
     private final PostAttachmentRepository postAttachmentRepository;
@@ -49,12 +57,19 @@ public class PostService {
         if (files != null && !files.isEmpty()) {
             for (MultipartFile file : files) {
                 if (file.isEmpty()) continue;
+                validateFile(file);
                 try {
                     String originalFilename = file.getOriginalFilename();
                     String storeFilename = createStoreFilename(originalFilename);
                     String fullPath = getFullPath(storeFilename);
 
-                    file.transferTo(new File(fullPath).getAbsoluteFile());
+                    File dest = new File(fullPath);
+                    // Path Traversal Check
+                    if (!dest.getCanonicalPath().startsWith(new File("uploads").getCanonicalPath())) {
+                         throw new RuntimeException("Invalid file path");
+                    }
+
+                    file.transferTo(dest.getAbsoluteFile());
 
                     PostAttachment attachment = new PostAttachment();
                     attachment.setPost(savedPost);
@@ -89,6 +104,16 @@ public class PostService {
             dir.mkdirs();
         }
         return uploadDir + filename;
+    }
+
+    private void validateFile(MultipartFile file) {
+        if (file.getSize() > MAX_FILE_SIZE) {
+            throw new RuntimeException("File size exceeds limit (5MB)");
+        }
+        String contentType = file.getContentType();
+        if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType)) {
+            throw new RuntimeException("Invalid file type: " + contentType);
+        }
     }
 
     @Transactional(readOnly = true)

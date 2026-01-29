@@ -15,6 +15,7 @@ export default function PostCreatePage() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [isManager, setIsManager] = useState(false);
   const [isNotice, setIsNotice] = useState(false);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
      api.get("/users/me").then(res => {
@@ -23,7 +24,29 @@ export default function PostCreatePage() {
      }).catch(() => {});
   }, []);
 
+  const validate = () => {
+      const newErrors: { [key: string]: string } = {};
+      if (!title.trim()) newErrors.title = "제목을 입력해주세요.";
+      if (!content.trim()) newErrors.content = "내용을 입력해주세요.";
+
+      if (files) {
+          for (let i = 0; i < files.length; i++) {
+              const f = files[i];
+              if (f.size > 5 * 1024 * 1024) {
+                  newErrors.files = "파일 크기는 5MB 이하여야 합니다.";
+              }
+              const allowed = ["image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf", "text/plain"];
+              if (!allowed.includes(f.type)) {
+                  newErrors.files = "지원하지 않는 파일 형식입니다. (이미지, PDF, 텍스트만 가능)";
+              }
+          }
+      }
+      setErrors(newErrors);
+      return Object.keys(newErrors).length === 0;
+  };
+
   const onCreate = async () => {
+    if (!validate()) return;
     try {
       const formData = new FormData();
       formData.append("title", title);
@@ -70,6 +93,7 @@ export default function PostCreatePage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
+            {errors.title && <span style={{color: '#ff6b6b', fontSize: '0.85rem', marginTop: '0.25rem'}}>{errors.title}</span>}
           </div>
 
           {isManager && (
@@ -96,6 +120,7 @@ export default function PostCreatePage() {
                     placeholder="내용을 입력하세요..."
                 />
             </div>
+            {errors.content && <span style={{color: '#ff6b6b', fontSize: '0.85rem', marginTop: '0.25rem'}}>{errors.content}</span>}
           </div>
           <div className="input-field">
             <label htmlFor="post-files">첨부 파일</label>
@@ -106,6 +131,7 @@ export default function PostCreatePage() {
               className="text-input"
               onChange={(e) => setFiles(e.target.files)}
             />
+             {errors.files && <span style={{color: '#ff6b6b', fontSize: '0.85rem', marginTop: '0.25rem'}}>{errors.files}</span>}
           </div>
           <button className="primary-btn" onClick={onCreate}>
             게시글 발행
