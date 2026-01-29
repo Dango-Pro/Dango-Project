@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Layout from "../components/Layout";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { api } from "../libs/api";
 import type { Post } from "../types/post";
 
@@ -94,7 +94,6 @@ const NoticeWidget = () => {
 };
 
 const LoginWidget = () => {
-    const navigate = useNavigate();
     const token = localStorage.getItem("token");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");

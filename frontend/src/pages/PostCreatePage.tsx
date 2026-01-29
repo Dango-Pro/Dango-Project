@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { api } from "../libs/api";
+import { postService } from "../services/postService";
 import Layout from "../components/Layout";
 import { useNavigate } from "react-router-dom";
 import SuccessModal from "../components/SuccessModal";
 import ReactQuill from "react-quill-new";
+import { useTranslation } from "react-i18next";
 import "react-quill-new/dist/quill.snow.css";
 
 export default function PostCreatePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -26,18 +29,18 @@ export default function PostCreatePage() {
 
   const validate = () => {
       const newErrors: { [key: string]: string } = {};
-      if (!title.trim()) newErrors.title = "제목을 입력해주세요.";
-      if (!content.trim()) newErrors.content = "내용을 입력해주세요.";
+      if (!title.trim()) newErrors.title = t("post.validation.title");
+      if (!content.trim()) newErrors.content = t("post.validation.content");
 
       if (files) {
           for (let i = 0; i < files.length; i++) {
               const f = files[i];
               if (f.size > 5 * 1024 * 1024) {
-                  newErrors.files = "파일 크기는 5MB 이하여야 합니다.";
+                  newErrors.files = t("post.validation.file_size");
               }
               const allowed = ["image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf", "text/plain"];
               if (!allowed.includes(f.type)) {
-                  newErrors.files = "지원하지 않는 파일 형식입니다. (이미지, PDF, 텍스트만 가능)";
+                  newErrors.files = t("post.validation.file_type");
               }
           }
       }
@@ -48,48 +51,41 @@ export default function PostCreatePage() {
   const onCreate = async () => {
     if (!validate()) return;
     try {
-      const formData = new FormData();
-      formData.append("title", title);
-      formData.append("content", content);
-      formData.append("isNotice", isNotice.toString());
-      if (files) {
-        for (let i = 0; i < files.length; i++) {
-          formData.append("files", files[i]);
-        }
-      }
-
-      await api.post("/posts", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      await postService.createPost({
+        title,
+        content,
+        isNotice,
+        files
       });
       setShowSuccess(true);
       setTimeout(() => navigate("/posts"), 1500);
     } catch (err) {
       console.error(err);
-      setStatus("게시글 작성 실패. API 연결 상태를 확인하세요.");
+      setStatus(t("post.fail"));
     }
   };
 
   return (
-    <Layout pageTitle="Write Post">
+    <Layout pageTitle={t("post.create_title")}>
       <SuccessModal
         isOpen={showSuccess}
-        message="Post Published!"
+        message={t("post.success")}
         onClose={() => navigate("/posts")}
       />
       <section className="glass-card">
         <div className="card-header">
-          <h2 className="card-title">New Post</h2>
+          <h2 className="card-title">{t("post.new_post")}</h2>
           <button className="secondary-btn" onClick={() => { setTitle(""); setContent(""); }}>
-            Clear
+            {t("post.clear")}
           </button>
         </div>
         <div className="form-grid">
           <div className="input-field">
-            <label htmlFor="post-title">제목</label>
+            <label htmlFor="post-title">{t("post.title")}</label>
             <input
               id="post-title"
               className="text-input"
-              placeholder="제목을 입력"
+              placeholder={t("post.title_placeholder")}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
@@ -105,25 +101,25 @@ export default function PostCreatePage() {
                         onChange={e => setIsNotice(e.target.checked)}
                         style={{ width: 18, height: 18, accentColor: '#ff6b6b' }}
                       />
-                      <span style={{ color: '#ff6b6b', fontWeight: 600 }}>공지사항으로 등록 (Announcement)</span>
+                      <span style={{ color: '#ff6b6b', fontWeight: 600 }}>{t("post.notice")}</span>
                   </label>
               </div>
           )}
 
           <div className="input-field">
-            <label htmlFor="post-content">내용</label>
+            <label htmlFor="post-content">{t("post.content")}</label>
             <div className="quill-wrapper">
                 <ReactQuill
                     theme="snow"
                     value={content}
                     onChange={setContent}
-                    placeholder="내용을 입력하세요..."
+                    placeholder={t("post.content_placeholder")}
                 />
             </div>
             {errors.content && <span style={{color: '#ff6b6b', fontSize: '0.85rem', marginTop: '0.25rem'}}>{errors.content}</span>}
           </div>
           <div className="input-field">
-            <label htmlFor="post-files">첨부 파일</label>
+            <label htmlFor="post-files">{t("post.files")}</label>
             <input
               id="post-files"
               type="file"
@@ -134,7 +130,7 @@ export default function PostCreatePage() {
              {errors.files && <span style={{color: '#ff6b6b', fontSize: '0.85rem', marginTop: '0.25rem'}}>{errors.files}</span>}
           </div>
           <button className="primary-btn" onClick={onCreate}>
-            게시글 발행
+            {t("post.publish")}
           </button>
           {status && <p className="muted">{status}</p>}
         </div>

@@ -23,7 +23,8 @@ public class CardService {
 
     @Transactional(readOnly = true)
     public List<Card> search(Long deckId, Boolean memorized, String keyword) {
-        return cardRepository.search(deckId, memorized, keyword);
+        String searchKey = (keyword != null && !keyword.isEmpty()) ? "%" + keyword.toLowerCase() + "%" : null;
+        return cardRepository.search(deckId, memorized, searchKey);
     }
 
     @Transactional(readOnly = true)
@@ -74,7 +75,7 @@ public class CardService {
     }
 
     @Transactional
-    public Card update(Long id, String term, String meaning, Long deckId) {
+    public Card update(Long id, String term, String meaning, Long deckId, Map<String, String> content) {
         Card card = findById(id);
         card.setTerm(term);
         card.setMeaning(meaning);
@@ -85,7 +86,19 @@ public class CardService {
         } else {
             card.setDeck(null); // Optional: allow unassigning
         }
+        if (content != null) {
+            try {
+                card.setContentJson(objectMapper.writeValueAsString(content));
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to serialize content", e);
+            }
+        }
         return card;
+    }
+
+    @Transactional
+    public Card update(Long id, String term, String meaning, Long deckId) {
+        return update(id, term, meaning, deckId, null);
     }
 
     @Transactional

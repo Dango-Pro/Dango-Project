@@ -25,24 +25,20 @@ export default function CardEditPage() {
 
             setDeckId(card.deckId ? String(card.deckId) : "");
 
-            let parsedContent = {};
-            try {
-                if (card.contentJson) parsedContent = JSON.parse(card.contentJson);
-            } catch (e) {
-                console.error("Failed to parse contentJson", e);
+            let initialContent = card.content || {};
+
+            // If content is empty but legacy fields exist (though interface marks them optional)
+            if (Object.keys(initialContent).length === 0 && (card.term || card.meaning)) {
+                 const deck = decksData.find(d => d.id === card.deckId);
+                 const fields = deck?.fieldNames && deck.fieldNames.length > 0 ? deck.fieldNames : ["Front", "Back"];
+
+                 const newContent: Record<string, string> = {};
+                 if (fields.length > 0 && card.term) newContent[fields[0]] = card.term;
+                 if (fields.length > 1 && card.meaning) newContent[fields[1]] = card.meaning;
+                 initialContent = newContent;
             }
 
-            // Fallback for legacy cards without contentJson
-            if (Object.keys(parsedContent).length === 0) {
-                // Determine fields based on deck
-                const deck = decksData.find(d => d.id === card.deckId);
-                const fields = deck?.fieldNames && deck.fieldNames.length > 0 ? deck.fieldNames : ["Front", "Back"];
-
-                parsedContent = {};
-                if (fields.length > 0) parsedContent[fields[0]] = card.term;
-                if (fields.length > 1) parsedContent[fields[1]] = card.meaning;
-            }
-            setContent(parsedContent);
+            setContent(initialContent);
 
         } catch (err) {
             console.error(err);

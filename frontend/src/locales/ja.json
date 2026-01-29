@@ -1,0 +1,52 @@
+{
+  "nav": {
+    "home": "ホーム",
+    "dashboard": "ダッシュボード",
+    "my_decks": "マイ単語帳",
+    "study": "学習",
+    "community": "コミュニティ",
+    "mypage": "マイページ",
+    "create": "作成",
+    "login": "ログイン",
+    "logout": "ログアウト"
+  },
+  "home": {
+    "welcome": "JPCardへようこそ",
+    "subtitle": "日本語マスターへの一番かわいい近道。",
+    "get_started": "はじめる",
+    "features_title": "JPCardの特徴",
+    "feature_1_title": "パステルカラー",
+    "feature_1_desc": "リラックスできる美しい環境で学習しましょう。",
+    "feature_2_title": "間隔反復学習",
+    "feature_2_desc": "科学的なアルゴリズムで効率よく暗記。",
+    "feature_3_title": "コミュニティ",
+    "feature_3_desc": "単語帳を共有して友達と一緒に勉強しましょう。"
+  },
+  "post": {
+    "new_post": "新規投稿",
+    "create_title": "投稿作成",
+    "title": "タイトル",
+    "title_placeholder": "タイトルを入力",
+    "content": "内容",
+    "content_placeholder": "内容を入力してください...",
+    "files": "添付ファイル",
+    "publish": "投稿する",
+    "clear": "クリア",
+    "notice": "お知らせとして登録",
+    "success": "投稿されました！",
+    "fail": "投稿に失敗しました。",
+    "validation": {
+      "title": "タイトルを入力してください。",
+      "content": "内容を入力してください。",
+      "file_size": "ファイルサイズは5MB以下にしてください。",
+      "file_type": "対応していないファイル形式です。(画像, PDF, テキストのみ)"
+    }
+  },
+  "common": {
+    "cancel": "キャンセル",
+    "save": "保存",
+    "delete": "削除",
+    "edit": "編集",
+    "confirm": "確認"
+  }
+}

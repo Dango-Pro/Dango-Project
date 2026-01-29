@@ -31,7 +31,8 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public List<Post> search(String keyword) {
-        return postRepository.search(keyword);
+        String searchKey = (keyword != null && !keyword.isEmpty()) ? "%" + keyword.toLowerCase() + "%" : null;
+        return postRepository.search(searchKey);
     }
 
     @Transactional(readOnly = true)

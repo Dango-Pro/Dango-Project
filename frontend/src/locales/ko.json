@@ -1,0 +1,52 @@
+{
+  "nav": {
+    "home": "홈",
+    "dashboard": "대시보드",
+    "my_decks": "내 단어장",
+    "study": "학습하기",
+    "community": "커뮤니티",
+    "mypage": "마이페이지",
+    "create": "만들기",
+    "login": "로그인",
+    "logout": "로그아웃"
+  },
+  "home": {
+    "welcome": "JPCard에 오신 것을 환영합니다",
+    "subtitle": "일본어 마스터를 위한 가장 귀여운 방법.",
+    "get_started": "시작하기",
+    "features_title": "왜 JPCard인가요?",
+    "feature_1_title": "파스텔 감성",
+    "feature_1_desc": "편안하고 아름다운 환경에서 공부하세요.",
+    "feature_2_title": "간격 반복 학습",
+    "feature_2_desc": "과학적인 알고리즘으로 효율적으로 암기하세요.",
+    "feature_3_title": "커뮤니티",
+    "feature_3_desc": "단어장을 공유하고 친구들과 함께 공부해요."
+  },
+  "post": {
+    "new_post": "새 게시글",
+    "create_title": "게시글 작성",
+    "title": "제목",
+    "title_placeholder": "제목을 입력",
+    "content": "내용",
+    "content_placeholder": "내용을 입력하세요...",
+    "files": "첨부 파일",
+    "publish": "게시글 발행",
+    "clear": "초기화",
+    "notice": "공지사항으로 등록",
+    "success": "게시글이 등록되었습니다!",
+    "fail": "게시글 작성 실패.",
+    "validation": {
+      "title": "제목을 입력해주세요.",
+      "content": "내용을 입력해주세요.",
+      "file_size": "파일 크기는 5MB 이하여야 합니다.",
+      "file_type": "지원하지 않는 파일 형식입니다. (이미지, PDF, 텍스트만 가능)"
+    }
+  },
+  "common": {
+    "cancel": "취소",
+    "save": "저장",
+    "delete": "삭제",
+    "edit": "수정",
+    "confirm": "확인"
+  }
+}

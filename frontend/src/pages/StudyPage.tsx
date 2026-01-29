@@ -168,7 +168,7 @@ export default function StudyPage() {
             <h2>{currentCard.term}</h2>
             <button
               className="icon-btn"
-              onClick={(e) => { e.stopPropagation(); speak(currentCard.term); }}
+              onClick={(e) => { e.stopPropagation(); speak(currentCard.term || ""); }}
               style={{ position: 'absolute', top: 16, right: 16 }}
             >
               🔊
@@ -180,7 +180,7 @@ export default function StudyPage() {
             <h2>{currentCard.meaning}</h2>
             <button
               className="icon-btn"
-              onClick={(e) => { e.stopPropagation(); speak(currentCard.meaning, "en-US"); }}
+              onClick={(e) => { e.stopPropagation(); speak(currentCard.meaning || "", "en-US"); }}
               style={{ position: 'absolute', top: 16, right: 16 }}
             >
               🔊

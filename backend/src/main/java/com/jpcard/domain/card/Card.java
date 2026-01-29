@@ -28,6 +28,7 @@ public class Card {
     @JoinColumn(name = "deck_id")
     private Deck deck;
 
+    @Lob
     @Column(columnDefinition = "TEXT")
     private String contentJson;
 }

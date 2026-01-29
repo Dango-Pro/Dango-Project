@@ -1,0 +1,52 @@
+{
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "my_decks": "My Decks",
+    "study": "Study",
+    "community": "Community",
+    "mypage": "My Page",
+    "create": "Create",
+    "login": "Login",
+    "logout": "Logout"
+  },
+  "home": {
+    "welcome": "Welcome to JPCard",
+    "subtitle": "The cutest way to master Japanese.",
+    "get_started": "Get Started",
+    "features_title": "Why JPCard?",
+    "feature_1_title": "Pastel Aesthetics",
+    "feature_1_desc": "Study in a relaxing, beautiful environment.",
+    "feature_2_title": "Spaced Repetition",
+    "feature_2_desc": "Efficiently memorize vocab with our algorithm.",
+    "feature_3_title": "Community",
+    "feature_3_desc": "Share decks and study with friends."
+  },
+  "post": {
+    "new_post": "New Post",
+    "create_title": "Write Post",
+    "title": "Title",
+    "title_placeholder": "Enter title",
+    "content": "Content",
+    "content_placeholder": "Enter content...",
+    "files": "Attachments",
+    "publish": "Publish",
+    "clear": "Clear",
+    "notice": "Post as Announcement",
+    "success": "Post Published!",
+    "fail": "Failed to publish post.",
+    "validation": {
+      "title": "Please enter a title.",
+      "content": "Please enter content.",
+      "file_size": "File size must be under 5MB.",
+      "file_type": "Unsupported file type (Images, PDF, Text only)."
+    }
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "confirm": "Confirm"
+  }
+}
