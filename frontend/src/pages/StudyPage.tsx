@@ -6,6 +6,7 @@ import type { Card } from "../types/card";
 import type { Deck } from "../types/deck";
 import { useSearchParams, Link } from "react-router-dom";
 import "../App.css";
+import { useTranslation } from "react-i18next";
 
 interface StudySessionResponse {
   cards: Card[];
@@ -17,6 +18,7 @@ interface StudySessionResponse {
 }
 
 export default function StudyPage() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const deckId = searchParams.get("deckId");
 
@@ -93,16 +95,16 @@ export default function StudyPage() {
     }
   };
 
-  if (loading) return <Layout pageTitle="Study Mode"><p className="muted">Loading...</p></Layout>;
+  if (loading) return <Layout pageTitle={t("study.title")}><p className="muted">{t("common.loading")}</p></Layout>;
 
   // Deck Selection View
   if (!deckId) {
       return (
-        <Layout pageTitle="Select Deck">
+        <Layout pageTitle={t("study.choose_deck")}>
             <div className="glass-card">
-                <h2 className="card-title" style={{ marginBottom: 20 }}>Choose a Deck to Study</h2>
+                <h2 className="card-title" style={{ marginBottom: 20 }}>{t("study.choose_deck")}</h2>
                 {decks.length === 0 ? (
-                    <p className="muted">No decks found. <Link to="/decks/create" style={{ textDecoration: "underline" }}>Create one?</Link></p>
+                    <p className="muted">{t("study.no_decks")} <Link to="/decks/create" style={{ textDecoration: "underline" }}>{t("study.create_deck_link")}</Link></p>
                 ) : (
                     <div className="card-grid">
                         {decks.map(d => (
@@ -110,7 +112,7 @@ export default function StudyPage() {
                                 <h3 className="item-title">{d.name}</h3>
                                 <p className="item-subtitle">{d.description}</p>
                                 <div style={{ marginTop: 10, color: '#1890ff', fontSize: '0.9rem' }}>
-                                    Start Session &rarr;
+                                    {t("study.start_session")} &rarr;
                                 </div>
                             </Link>
                         ))}
@@ -124,23 +126,23 @@ export default function StudyPage() {
   // Session Complete View
   if (cards.length === 0) {
     return (
-      <Layout pageTitle="Study Mode">
+      <Layout pageTitle={t("study.title")}>
          <section className="glass-card" style={{ textAlign: "center", padding: "40px 20px" }}>
             {stats.limitReached ? (
                 <>
-                    <h2 className="card-title">Daily Goal Reached! ({stats.newCardsStudiedToday}/{stats.dailyLimit})</h2>
-                    <p className="muted">Great job! You've hit your daily limit for new cards.</p>
+                    <h2 className="card-title">{t("study.daily_goal")} ({stats.newCardsStudiedToday}/{stats.dailyLimit})</h2>
+                    <p className="muted">{t("study.daily_goal_msg")}</p>
                     <div style={{ marginTop: 20, display: 'flex', gap: 10, justifyContent: 'center' }}>
-                        <button className="secondary-btn" onClick={() => window.location.href = '/dashboard'}>Finish</button>
-                        <button className="primary-btn" onClick={() => fetchCards(true)}>Study More (+10)</button>
+                        <button className="secondary-btn" onClick={() => window.location.href = '/dashboard'}>{t("study.finish_btn")}</button>
+                        <button className="primary-btn" onClick={() => fetchCards(true)}>{t("study.study_more")}</button>
                     </div>
                 </>
             ) : (
                 <>
-                    <h2 className="card-title">All caught up!</h2>
-                    <p className="muted">No cards due for review right now.</p>
+                    <h2 className="card-title">{t("study.caught_up")}</h2>
+                    <p className="muted">{t("study.no_due_cards")}</p>
                     <div style={{ marginTop: 20 }}>
-                        <button className="secondary-btn" onClick={() => window.location.href = '/dashboard'}>Return to Dashboard</button>
+                        <button className="secondary-btn" onClick={() => window.location.href = '/dashboard'}>{t("study.return_dashboard")}</button>
                     </div>
                 </>
             )}
@@ -150,12 +152,12 @@ export default function StudyPage() {
   }
 
   return (
-    <Layout pageTitle="Study Mode">
+    <Layout pageTitle={t("study.title")}>
       {/* Counters */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginBottom: 10, fontSize: '0.9rem', color: '#ccc' }}>
-         <span>Due: {stats.dueCardsCount}</span>
+         <span>{t("study.due_label")}: {stats.dueCardsCount}</span>
          <span>|</span>
-         <span>New: {stats.newCardsCount}</span>
+         <span>{t("study.new_label")}: {stats.newCardsCount}</span>
       </div>
 
       <div className="study-container">
@@ -164,7 +166,7 @@ export default function StudyPage() {
           onClick={() => setIsFlipped(!isFlipped)}
         >
           <div className="card-face card-front">
-            <span className="card-label">TERM</span>
+            <span className="card-label">{t("study.term_label")}</span>
             <h2>{currentCard.term}</h2>
             <button
               className="icon-btn"
@@ -173,10 +175,10 @@ export default function StudyPage() {
             >
               🔊
             </button>
-            <p className="click-hint">Click to flip</p>
+            <p className="click-hint">{t("study.click_flip")}</p>
           </div>
           <div className="card-face card-back">
-            <span className="card-label">MEANING</span>
+            <span className="card-label">{t("study.meaning_label")}</span>
             <h2>{currentCard.meaning}</h2>
             <button
               className="icon-btn"
@@ -190,21 +192,21 @@ export default function StudyPage() {
 
         {!isFlipped ? (
             <div className="controls" style={{ marginTop: 20 }}>
-               <p className="muted">Tap card to see meaning</p>
+               <p className="muted">{t("study.tap_hint")}</p>
             </div>
         ) : (
             <div className="action-row" style={{ marginTop: 20, display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
                <button className="nav-btn" style={{ borderColor: '#ff4d4f', color: '#ff4d4f' }} onClick={() => handleReview("FAIL")}>
-                 Again (&lt;1m)
+                 {t("study.rate_again")}
                </button>
                <button className="nav-btn" style={{ borderColor: '#faad14', color: '#faad14' }} onClick={() => handleReview("HARD")}>
-                 Hard (12h)
+                 {t("study.rate_hard")}
                </button>
                <button className="nav-btn" style={{ borderColor: '#52c41a', color: '#52c41a' }} onClick={() => handleReview("GOOD")}>
-                 Good (1d)
+                 {t("study.rate_good")}
                </button>
                <button className="nav-btn" style={{ borderColor: '#1890ff', color: '#1890ff' }} onClick={() => handleReview("EASY")}>
-                 Easy (4d)
+                 {t("study.rate_easy")}
                </button>
             </div>
         )}

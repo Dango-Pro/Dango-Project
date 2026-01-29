@@ -5,22 +5,24 @@ import Layout from "../components/Layout";
 import { Link, useParams } from "react-router-dom";
 import type { Card } from "../types/card";
 import type { Deck } from "../types/deck";
+import { useTranslation } from "react-i18next";
 
 export default function DeckDetailPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [deck, setDeck] = useState<Deck | null>(null);
   const [cards, setCards] = useState<Card[]>([]);
-  const [status, setStatus] = useState("Loading...");
+  const [status, setStatus] = useState(t("common.loading"));
 
   useEffect(() => {
     api.get<Deck>(`/decks/${id}`).then(res => setDeck(res.data)).catch(console.error);
     api.get<Card[]>(`/cards?deckId=${id}`).then(res => {
         setCards(res.data);
-        setStatus(res.data.length ? "" : "No cards in this deck.");
-    }).catch(() => setStatus("Failed to load cards."));
-  }, [id]);
+        setStatus(res.data.length ? "" : t("deck.no_cards"));
+    }).catch(() => setStatus(t("deck.load_cards_fail")));
+  }, [id, t]);
 
-  if (!deck) return <Layout><p className="muted">Loading deck...</p></Layout>;
+  if (!deck) return <Layout><p className="muted">{t("common.loading")}</p></Layout>;
 
   return (
     <Layout pageTitle={deck.name}>
@@ -29,13 +31,13 @@ export default function DeckDetailPage() {
           <h2 className="card-title">{deck.name}</h2>
           <div style={{ display: 'flex', gap: 10 }}>
              <Link to={`/study?deckId=${id}`} className="primary-btn" style={{ background: 'linear-gradient(135deg, #1890ff, #096dd9)', borderColor: 'transparent' }}>
-               Study Now
+               {t("deck.study_now")}
              </Link>
              <Link to={`/cards/create?deckId=${id}`} className="secondary-btn">
-               Add Card
+               {t("deck.add_card")}
              </Link>
              <Link to={`/decks/${id}/edit`} className="secondary-btn">
-               Edit
+               {t("common.edit")}
              </Link>
           </div>
         </div>
@@ -55,7 +57,7 @@ export default function DeckDetailPage() {
                   <p className="item-subtitle">{c.meaning}</p>
                 </div>
                 <div style={{ display: "flex", gap: 8 }}>
-                   <Link to={`/cards/${c.id}/edit`} className="muted" style={{ fontSize: "0.8rem", textDecoration: "underline" }}>Edit</Link>
+                   <Link to={`/cards/${c.id}/edit`} className="muted" style={{ fontSize: "0.8rem", textDecoration: 'underline' }}>{t("common.edit")}</Link>
                 </div>
               </div>
             </article>
