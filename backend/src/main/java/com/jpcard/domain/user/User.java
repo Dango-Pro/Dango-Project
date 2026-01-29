@@ -34,5 +34,8 @@ public class User {
     @Column(nullable = false)
     private int dailyLimit = 20; // Default 20
 
+    @Column(nullable = false)
+    private String timezone = "UTC"; // Default UTC
+
     public void addRole(Role role) { roles.add(role); }
 }

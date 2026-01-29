@@ -12,9 +12,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -44,12 +47,28 @@ public class StudyService {
         List<UserCardProgress> dueProgress = progressRepository.findDueCards(userId, deckId, LocalDateTime.now());
         List<Card> dueCards = dueProgress.stream().map(UserCardProgress::getCard).collect(Collectors.toList());
 
-        // 2. Get NEW cards with limits
+        // 2. Get NEW cards with limits (Timezone Aware)
         int dailyLimit = user.getDailyLimit();
+        String userZone = user.getTimezone() != null ? user.getTimezone() : "UTC";
+        ZoneId zoneId = ZoneId.of(userZone);
 
-        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
-        LocalDateTime endOfDay = LocalDate.now().atTime(23, 59, 59);
-        long newCardsStudiedToday = progressRepository.countNewCardsStudiedToday(userId, deckId, startOfDay, endOfDay);
+        ZonedDateTime nowZoned = ZonedDateTime.now(zoneId);
+        LocalDateTime startOfDay = nowZoned.toLocalDate().atStartOfDay(zoneId).toLocalDateTime(); // Convert back to server local time for DB query?
+        // Wait, DB stores LocalDateTime without zone (usually UTC).
+        // If we want "User's Start of Day", we must convert User's 00:00 to Server's LocalDateTime.
+        // Assuming Server is UTC.
+
+        ZonedDateTime userStartOfDay = nowZoned.toLocalDate().atStartOfDay(zoneId);
+        ZonedDateTime userEndOfDay = nowZoned.toLocalDate().atTime(23, 59, 59).atZone(zoneId);
+
+        // Convert to System Default Zone (Server Time) for DB comparison
+        // Assuming DB stores in System Default (or UTC).
+        // Best practice: Store UTC. Let's assume the DB values are comparable to LocalDateTime.now(ZoneId.systemDefault()).
+
+        LocalDateTime startParam = userStartOfDay.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime endParam = userEndOfDay.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
+
+        long newCardsStudiedToday = progressRepository.countNewCardsStudiedToday(userId, deckId, startParam, endParam);
 
         int remainingLimit = dailyLimit - (int) newCardsStudiedToday;
         boolean limitReached = false;
@@ -69,11 +88,18 @@ public class StudyService {
 
         List<Card> newCards = Collections.emptyList();
         if (fetchCount > 0) {
-            newCards = cardRepository.findNewCards(deckId, userId, PageRequest.of(0, fetchCount));
+            // Apply Pagination Limit (e.g., 50)
+            int safetyLimit = Math.min(fetchCount, 50);
+            newCards = cardRepository.findNewCards(deckId, userId, PageRequest.of(0, safetyLimit));
         }
 
         List<Card> allCards = new ArrayList<>(dueCards);
         allCards.addAll(newCards);
+
+        // Safety cap for total session size (Memory Protection)
+        if (allCards.size() > 100) {
+             allCards = allCards.subList(0, 100);
+        }
 
         return new StudySessionResult(
             allCards,
@@ -92,25 +118,35 @@ public class StudyService {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new ResourceNotFoundException("Card not found"));
 
-        UserCardProgress progress = progressRepository.findByUserIdAndCardId(userId, cardId)
-                .orElse(new UserCardProgress());
+        try {
+            UserCardProgress progress = progressRepository.findByUserIdAndCardId(userId, cardId)
+                    .orElse(new UserCardProgress());
 
-        if (progress.getId() == null) {
-            progress.setUser(user);
-            progress.setCard(card);
-            progress.setStatus(StudyStatus.NEW);
-            progress.setLearningStep(0); // Initialize step
+            if (progress.getId() == null) {
+                progress.setUser(user);
+                progress.setCard(card);
+                progress.setStatus(StudyStatus.NEW);
+                progress.setLearningStep(0); // Initialize step
+            }
+
+            if (progress.getFirstStudiedAt() == null) {
+                progress.setFirstStudiedAt(LocalDateTime.now());
+            }
+
+            applyAlgorithm(progress, rating);
+            progressRepository.save(progress); // This might throw DataIntegrityViolationException if duplicate
+
+            // 4. Sibling Burying
+            burySiblings(user.getId(), card);
+
+        } catch (DataIntegrityViolationException e) {
+            // Handle concurrency: Duplicate entry.
+            // We can either ignore it (user double clicked, first one won)
+            // or retry (fetch again and update).
+            // Ignoring is safer for "Review" logic as the first click was valid.
+            // Logging it would be good.
+            System.out.println("Concurrency conflict handled for User " + userId + " Card " + cardId);
         }
-
-        if (progress.getFirstStudiedAt() == null) {
-            progress.setFirstStudiedAt(LocalDateTime.now());
-        }
-
-        applyAlgorithm(progress, rating);
-        progressRepository.save(progress);
-
-        // 4. Sibling Burying
-        burySiblings(user.getId(), card);
     }
 
     private void applyAlgorithm(UserCardProgress p, String rating) {

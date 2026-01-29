@@ -42,10 +42,13 @@ public class UserService {
     }
 
     @Transactional
-    public User updateSettings(Long userId, int dailyLimit) {
+    public User updateSettings(Long userId, int dailyLimit, String timezone) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         user.setDailyLimit(dailyLimit);
+        if (timezone != null) {
+            user.setTimezone(timezone);
+        }
         return user;
     }
 }

@@ -9,7 +9,9 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user_card_progress")
+@Table(name = "user_card_progress", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"user_id", "card_id"})
+})
 @Getter
 @Setter
 public class UserCardProgress {

@@ -36,7 +36,7 @@ public class UserController {
                 : Collections.emptySet();
 
         return ResponseEntity.ok(
-                new UserInfoResponse(user.getId(), user.getUsername(), roles, user.getDailyLimit())
+                new UserInfoResponse(user.getId(), user.getUsername(), roles, user.getDailyLimit(), user.getTimezone())
         );
     }
 
@@ -45,7 +45,7 @@ public class UserController {
         if (auth == null) return ResponseEntity.status(401).build();
         User principal = (User) auth.getPrincipal();
 
-        User updated = userService.updateSettings(principal.getId(), request.dailyLimit());
+        User updated = userService.updateSettings(principal.getId(), request.dailyLimit(), request.timezone());
 
         return ResponseEntity.ok().build();
     }
