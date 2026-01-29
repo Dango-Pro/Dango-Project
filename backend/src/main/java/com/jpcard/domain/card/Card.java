@@ -31,4 +31,8 @@ public class Card {
     @Lob
     @Column(columnDefinition = "TEXT")
     private String contentJson;
+
+    // Groups siblings (e.g. Forward/Reverse cards)
+    @Column
+    private Long noteId;
 }

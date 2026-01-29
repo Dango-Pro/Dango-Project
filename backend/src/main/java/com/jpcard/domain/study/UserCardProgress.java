@@ -48,4 +48,8 @@ public class UserCardProgress {
 
     // To track daily limits
     private LocalDateTime firstStudiedAt;
+
+    // For multi-step learning (0 = 1min, 1 = 10min, etc)
+    @Column(nullable = false)
+    private int learningStep = 0;
 }

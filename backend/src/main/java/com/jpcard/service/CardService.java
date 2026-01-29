@@ -54,7 +54,15 @@ public class CardService {
                 throw new RuntimeException("Failed to serialize content", e);
             }
         }
-        return cardRepository.save(card);
+
+        // Save first to get ID
+        card = cardRepository.save(card);
+
+        // Use ID as initial noteId (group leader of itself)
+        card.setNoteId(card.getId());
+
+        return card; // Saved implicitly by Transactional, but explicit save might be safer if we returned it directly without re-save.
+                     // Since we modified it after save, Hibernate dirty check will update it at commit.
     }
 
     @Transactional

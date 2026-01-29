@@ -21,6 +21,9 @@ public interface UserCardProgressRepository extends JpaRepository<UserCardProgre
     @Query("SELECT COUNT(p) FROM UserCardProgress p JOIN p.card c WHERE p.user.id = :userId AND c.deck.id = :deckId AND p.firstStudiedAt BETWEEN :start AND :end")
     long countNewCardsStudiedToday(@Param("userId") Long userId, @Param("deckId") Long deckId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
+    @Query("SELECT p FROM UserCardProgress p JOIN p.card c WHERE p.user.id = :userId AND c.noteId = :noteId")
+    List<UserCardProgress> findByUserIdAndCardNoteId(@Param("userId") Long userId, @Param("noteId") Long noteId);
+
     long countByUserIdAndNextReviewLessThanEqual(Long userId, LocalDateTime now);
     long countByUserIdAndStatus(Long userId, StudyStatus status);
 
