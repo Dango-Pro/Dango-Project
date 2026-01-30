@@ -245,6 +245,7 @@ export default function StudyPage() {
           backdrop-filter: blur(12px);
           border: 1px solid rgba(255, 255, 255, 0.1);
           border-radius: 16px;
+          color: #ffffff;
           display: flex;
           flex-direction: column;
           justify-content: center;
