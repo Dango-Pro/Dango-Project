@@ -162,7 +162,7 @@ export default function StudyPage() {
   return (
     <Layout pageTitle={t("study.title")}>
       {/* Counters */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginBottom: 10, fontSize: '0.9rem', color: '#ccc' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginBottom: 10, fontSize: '0.9rem', color: '#333' }}>
          <span>{t("study.due_label")}: {stats.dueCardsCount}</span>
          <span>|</span>
          <span>{t("study.new_label")}: {stats.newCardsCount}</span>

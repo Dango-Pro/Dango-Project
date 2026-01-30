@@ -117,7 +117,7 @@
 }
 
 .muted {
-  color: #666666;
+  color: #444444;
 }
 
 /* PILLS / TAGS */
@@ -222,7 +222,7 @@ select.text-input option {
   border: 1px solid transparent;
   /* Pastel Pink Gradient */
   background: linear-gradient(135deg, #ffb7b2, #ff9aa2);
-  color: #ffffff;
+  color: #333333;
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.2s ease;
@@ -240,7 +240,7 @@ select.text-input option {
   border-radius: 14px;
   border: 1px solid #b5ead7; /* Mint border */
   background: transparent;
-  color: #4db6ac; /* Darker teal/mint */
+  color: #00796b; /* Darker teal/mint */
   font-weight: 600;
   cursor: pointer;
   transition: border-color 0.2s ease, background 0.2s ease;

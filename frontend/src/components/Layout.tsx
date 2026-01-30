@@ -55,10 +55,11 @@ export default function Layout({ children }: LayoutProps) {
                 className="nav-link"
                 style={{
                   borderColor:
-                    pathname === link.to ? "rgba(255, 255, 255, 0.25)" : undefined,
+                    pathname === link.to ? "rgba(255, 183, 178, 0.6)" : undefined,
                   background:
-                    pathname === link.to ? "rgba(255, 255, 255, 0.08)" : undefined,
-                  color: pathname === link.to ? "#ffffff" : undefined,
+                    pathname === link.to ? "rgba(255, 183, 178, 0.25)" : undefined,
+                  color: pathname === link.to ? "#d9534f" : undefined,
+                  fontWeight: pathname === link.to ? "bold" : undefined,
                 }}
               >
                 {link.label}
@@ -69,9 +70,10 @@ export default function Layout({ children }: LayoutProps) {
                 to="/login"
                 className="nav-link"
                 style={{
-                  borderColor: pathname === "/login" ? "rgba(255, 255, 255, 0.25)" : undefined,
-                  background: pathname === "/login" ? "rgba(255, 255, 255, 0.08)" : undefined,
-                  color: pathname === "/login" ? "#ffffff" : undefined,
+                  borderColor: pathname === "/login" ? "rgba(255, 183, 178, 0.6)" : undefined,
+                  background: pathname === "/login" ? "rgba(255, 183, 178, 0.25)" : undefined,
+                  color: pathname === "/login" ? "#d9534f" : undefined,
+                  fontWeight: pathname === "/login" ? "bold" : undefined,
                 }}
               >
                 {t("nav.login")}

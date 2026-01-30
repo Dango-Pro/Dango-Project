@@ -74,7 +74,7 @@ const NoticeWidget = () => {
             <div style={{ flex: 1 }}>
                 {loading ? <p className="muted">{t("common.loading")}</p> : (
                     <ul style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                        {posts.length === 0 && <li style={{ color: "#555" }}>{t("home.no_notices")}</li>}
+                        {posts.length === 0 && <li style={{ color: "#333" }}>{t("home.no_notices")}</li>}
                         {posts.map(p => (
                             <li key={p.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                 <Link to={`/posts/${p.id}`} style={{ textDecoration: "none", color: "#333", fontSize: "0.95rem", flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginRight: "10px" }}>
