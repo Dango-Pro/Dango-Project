@@ -36,11 +36,25 @@ public class StudyService {
     private final StudyLogRepository studyLogRepository;
     private final Random random = new Random();
 
-    // Learning steps in minutes: 1min -> 10min -> Graduation (1 day)
-    private static final int[] LEARNING_STEPS = {1, 10};
+    // Default Fallback. Now we use deck-specific steps.
+    private static final int[] DEFAULT_LEARNING_STEPS = {1, 10};
     private static final int GRADUATING_INTERVAL = 1440; // 1 day in minutes
     private static final int EASY_INTERVAL = 4 * 1440;   // 4 days
     private static final int LEECH_THRESHOLD = 8; // Fail count to suspend
+
+    private int[] parseLearningSteps(String steps) {
+        if (steps == null || steps.isEmpty()) return DEFAULT_LEARNING_STEPS;
+        try {
+            String[] parts = steps.split(",");
+            int[] result = new int[parts.length];
+            for (int i = 0; i < parts.length; i++) {
+                result[i] = Integer.parseInt(parts[i].trim());
+            }
+            return result;
+        } catch (NumberFormatException e) {
+            return DEFAULT_LEARNING_STEPS;
+        }
+    }
 
     @Transactional(readOnly = true)
     public StudySessionResult getDueCards(Long userId, Long deckId, boolean studyMore) {
@@ -162,13 +176,14 @@ public class StudyService {
 
     private void applyAlgorithm(UserCardProgress p, String rating) {
         LocalDateTime now = LocalDateTime.now();
+        int[] learningSteps = parseLearningSteps(p.getCard().getDeck().getLearningSteps());
 
         switch (rating.toUpperCase()) {
             case "FAIL": // Again
                 // Reset to first step
                 p.setStatus(StudyStatus.LEARNING);
                 p.setLearningStep(0);
-                p.setIntervalMinutes(LEARNING_STEPS[0]); // 1 min
+                p.setIntervalMinutes(learningSteps[0]); // First step
                 p.setNextReview(now.plusMinutes(p.getIntervalMinutes()));
 
                 // Penalty
@@ -190,8 +205,8 @@ public class StudyService {
                 } else {
                     // In learning, Hard means "repeat current step" or avg
                     // We just keep current step interval
-                    int currentStepInterval = (p.getLearningStep() < LEARNING_STEPS.length)
-                            ? LEARNING_STEPS[p.getLearningStep()]
+                    int currentStepInterval = (p.getLearningStep() < learningSteps.length)
+                            ? learningSteps[p.getLearningStep()]
                             : GRADUATING_INTERVAL;
                     p.setIntervalMinutes(currentStepInterval);
                     p.setNextReview(now.plusMinutes(currentStepInterval));
@@ -201,10 +216,10 @@ public class StudyService {
             case "GOOD":
                 if (p.getStatus() == StudyStatus.NEW || p.getStatus() == StudyStatus.LEARNING) {
                     // 3. Multi-step Learning
-                    if (p.getLearningStep() < LEARNING_STEPS.length - 1) {
+                    if (p.getLearningStep() < learningSteps.length - 1) {
                         // Advance to next learning step
                         p.setLearningStep(p.getLearningStep() + 1);
-                        p.setIntervalMinutes(LEARNING_STEPS[p.getLearningStep()]);
+                        p.setIntervalMinutes(learningSteps[p.getLearningStep()]);
                         p.setStatus(StudyStatus.LEARNING);
                     } else {
                         // Graduate
@@ -250,11 +265,12 @@ public class StudyService {
         }
     }
 
-    // 1. Fuzzing: ±5-10% variation for intervals > 2 days
+    // 1. Fuzzing: +0-5% variation for intervals > 2 days (Prevents "too soon" regressions)
     private int applyFuzz(int intervalMinutes) {
         if (intervalMinutes < 2 * 1440) return intervalMinutes; // No fuzz for < 2 days
 
-        double fuzzFactor = 0.95 + (random.nextDouble() * 0.1); // 0.95 ~ 1.05
+        // Only extend the interval (1.0 ~ 1.05) to avoid showing cards sooner than algorithm intended
+        double fuzzFactor = 1.0 + (random.nextDouble() * 0.05);
         return (int) (intervalMinutes * fuzzFactor);
     }
 

@@ -41,6 +41,10 @@ class StudyServiceTest {
     void processReview_NewFail() {
         User user = new User(); user.setId(1L);
         Card card = new Card(); card.setId(1L);
+        // Fix: Mock deck for learningSteps
+        com.jpcard.domain.deck.Deck deck = new com.jpcard.domain.deck.Deck();
+        deck.setLearningSteps("1,10");
+        card.setDeck(deck);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(cardRepository.findById(1L)).thenReturn(Optional.of(card));
@@ -63,6 +67,9 @@ class StudyServiceTest {
         // triggering the catch block which should re-fetch and update.
         User user = new User(); user.setId(1L);
         Card card = new Card(); card.setId(1L);
+        com.jpcard.domain.deck.Deck deck = new com.jpcard.domain.deck.Deck();
+        deck.setLearningSteps("1,10");
+        card.setDeck(deck);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(cardRepository.findById(1L)).thenReturn(Optional.of(card));
