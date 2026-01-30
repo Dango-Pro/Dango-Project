@@ -44,9 +44,9 @@ export default function Layout({ children }: LayoutProps) {
           </div>
           <div className="nav-links">
              <div className="lang-switcher" style={{marginRight: '20px', display: 'flex', gap: '5px'}}>
-                <button onClick={() => changeLanguage('ko')} style={{background: 'none', border: 'none', color: i18n.language === 'ko' ? '#fff' : '#aaa', cursor: 'pointer'}}>KO</button>
-                <button onClick={() => changeLanguage('en')} style={{background: 'none', border: 'none', color: i18n.language === 'en' ? '#fff' : '#aaa', cursor: 'pointer'}}>EN</button>
-                <button onClick={() => changeLanguage('ja')} style={{background: 'none', border: 'none', color: i18n.language === 'ja' ? '#fff' : '#aaa', cursor: 'pointer'}}>JA</button>
+                <button onClick={() => changeLanguage('ko')} style={{background: 'none', border: 'none', color: i18n.language === 'ko' ? '#333' : '#aaa', fontWeight: i18n.language === 'ko' ? 'bold' : 'normal', cursor: 'pointer'}}>KO</button>
+                <button onClick={() => changeLanguage('en')} style={{background: 'none', border: 'none', color: i18n.language === 'en' ? '#333' : '#aaa', fontWeight: i18n.language === 'en' ? 'bold' : 'normal', cursor: 'pointer'}}>EN</button>
+                <button onClick={() => changeLanguage('ja')} style={{background: 'none', border: 'none', color: i18n.language === 'ja' ? '#333' : '#aaa', fontWeight: i18n.language === 'ja' ? 'bold' : 'normal', cursor: 'pointer'}}>JA</button>
              </div>
             {links.map((link) => (
               <Link

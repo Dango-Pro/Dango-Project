@@ -117,7 +117,7 @@
 }
 
 .muted {
-  color: #888888;
+  color: #666666;
 }
 
 /* PILLS / TAGS */
@@ -192,6 +192,11 @@
   color: #333333;
   padding: 12px 14px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+select.text-input option {
+  color: #333333;
+  background: #ffffff;
 }
 
 .text-input:focus,

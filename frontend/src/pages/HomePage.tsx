@@ -70,14 +70,14 @@ const NoticeWidget = () => {
 
     return (
         <div className="glass-card" style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-            <h3 className="card-title" style={{ fontSize: "1.2rem", marginBottom: "16px" }}>{t("home.notices_title")}</h3>
+            <h3 className="card-title" style={{ fontSize: "1.2rem", marginBottom: "16px", color: "#000" }}>{t("home.notices_title")}</h3>
             <div style={{ flex: 1 }}>
                 {loading ? <p className="muted">{t("common.loading")}</p> : (
                     <ul style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                        {posts.length === 0 && <li className="muted">{t("home.no_notices")}</li>}
+                        {posts.length === 0 && <li style={{ color: "#555" }}>{t("home.no_notices")}</li>}
                         {posts.map(p => (
                             <li key={p.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <Link to={`/posts/${p.id}`} style={{ textDecoration: "none", color: "#e0e0e0", fontSize: "0.95rem", flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginRight: "10px" }}>
+                                <Link to={`/posts/${p.id}`} style={{ textDecoration: "none", color: "#333", fontSize: "0.95rem", flex: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginRight: "10px" }}>
                                     <span style={{ color: "#ff6b6b", marginRight: "6px", fontWeight: "bold" }}>{t("home.notice_tag")}</span>
                                     {p.title}
                                 </Link>
@@ -119,7 +119,7 @@ const LoginWidget = () => {
     if (token) {
         return (
              <div className="glass-card" style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center" }}>
-                 <h3 className="card-title" style={{ marginBottom: "10px" }}>{t("home.welcome_back")}</h3>
+                 <h3 className="card-title" style={{ marginBottom: "10px", color: "#000" }}>{t("home.welcome_back")}</h3>
                  <p className="muted" style={{ marginBottom: "20px" }}>{t("home.logged_in_msg")}</p>
                  <div style={{ display: "flex", gap: "10px" }}>
                      <Link to="/dashboard" className="primary-btn">{t("nav.dashboard")}</Link>
@@ -137,7 +137,7 @@ const LoginWidget = () => {
 
     return (
         <div className="glass-card" style={{ height: "100%" }}>
-            <h3 className="card-title" style={{ fontSize: "1.2rem", marginBottom: "16px" }}>{t("home.quick_login")}</h3>
+            <h3 className="card-title" style={{ fontSize: "1.2rem", marginBottom: "16px", color: "#000" }}>{t("home.quick_login")}</h3>
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                 <input
                     className="text-input"
