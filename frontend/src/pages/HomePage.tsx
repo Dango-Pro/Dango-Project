@@ -9,10 +9,10 @@ const Carousel = () => {
     const { t } = useTranslation();
     const [current, setCurrent] = useState(0);
     const slides = [
-        "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=80",
-        "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1200&q=80"
+        "/26dc3940-d441-4480-9171-20361974c915.jpg",
+        "/26dc3940-d441-4480-9171-20361974c915.jpg",
+        "/26dc3940-d441-4480-9171-20361974c915.jpg",
+        "/26dc3940-d441-4480-9171-20361974c915.jpg"
     ];
 
     useEffect(() => {
