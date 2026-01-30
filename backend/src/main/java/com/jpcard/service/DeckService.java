@@ -49,12 +49,15 @@ public class DeckService {
     }
 
     @Transactional
-    public Deck create(String name, String description, Long templateId, Boolean isPublic, User owner) {
+    public Deck create(String name, String description, Long templateId, Boolean isPublic, String learningSteps, User owner) {
         Deck deck = new Deck();
         deck.setName(name);
         deck.setDescription(description);
         deck.setOwner(owner);
         deck.setPublic(isPublic != null ? isPublic : false);
+        if (learningSteps != null && !learningSteps.trim().isEmpty()) {
+            deck.setLearningSteps(learningSteps);
+        }
         if (templateId != null) {
             CardTemplate template = cardTemplateRepository.findById(templateId)
                     .orElseThrow(() -> new ResourceNotFoundException("Template not found: " + templateId));
@@ -64,7 +67,7 @@ public class DeckService {
     }
 
     @Transactional
-    public Deck update(Long id, String name, String description, boolean isPublic, User owner) {
+    public Deck update(Long id, String name, String description, boolean isPublic, String learningSteps, User owner) {
         Deck deck = findById(id);
         if (!deck.getOwner().getId().equals(owner.getId())) {
              throw new IllegalArgumentException("Not authorized to update this deck");
@@ -72,6 +75,9 @@ public class DeckService {
         deck.setName(name);
         deck.setDescription(description);
         deck.setPublic(isPublic);
+        if (learningSteps != null && !learningSteps.trim().isEmpty()) {
+            deck.setLearningSteps(learningSteps);
+        }
         return deck;
     }
 

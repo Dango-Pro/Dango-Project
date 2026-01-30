@@ -61,16 +61,7 @@ public class StudyService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        // 1. Get existing progress that is due (Exclude SUSPENDED)
-        List<UserCardProgress> dueProgress = progressRepository.findDueCards(userId, deckId, LocalDateTime.now())
-                .stream()
-                .filter(p -> p.getStatus() != StudyStatus.SUSPENDED)
-                .collect(Collectors.toList());
-
-        List<Card> dueCards = dueProgress.stream().map(UserCardProgress::getCard).collect(Collectors.toList());
-
-        // 2. Get NEW cards with limits (Timezone Aware)
-        int dailyLimit = user.getDailyLimit();
+        // 1. Timezone Setup
         String userZone = user.getTimezone() != null ? user.getTimezone() : "UTC";
         ZoneId zoneId = ZoneId.of(userZone);
 
@@ -81,21 +72,55 @@ public class StudyService {
         LocalDateTime startParam = userStartOfDay.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
         LocalDateTime endParam = userEndOfDay.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
 
+        // 2. Check Review Limit (For DUE cards)
+        int reviewLimit = user.getReviewLimit();
+        long reviewsToday = studyLogRepository.countReviewsToday(userId, deckId, startParam, endParam);
+
+        boolean reviewLimitReached = false;
+        int remainingReviews = reviewLimit - (int) reviewsToday;
+        if (remainingReviews <= 0 && !studyMore) {
+            reviewLimitReached = true;
+        }
+
+        List<Card> dueCards = Collections.emptyList();
+        if (!reviewLimitReached || studyMore) {
+             List<UserCardProgress> dueProgress = progressRepository.findDueCards(userId, deckId, LocalDateTime.now())
+                .stream()
+                .filter(p -> p.getStatus() != StudyStatus.SUSPENDED)
+                .collect(Collectors.toList());
+
+             // If strictly limiting reviews, we should sublist dueProgress.
+             // But usually "review limit" means total reviews done today.
+             // If remainingReviews > 0, we can fetch up to that many?
+             // Simplification: Fetch all due, let user decide when to stop or cap it.
+             // Let's cap the due cards list if not studyMore
+             if (!studyMore && remainingReviews > 0 && dueProgress.size() > remainingReviews) {
+                 dueProgress = dueProgress.subList(0, remainingReviews);
+             } else if (!studyMore && remainingReviews <= 0) {
+                 dueProgress = Collections.emptyList();
+             }
+
+             dueCards = dueProgress.stream().map(UserCardProgress::getCard).collect(Collectors.toList());
+        }
+
+
+        // 3. Get NEW cards with limits
+        int dailyLimit = user.getDailyLimit();
         long newCardsStudiedToday = progressRepository.countNewCardsStudiedToday(userId, deckId, startParam, endParam);
 
-        int remainingLimit = dailyLimit - (int) newCardsStudiedToday;
-        boolean limitReached = false;
+        int remainingNewLimit = dailyLimit - (int) newCardsStudiedToday;
+        boolean newLimitReached = false;
 
-        if (remainingLimit <= 0 && !studyMore) {
-            limitReached = true;
+        if (remainingNewLimit <= 0 && !studyMore) {
+            newLimitReached = true;
         }
 
         int fetchCount = 0;
-        if (!limitReached) {
+        if (!newLimitReached) {
             if (studyMore) {
-                fetchCount = (remainingLimit > 0) ? remainingLimit : 10;
+                fetchCount = (remainingNewLimit > 0) ? remainingNewLimit : 10;
             } else {
-                fetchCount = remainingLimit;
+                fetchCount = remainingNewLimit;
             }
         }
 
@@ -114,9 +139,17 @@ public class StudyService {
              allCards = allCards.subList(0, 100);
         }
 
+        // "limitReached" generally implies either limit is hit preventing further study.
+        // We can combine them or return separate flags.
+        // For frontend compatibility (StudySessionResult), let's say limitReached if BOTH are reached?
+        // Or if the one relevant to current potential cards is reached.
+        // If we have 0 cards returned, and it's because of limits, limitReached = true.
+
+        boolean isLimitReached = (allCards.isEmpty() && (newLimitReached || reviewLimitReached));
+
         return new StudySessionResult(
             allCards,
-            limitReached,
+            isLimitReached,
             newCardsStudiedToday,
             dailyLimit,
             newCards.size(),

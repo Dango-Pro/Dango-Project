@@ -32,7 +32,10 @@ public class User {
     private String refreshToken;
 
     @Column(nullable = false)
-    private int dailyLimit = 20; // Default 20
+    private int dailyLimit = 20; // Default 20 for NEW cards
+
+    @Column(nullable = false)
+    private int reviewLimit = 200; // Default 200 for REVIEWS
 
     @Column(nullable = false)
     private String timezone = "UTC"; // Default UTC

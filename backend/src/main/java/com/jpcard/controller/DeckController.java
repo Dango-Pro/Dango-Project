@@ -80,7 +80,7 @@ public class DeckController {
         User user = getUser(auth);
         if (user == null) return ResponseEntity.status(401).build();
 
-        var d = deckService.create(request.name(), request.description(), request.templateId(), request.isPublic(), user);
+        var d = deckService.create(request.name(), request.description(), request.templateId(), request.isPublic(), request.learningSteps(), user);
         return ResponseEntity.ok(mapToResponse(d));
     }
 
@@ -91,7 +91,7 @@ public class DeckController {
 
         boolean isPublic = request.isPublic() != null ? request.isPublic() : false;
 
-        var d = deckService.update(id, request.name(), request.description(), isPublic, user);
+        var d = deckService.update(id, request.name(), request.description(), isPublic, request.learningSteps(), user);
         return ResponseEntity.ok(mapToResponse(d));
     }
 
@@ -118,8 +118,6 @@ public class DeckController {
         String templateName = d.getCardTemplate() != null ? d.getCardTemplate().getName() : null;
         List<String> fieldNames = d.getCardTemplate() != null ? d.getCardTemplate().getFieldNames() : java.util.Collections.emptyList();
 
-        // Need to add ownerId and isPublic to Response DTO?
-        // Let's assume frontend might need it.
-        return new DeckResponse(d.getId(), d.getName(), d.getDescription(), templateId, templateName, fieldNames, d.getOwner() != null ? d.getOwner().getId() : null, d.isPublic());
+        return new DeckResponse(d.getId(), d.getName(), d.getDescription(), templateId, templateName, fieldNames, d.getOwner() != null ? d.getOwner().getId() : null, d.isPublic(), d.getLearningSteps());
     }
 }
