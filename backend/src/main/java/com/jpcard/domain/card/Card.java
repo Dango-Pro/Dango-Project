@@ -21,7 +21,12 @@ public class Card {
     @Column(nullable = false)
     private String meaning;
 
+    /**
+     * @deprecated This field is legacy and does not reflect multi-user progress.
+     * Use UserCardProgress instead. Kept for backward compatibility.
+     */
     @Column(nullable = false)
+    @Deprecated
     private boolean isMemorized = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -29,7 +34,7 @@ public class Card {
     private Deck deck;
 
     @Lob
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
     private String contentJson;
 
     // Groups siblings (e.g. Forward/Reverse cards)

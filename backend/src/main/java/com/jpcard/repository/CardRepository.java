@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface CardRepository extends JpaRepository<Card, Long> {
 
-    @Query("SELECT c FROM Card c WHERE " +
+    @Query("SELECT c FROM Card c JOIN FETCH c.deck WHERE " +
            "(:deckId IS NULL OR c.deck.id = :deckId) AND " +
            "(:memorized IS NULL OR c.isMemorized = :memorized) AND " +
            "(:keyword IS NULL OR LOWER(c.term) LIKE :keyword OR LOWER(c.meaning) LIKE :keyword)")
@@ -18,7 +18,7 @@ public interface CardRepository extends JpaRepository<Card, Long> {
                       @Param("memorized") Boolean memorized,
                       @Param("keyword") String keyword);
 
-    @Query("SELECT c FROM Card c WHERE c.deck.id = :deckId AND NOT EXISTS (SELECT p FROM UserCardProgress p WHERE p.card = c AND p.user.id = :userId)")
+    @Query("SELECT c FROM Card c JOIN FETCH c.deck WHERE c.deck.id = :deckId AND NOT EXISTS (SELECT p FROM UserCardProgress p WHERE p.card = c AND p.user.id = :userId)")
     List<Card> findNewCards(@Param("deckId") Long deckId, @Param("userId") Long userId, Pageable pageable);
 
     void deleteByDeckId(Long deckId);

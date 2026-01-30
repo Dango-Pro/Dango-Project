@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -104,6 +106,8 @@ public class DeckService {
         Deck savedDeck = deckRepository.save(newDeck);
 
         List<Card> cards = cardRepository.findByDeckId(originalDeckId);
+        Map<Long, Long> oldNoteIdToNewNoteId = new HashMap<>();
+
         for (Card card : cards) {
             Card newCard = new Card();
             newCard.setDeck(savedDeck);
@@ -111,18 +115,25 @@ public class DeckService {
             newCard.setMeaning(card.getMeaning());
             newCard.setContentJson(card.getContentJson());
             newCard.setMemorized(false); // Reset progress
-            // NoteId logic: If we want to keep sibling relationships within the fork,
-            // we'd need to map oldNoteId -> newNoteId.
-            // For simplicity, we assign a new NoteId if the original had one?
-            // Or just leave it null for now.
-            // If the original cards are generated in pairs, they share a noteId.
-            // Complex deep copy logic omitted for brevity, stripping noteId for now or copying it might be risky if noteId is global.
-            // Best practice: Generate new Note ID for the pair in the new deck.
-            // But here we are iterating linearly.
-            // Simplest: Set noteId to null or handle strictly if 'siblings' feature is critical.
-            // Let's copy properties directly.
 
-            cardRepository.save(newCard);
+            Long oldNoteId = card.getNoteId();
+            if (oldNoteId != null && oldNoteIdToNewNoteId.containsKey(oldNoteId)) {
+                // Reuse the new noteId for this sibling group
+                newCard.setNoteId(oldNoteIdToNewNoteId.get(oldNoteId));
+                cardRepository.save(newCard);
+            } else {
+                // First card of a group or single card
+                // Save first to generate ID
+                cardRepository.save(newCard);
+                // Use its own ID as noteId
+                newCard.setNoteId(newCard.getId());
+                // Map it if the original had a noteId
+                if (oldNoteId != null) {
+                    oldNoteIdToNewNoteId.put(oldNoteId, newCard.getId());
+                }
+                // Update with new noteId
+                cardRepository.save(newCard);
+            }
         }
 
         return savedDeck;
