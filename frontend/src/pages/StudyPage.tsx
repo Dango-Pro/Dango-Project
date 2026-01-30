@@ -85,7 +85,15 @@ export default function StudyPage() {
         await api.post("/study/review", { cardId: currentCard.id, rating });
 
         setIsFlipped(false);
-        if (currentIndex < cards.length - 1) {
+
+        // If 'FAIL', re-queue the card at the end of the session
+        let nextCards = [...cards];
+        if (rating === 'FAIL') {
+            nextCards.push(currentCard);
+        }
+
+        if (currentIndex < nextCards.length - 1) {
+            setCards(nextCards); // Update queue if we added something (or just to be safe)
             setCurrentIndex(prev => prev + 1);
         } else {
             setCards([]); // Trigger session complete
