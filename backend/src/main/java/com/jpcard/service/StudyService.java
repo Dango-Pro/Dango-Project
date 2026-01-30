@@ -13,8 +13,11 @@ import com.jpcard.util.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,6 +37,7 @@ public class StudyService {
     private final CardRepository cardRepository;
     private final UserRepository userRepository;
     private final StudyLogRepository studyLogRepository;
+    private final PlatformTransactionManager transactionManager;
     private final Random random = new Random();
 
     // Default Fallback. Now we use deck-specific steps.
@@ -84,23 +88,22 @@ public class StudyService {
 
         List<Card> dueCards = Collections.emptyList();
         if (!reviewLimitReached || studyMore) {
-             List<UserCardProgress> dueProgress = progressRepository.findDueCards(userId, deckId, LocalDateTime.now())
-                .stream()
-                .filter(p -> p.getStatus() != StudyStatus.SUSPENDED)
-                .collect(Collectors.toList());
-
-             // If strictly limiting reviews, we should sublist dueProgress.
-             // But usually "review limit" means total reviews done today.
-             // If remainingReviews > 0, we can fetch up to that many?
-             // Simplification: Fetch all due, let user decide when to stop or cap it.
-             // Let's cap the due cards list if not studyMore
-             if (!studyMore && remainingReviews > 0 && dueProgress.size() > remainingReviews) {
-                 dueProgress = dueProgress.subList(0, remainingReviews);
+             int fetchLimit = 100; // Default safety cap
+             if (!studyMore && remainingReviews > 0) {
+                 fetchLimit = Math.min(remainingReviews, 100);
              } else if (!studyMore && remainingReviews <= 0) {
-                 dueProgress = Collections.emptyList();
+                 fetchLimit = 0;
              }
 
-             dueCards = dueProgress.stream().map(UserCardProgress::getCard).collect(Collectors.toList());
+             if (fetchLimit > 0) {
+                 List<UserCardProgress> dueProgress = progressRepository.findDueCardsWithLimit(
+                     userId,
+                     deckId,
+                     LocalDateTime.now(),
+                     PageRequest.of(0, fetchLimit)
+                 );
+                 dueCards = dueProgress.stream().map(UserCardProgress::getCard).collect(Collectors.toList());
+             }
         }
 
 
@@ -157,54 +160,72 @@ public class StudyService {
         );
     }
 
-    @Transactional
     public void processReview(Long userId, Long cardId, String rating) {
+        TransactionTemplate tmpl = new TransactionTemplate(transactionManager);
+        int maxRetries = 3;
+
+        for (int i = 0; i < maxRetries; i++) {
+            try {
+                tmpl.execute(status -> {
+                    processReviewLogic(userId, cardId, rating);
+                    return null;
+                });
+                return; // Success
+            } catch (DataIntegrityViolationException | ObjectOptimisticLockingFailureException e) {
+                if (i == maxRetries - 1) {
+                    throw e; // Rethrow on last attempt
+                }
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+    }
+
+    private void processReviewLogic(Long userId, Long cardId, String rating) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new ResourceNotFoundException("Card not found"));
 
-        try {
-            UserCardProgress progress = progressRepository.findByUserIdAndCardId(userId, cardId)
-                    .orElse(new UserCardProgress());
+        UserCardProgress progress = progressRepository.findByUserIdAndCardId(userId, cardId)
+                .orElse(new UserCardProgress());
 
-            if (progress.getId() == null) {
-                progress.setUser(user);
-                progress.setCard(card);
-                progress.setStatus(StudyStatus.NEW);
-                progress.setLearningStep(0); // Initialize step
-            }
-
-            if (progress.getFirstStudiedAt() == null) {
-                progress.setFirstStudiedAt(LocalDateTime.now());
-            }
-
-            // Save History Log
-            StudyLog log = new StudyLog();
-            log.setUser(user);
-            log.setCard(card);
-            log.setRating(rating);
-            log.setStudiedAt(LocalDateTime.now());
-            studyLogRepository.save(log);
-
-            applyAlgorithm(progress, rating);
-
-            // Leech Check
-            if ("FAIL".equalsIgnoreCase(rating)) {
-                progress.setLapses(progress.getLapses() + 1);
-                if (progress.getLapses() >= LEECH_THRESHOLD) {
-                    progress.setStatus(StudyStatus.SUSPENDED);
-                }
-            }
-
-            progressRepository.save(progress);
-
-            // 4. Sibling Burying
-            burySiblings(user.getId(), card);
-
-        } catch (DataIntegrityViolationException e) {
-            System.out.println("Concurrency conflict handled for User " + userId + " Card " + cardId);
+        if (progress.getId() == null) {
+            progress.setUser(user);
+            progress.setCard(card);
+            progress.setStatus(StudyStatus.NEW);
+            progress.setLearningStep(0); // Initialize step
         }
+
+        if (progress.getFirstStudiedAt() == null) {
+            progress.setFirstStudiedAt(LocalDateTime.now());
+        }
+
+        // Save History Log
+        StudyLog log = new StudyLog();
+        log.setUser(user);
+        log.setCard(card);
+        log.setRating(rating);
+        log.setStudiedAt(LocalDateTime.now());
+        studyLogRepository.save(log);
+
+        applyAlgorithm(progress, rating);
+
+        // Leech Check
+        if ("FAIL".equalsIgnoreCase(rating)) {
+            progress.setLapses(progress.getLapses() + 1);
+            if (progress.getLapses() >= LEECH_THRESHOLD) {
+                progress.setStatus(StudyStatus.SUSPENDED);
+            }
+        }
+
+        progressRepository.save(progress);
+
+        // 4. Sibling Burying
+        burySiblings(user.getId(), card);
     }
 
     private void applyAlgorithm(UserCardProgress p, String rating) {

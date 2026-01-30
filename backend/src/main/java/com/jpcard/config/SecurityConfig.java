@@ -38,9 +38,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/cards/**", "/api/decks/**", "/api/comments/**", "/api/stats/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/posts", "/api/posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
-                        // Allow POST for Posts and Comments (Anonymous posting)
-                        .requestMatchers(HttpMethod.POST, "/api/posts", "/api/posts/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/comments/**").permitAll()
+                        // POST requires authentication
+                        .requestMatchers(HttpMethod.POST, "/api/posts", "/api/posts/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/comments/**").authenticated()
                         .requestMatchers("/api/study/**").authenticated() // Study endpoints require auth
                         .requestMatchers("/", "/index.html", "/assets/**", "/favicon.ico").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()

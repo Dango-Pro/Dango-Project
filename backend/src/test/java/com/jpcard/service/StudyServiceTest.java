@@ -14,6 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 
 import org.springframework.dao.DataIntegrityViolationException;
 
@@ -34,6 +36,7 @@ class StudyServiceTest {
     @Mock private CardRepository cardRepository;
     @Mock private UserRepository userRepository;
     @Mock private StudyLogRepository studyLogRepository;
+    @Mock private PlatformTransactionManager transactionManager;
 
     @InjectMocks private StudyService studyService;
 
@@ -49,6 +52,7 @@ class StudyServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(cardRepository.findById(1L)).thenReturn(Optional.of(card));
         when(progressRepository.findByUserIdAndCardId(1L, 1L)).thenReturn(Optional.empty());
+        when(transactionManager.getTransaction(any())).thenReturn(mock(TransactionStatus.class));
 
         studyService.processReview(1L, 1L, "FAIL");
 
@@ -61,10 +65,9 @@ class StudyServiceTest {
     }
 
     @Test
-    void processReview_Concurrency_RaceCondition() {
-        // Simulates a scenario where findByUserIdAndCardId returns empty,
-        // but save() throws DataIntegrityViolationException (another thread inserted it),
-        // triggering the catch block which should re-fetch and update.
+    void processReview_Concurrency_Retry() {
+        // Simulates a scenario where save() throws DataIntegrityViolationException initially,
+        // triggering the retry logic.
         User user = new User(); user.setId(1L);
         Card card = new Card(); card.setId(1L);
         com.jpcard.domain.deck.Deck deck = new com.jpcard.domain.deck.Deck();
@@ -73,29 +76,26 @@ class StudyServiceTest {
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(cardRepository.findById(1L)).thenReturn(Optional.of(card));
+        when(transactionManager.getTransaction(any())).thenReturn(mock(TransactionStatus.class));
 
-        // First check returns empty
         UserCardProgress p = new UserCardProgress();
         p.setUser(user);
         p.setCard(card);
 
         when(progressRepository.findByUserIdAndCardId(1L, 1L))
-                .thenReturn(Optional.empty()) // First call
-                .thenReturn(Optional.of(p)); // Second call in catch block
+                .thenReturn(Optional.empty());
 
-        // First save throws exception
-        doThrow(DataIntegrityViolationException.class)
-                .when(progressRepository).save(any(UserCardProgress.class));
+        // Save throws exception twice, then succeeds
+        when(progressRepository.save(any(UserCardProgress.class)))
+                .thenThrow(new DataIntegrityViolationException("Conflict"))
+                .thenThrow(new DataIntegrityViolationException("Conflict"))
+                .thenReturn(p);
 
         // Act
-        try {
-            studyService.processReview(1L, 1L, "FAIL");
-        } catch (Exception e) {
-            fail("Exception should have been caught inside the service");
-        }
+        studyService.processReview(1L, 1L, "FAIL");
 
-        // Verify that findByUserIdAndCardId was called once (no retry logic implemented, just catch and ignore)
-        verify(progressRepository, times(1)).findByUserIdAndCardId(1L, 1L);
+        // Verify that it was called 3 times (2 failures + 1 success)
+        verify(progressRepository, times(3)).save(any(UserCardProgress.class));
     }
 
 
@@ -107,9 +107,9 @@ class StudyServiceTest {
         user.setTimezone("Asia/Tokyo"); // UTC+9
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(progressRepository.findDueCards(anyLong(), anyLong(), any(LocalDateTime.class))).thenReturn(Collections.emptyList());
-        // We verify the passed LocalDateTime is shifted correctly implicitly by the logic flow,
-        // or we could capture the argument.
+        // Update: use findDueCardsWithLimit
+        when(progressRepository.findDueCardsWithLimit(anyLong(), anyLong(), any(LocalDateTime.class), any(Pageable.class))).thenReturn(Collections.emptyList());
+
         when(progressRepository.countNewCardsStudiedToday(anyLong(), anyLong(), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(20L);
 
         StudySessionResult result = studyService.getDueCards(1L, 1L, false);
@@ -126,7 +126,8 @@ class StudyServiceTest {
         user.setDailyLimit(20);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(progressRepository.findDueCards(anyLong(), anyLong(), any(LocalDateTime.class))).thenReturn(Collections.emptyList());
+        // Update: use findDueCardsWithLimit
+        when(progressRepository.findDueCardsWithLimit(anyLong(), anyLong(), any(LocalDateTime.class), any(Pageable.class))).thenReturn(Collections.emptyList());
         when(progressRepository.countNewCardsStudiedToday(anyLong(), anyLong(), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(20L);
         when(cardRepository.findNewCards(anyLong(), anyLong(), any(Pageable.class))).thenReturn(List.of(new Card()));
 
