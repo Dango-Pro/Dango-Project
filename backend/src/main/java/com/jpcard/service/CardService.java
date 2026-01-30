@@ -2,6 +2,7 @@ package com.jpcard.service;
 
 import com.jpcard.domain.card.Card;
 import com.jpcard.domain.deck.Deck;
+import com.jpcard.domain.user.User;
 import com.jpcard.repository.CardRepository;
 import com.jpcard.repository.DeckRepository;
 import com.jpcard.util.ResourceNotFoundException;
@@ -38,13 +39,22 @@ public class CardService {
     }
 
     @Transactional
-    public Card create(String term, String meaning, Long deckId, Map<String, String> content) {
+    public Card create(String term, String meaning, Long deckId, Map<String, String> content, User owner) {
+        return createWithNoteId(term, meaning, deckId, content, owner, null);
+    }
+
+    @Transactional
+    public Card createWithNoteId(String term, String meaning, Long deckId, Map<String, String> content, User owner, Long noteId) {
         Card card = new Card();
         card.setTerm(term);
         card.setMeaning(meaning);
         if (deckId != null) {
             Deck deck = deckRepository.findById(deckId)
                     .orElseThrow(() -> new ResourceNotFoundException("Deck not found with id: " + deckId));
+
+            if (owner != null && !deck.getOwner().getId().equals(owner.getId())) {
+                throw new IllegalArgumentException("Not authorized to create card in this deck");
+            }
             card.setDeck(deck);
         }
         if (content != null) {
@@ -55,25 +65,29 @@ public class CardService {
             }
         }
 
-        // Save first to get ID
-        card = cardRepository.save(card);
+        Card savedCard = cardRepository.save(card);
 
-        // Use ID as initial noteId (group leader of itself)
-        card.setNoteId(card.getId());
+        // Use ID as initial noteId if not provided
+        savedCard.setNoteId(noteId != null ? noteId : savedCard.getId());
 
-        return card; // Saved implicitly by Transactional, but explicit save might be safer if we returned it directly without re-save.
-                     // Since we modified it after save, Hibernate dirty check will update it at commit.
+        return savedCard;
     }
 
     @Transactional
-    public Card create(String term, String meaning, Long deckId) {
-        return create(term, meaning, deckId, null);
-    }
+    public List<Card> createSiblings(String term, String meaning, Long deckId, Map<String, String> content, User owner) {
+        // 1. Create Forward Card (Term -> Meaning)
+        Card forward = createWithNoteId(term, meaning, deckId, content, owner, null);
+        Long sharedNoteId = forward.getNoteId(); // Uses its own ID
 
-    // Overload for backward compatibility if needed, or just replace usage
-    @Transactional
-    public Card create(String term, String meaning) {
-        return create(term, meaning, null);
+        // 2. Create Reverse Card (Meaning -> Term)
+        // Swap content keys if generic? Assuming 'Front'/'Back' in content.
+        // For simple term/meaning, we swap them.
+        // For JSON content, it's tricky without knowing template structure.
+        // Assuming simple default template for now.
+
+        Card reverse = createWithNoteId(meaning, term, deckId, content, owner, sharedNoteId);
+
+        return List.of(forward, reverse);
     }
 
     @Transactional(readOnly = true)
@@ -83,8 +97,24 @@ public class CardService {
     }
 
     @Transactional
-    public Card update(Long id, String term, String meaning, Long deckId, Map<String, String> content) {
+    public Card update(Long id, String term, String meaning, Long deckId, Map<String, String> content, User owner) {
         Card card = findById(id);
+
+        // Ownership Check
+        if (owner != null) {
+             if (card.getDeck() != null && !card.getDeck().getOwner().getId().equals(owner.getId())) {
+                 throw new IllegalArgumentException("Not authorized to update this card");
+             }
+             // Also check new deck ownership if changing deck
+             if (deckId != null) {
+                 Deck newDeck = deckRepository.findById(deckId)
+                         .orElseThrow(() -> new ResourceNotFoundException("Deck not found: " + deckId));
+                 if (!newDeck.getOwner().getId().equals(owner.getId())) {
+                     throw new IllegalArgumentException("Not authorized to move card to this deck");
+                 }
+             }
+        }
+
         card.setTerm(term);
         card.setMeaning(meaning);
         if (deckId != null) {
@@ -92,8 +122,13 @@ public class CardService {
                     .orElseThrow(() -> new ResourceNotFoundException("Deck not found with id: " + deckId));
             card.setDeck(deck);
         } else {
-            card.setDeck(null); // Optional: allow unassigning
+            // Should we allow unassigning? Usually cards belong to a deck.
+            // If deckId is null in request, it might mean "don't change".
+            // But here we might be overwriting. Let's assume deckId is mandatory for update if passed.
+            // If frontend sends null, we shouldn't clear it unless intentional.
+            // For now, let's keep existing logic: if deckId passed, set it.
         }
+
         if (content != null) {
             try {
                 card.setContentJson(objectMapper.writeValueAsString(content));
@@ -105,29 +140,25 @@ public class CardService {
     }
 
     @Transactional
-    public Card update(Long id, String term, String meaning, Long deckId) {
-        return update(id, term, meaning, deckId, null);
-    }
-
-    @Transactional
-    public Card update(Long id, String term, String meaning) {
-        // Preserve existing deck if not specified? Or clear it?
-        // For "Edit Card" page, we usually send all data.
-        // If I keep this old method, I should probably not touch the deck.
+    public void delete(Long id, User owner) {
         Card card = findById(id);
-        card.setTerm(term);
-        card.setMeaning(meaning);
-        return card;
-    }
-
-    @Transactional
-    public void delete(Long id) {
+        if (owner != null && card.getDeck() != null && !card.getDeck().getOwner().getId().equals(owner.getId())) {
+             throw new IllegalArgumentException("Not authorized to delete this card");
+        }
         cardRepository.deleteById(id);
     }
 
     @Transactional
-    public Card changeMemorizedStatus(Long id, boolean isMemorized) {
+    public Card changeMemorizedStatus(Long id, boolean isMemorized, User owner) {
         Card card = findById(id);
+        // Ownership? Or is memorized status per user?
+        // Currently Card entity has 'memorized' field, which implies global status (single user app design origin).
+        // But for multi-user, progress should be in UserCardProgress.
+        // The 'memorized' field in Card might be legacy or "Mastered by Owner".
+        // Let's protect it.
+        if (owner != null && card.getDeck() != null && !card.getDeck().getOwner().getId().equals(owner.getId())) {
+             throw new IllegalArgumentException("Not authorized");
+        }
         card.setMemorized(isMemorized);
         return card;
     }

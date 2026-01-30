@@ -3,19 +3,12 @@ package com.jpcard.controller;
 import com.jpcard.controller.dto.CardRequest;
 import com.jpcard.controller.dto.CardResponse;
 import com.jpcard.domain.card.Card;
+import com.jpcard.domain.user.User;
 import com.jpcard.service.CardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.core.type.TypeReference;
 
@@ -52,26 +45,48 @@ public class CardController {
     }
 
     @PostMapping
-    public ResponseEntity<CardResponse> create(@RequestBody CardRequest request) {
-        var card = cardService.create(request.term(), request.meaning(), request.deckId(), request.content());
-        return ResponseEntity.ok(toResponse(card));
+    public ResponseEntity<List<CardResponse>> create(@RequestBody CardRequest request, Authentication auth) {
+        User user = (auth != null) ? (User) auth.getPrincipal() : null;
+        if (user == null) return ResponseEntity.status(401).build();
+
+        List<Card> cards;
+        if (Boolean.TRUE.equals(request.createReverse())) {
+            cards = cardService.createSiblings(request.term(), request.meaning(), request.deckId(), request.content(), user);
+        } else {
+            cards = Collections.singletonList(cardService.create(request.term(), request.meaning(), request.deckId(), request.content(), user));
+        }
+
+        List<CardResponse> responses = cards.stream().map(this::toResponse).collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CardResponse> update(@PathVariable Long id, @RequestBody CardRequest request) {
-        var card = cardService.update(id, request.term(), request.meaning(), request.deckId(), request.content());
+    public ResponseEntity<CardResponse> update(@PathVariable Long id, @RequestBody CardRequest request, Authentication auth) {
+        User user = (auth != null) ? (User) auth.getPrincipal() : null;
+        if (user == null) return ResponseEntity.status(401).build();
+
+        var card = cardService.update(id, request.term(), request.meaning(), request.deckId(), request.content(), user);
         return ResponseEntity.ok(toResponse(card));
     }
 
     @PatchMapping("/{id}/memorized")
-    public ResponseEntity<CardResponse> updateMemorizedStatus(@PathVariable Long id, @RequestBody boolean isMemorized) {
-        var card = cardService.changeMemorizedStatus(id, isMemorized);
+    public ResponseEntity<CardResponse> updateMemorizedStatus(@PathVariable Long id, @RequestBody boolean isMemorized, Authentication auth) {
+        User user = (auth != null) ? (User) auth.getPrincipal() : null;
+        // Memorized status update might be allowed for study session logic?
+        // But changeMemorizedStatus in CardService updates the Card entity directly.
+        // So it requires owner permission.
+        if (user == null) return ResponseEntity.status(401).build();
+
+        var card = cardService.changeMemorizedStatus(id, isMemorized, user);
         return ResponseEntity.ok(toResponse(card));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        cardService.delete(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id, Authentication auth) {
+        User user = (auth != null) ? (User) auth.getPrincipal() : null;
+        if (user == null) return ResponseEntity.status(401).build();
+
+        cardService.delete(id, user);
         return ResponseEntity.noContent().build();
     }
 

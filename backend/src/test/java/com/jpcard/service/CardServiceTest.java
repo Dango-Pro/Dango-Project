@@ -1,7 +1,10 @@
 package com.jpcard.service;
 
 import com.jpcard.domain.card.Card;
+import com.jpcard.domain.deck.Deck;
+import com.jpcard.domain.user.User;
 import com.jpcard.repository.CardRepository;
+import com.jpcard.repository.DeckRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,6 +22,9 @@ class CardServiceTest {
     @Mock
     private CardRepository cardRepository;
 
+    @Mock
+    private DeckRepository deckRepository;
+
     @InjectMocks
     private CardService cardService;
 
@@ -31,7 +37,7 @@ class CardServiceTest {
 
         when(cardRepository.save(any(Card.class))).thenReturn(card);
 
-        Card created = cardService.create("Test", "Meaning");
+        Card created = cardService.create("Test", "Meaning", null, null, null);
 
         assertNotNull(created);
         assertEquals("Test", created.getTerm());
@@ -40,14 +46,20 @@ class CardServiceTest {
 
     @Test
     void updateCard() {
+        Deck deck = new Deck();
+        User user = new User();
+        user.setId(10L);
+        deck.setOwner(user);
+
         Card card = new Card();
         card.setId(1L);
         card.setTerm("Old");
         card.setMeaning("Old Meaning");
+        card.setDeck(deck);
 
         when(cardRepository.findById(1L)).thenReturn(Optional.of(card));
 
-        Card updated = cardService.update(1L, "New", "New Meaning");
+        Card updated = cardService.update(1L, "New", "New Meaning", null, null, user);
 
         assertEquals("New", updated.getTerm());
         assertEquals("New Meaning", updated.getMeaning());
@@ -58,22 +70,38 @@ class CardServiceTest {
 
     @Test
     void deleteCard() {
+        Deck deck = new Deck();
+        User user = new User();
+        user.setId(10L);
+        deck.setOwner(user);
+
+        Card card = new Card();
+        card.setId(1L);
+        card.setDeck(deck);
+
+        when(cardRepository.findById(1L)).thenReturn(Optional.of(card));
         doNothing().when(cardRepository).deleteById(1L);
 
-        cardService.delete(1L);
+        cardService.delete(1L, user);
 
         verify(cardRepository).deleteById(1L);
     }
 
     @Test
     void toggleMemorized() {
+        Deck deck = new Deck();
+        User user = new User();
+        user.setId(10L);
+        deck.setOwner(user);
+
         Card card = new Card();
         card.setId(1L);
         card.setMemorized(false);
+        card.setDeck(deck);
 
         when(cardRepository.findById(1L)).thenReturn(Optional.of(card));
 
-        Card updated = cardService.changeMemorizedStatus(1L, true);
+        Card updated = cardService.changeMemorizedStatus(1L, true, user);
 
         assertTrue(updated.isMemorized());
         verify(cardRepository).findById(1L);

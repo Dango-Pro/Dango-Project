@@ -2,6 +2,8 @@ package com.jpcard.service;
 
 import com.jpcard.domain.post.Post;
 import com.jpcard.domain.post.PostAttachment;
+import com.jpcard.domain.user.User;
+import com.jpcard.domain.user.Role;
 import com.jpcard.repository.PostAttachmentRepository;
 import com.jpcard.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -46,13 +48,14 @@ public class PostService {
     }
 
     @Transactional
-    public Post create(String title, String content, boolean isNotice, String authorName, String ipAddress, List<MultipartFile> files) {
+    public Post create(String title, String content, boolean isNotice, String authorName, String ipAddress, List<MultipartFile> files, User author) {
         Post post = new Post();
         post.setTitle(title);
         post.setContent(content);
         post.setNotice(isNotice);
         post.setAuthorName(authorName);
         post.setIpAddress(ipAddress);
+        post.setAuthor(author);
         Post savedPost = postRepository.save(post);
 
         if (files != null && !files.isEmpty()) {
@@ -124,8 +127,9 @@ public class PostService {
     }
 
     @Transactional
-    public Post update(Long id, String title, String content, boolean isNotice) {
+    public Post update(Long id, String title, String content, boolean isNotice, User user) {
         Post post = findById(id);
+        checkOwner(post, user);
         post.setTitle(title);
         post.setContent(content);
         post.setNotice(isNotice);
@@ -133,8 +137,31 @@ public class PostService {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void delete(Long id, User user) {
+        Post post = findById(id);
+        checkOwner(post, user);
         postRepository.deleteById(id);
+    }
+
+    private void checkOwner(Post post, User user) {
+        if (user == null) {
+             throw new IllegalArgumentException("User required");
+        }
+        // Admin or Manager can delete/update? Usually yes.
+        boolean isManager = user.getRoles().contains(Role.ROLE_MANAGER) || user.getRoles().contains(Role.ROLE_ADMIN);
+
+        if (post.getAuthor() != null) {
+            if (!post.getAuthor().getId().equals(user.getId()) && !isManager) {
+                throw new IllegalArgumentException("Not authorized to modify this post");
+            }
+        } else {
+            // Anonymous posts or legacy posts - who can delete?
+            // Maybe authorName matches? But that's spoofable.
+            // Only Manager should touch legacy posts.
+            if (!isManager) {
+                 throw new IllegalArgumentException("Not authorized to modify this post");
+            }
+        }
     }
 
     @Transactional

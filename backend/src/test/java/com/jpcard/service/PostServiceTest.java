@@ -1,6 +1,8 @@
 package com.jpcard.service;
 
 import com.jpcard.domain.post.Post;
+import com.jpcard.domain.user.User;
+import com.jpcard.domain.user.Role;
 import com.jpcard.repository.PostAttachmentRepository;
 import com.jpcard.repository.PostRepository;
 import org.junit.jupiter.api.Test;
@@ -38,7 +40,7 @@ class PostServiceTest {
 
         when(postRepository.save(any(Post.class))).thenReturn(post);
 
-        Post created = postService.create("Test Title", "Content", false, "User", "127.0.0.1", null);
+        Post created = postService.create("Test Title", "Content", false, "User", "127.0.0.1", null, new User());
 
         assertNotNull(created);
         assertEquals("Test Title", created.getTitle());
@@ -47,13 +49,18 @@ class PostServiceTest {
 
     @Test
     void update_ShouldUpdatePost() {
+        User user = new User();
+        user.setId(10L);
+        user.addRole(Role.ROLE_USER);
+
         Post post = new Post();
         post.setId(1L);
         post.setTitle("Old Title");
+        post.setAuthor(user);
 
         when(postRepository.findById(1L)).thenReturn(Optional.of(post));
 
-        Post updated = postService.update(1L, "New Title", "New Content", true);
+        Post updated = postService.update(1L, "New Title", "New Content", true, user);
 
         assertEquals("New Title", updated.getTitle());
         assertEquals(true, updated.isNotice());

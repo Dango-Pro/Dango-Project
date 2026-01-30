@@ -62,22 +62,35 @@ public class PostController {
             @RequestParam(value = "isNotice", required = false, defaultValue = "false") boolean isNotice,
             @RequestParam(value = "files", required = false) List<org.springframework.web.multipart.MultipartFile> files,
             HttpServletRequest httpRequest) {
+
+        com.jpcard.domain.user.User author = null;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof com.jpcard.domain.user.User) {
+            author = (com.jpcard.domain.user.User) authentication.getPrincipal();
+        }
+
         String authorName = determineAuthorName(httpRequest);
         String ipAddress = httpRequest.getRemoteAddr();
 
-        var post = postService.create(title, content, isNotice, authorName, ipAddress, files);
+        var post = postService.create(title, content, isNotice, authorName, ipAddress, files, author);
         return ResponseEntity.ok(mapToResponse(post));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<PostResponse> update(@PathVariable Long id, @RequestBody @Valid PostRequest request) {
-        var post = postService.update(id, request.title(), request.content(), request.isNotice());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        com.jpcard.domain.user.User user = (auth != null && auth.getPrincipal() instanceof com.jpcard.domain.user.User) ? (com.jpcard.domain.user.User) auth.getPrincipal() : null;
+
+        var post = postService.update(id, request.title(), request.content(), request.isNotice(), user);
         return ResponseEntity.ok(mapToResponse(post));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        postService.delete(id);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        com.jpcard.domain.user.User user = (auth != null && auth.getPrincipal() instanceof com.jpcard.domain.user.User) ? (com.jpcard.domain.user.User) auth.getPrincipal() : null;
+
+        postService.delete(id, user);
         return ResponseEntity.noContent().build();
     }
 
