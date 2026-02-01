@@ -85,7 +85,7 @@ export default function DeckCreatePage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                style={{ padding: "12px 16px", fontSize: "1.1rem" }}
+                style={{ fontSize: "1.1rem" }}
               />
             </div>
             <div className="input-group">
@@ -133,7 +133,7 @@ export default function DeckCreatePage() {
                         <button type="button" className="secondary-btn" onClick={() => setIsCreatingTemplate(true)}>New</button>
                     </div>
                 ) : (
-                    <div className="glass-card" style={{ background: "rgba(0,0,0,0.2)", padding: 15 }}>
+                    <div className="glass-card" style={{ background: "rgba(255,255,255,0.4)", padding: 15 }}>
                         <div style={{ marginBottom: 10 }}>
                             <label className="input-label" style={{ fontSize: "0.8rem" }}>Template Name</label>
                             <input
@@ -179,7 +179,7 @@ export default function DeckCreatePage() {
         }
         .input-label {
           font-size: 0.9rem;
-          color: rgba(255, 255, 255, 0.7);
+          color: #555;
           text-transform: uppercase;
           letter-spacing: 1px;
           font-weight: 600;

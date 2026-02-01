@@ -72,10 +72,9 @@ export default function CardCreatePage() {
                <label htmlFor="card-deck" className="input-label">Assign to Deck</label>
                <select
                  id="card-deck"
-                 className="input-field"
+                 className="text-input"
                  value={deckId}
                  onChange={e => setDeckId(e.target.value)}
-                 style={{ padding: "12px 16px" }}
                >
                   <option value="">No Deck (Unassigned - Basic)</option>
                   {decks.map(d => (
@@ -89,21 +88,20 @@ export default function CardCreatePage() {
                   <label className="input-label">{field}</label>
                   {idx === 0 ? (
                       <input
-                        className="input-field"
+                        className="text-input"
                         placeholder={`Enter ${field}`}
                         value={content[field] || ""}
                         onChange={(e) => handleContentChange(field, e.target.value)}
                         required
-                        style={{ padding: "12px 16px", fontSize: "1.1rem" }}
+                        style={{ fontSize: "1.1rem" }}
                       />
                   ) : (
                       <textarea
-                        className="input-field"
+                        className="text-area"
                         rows={idx === 1 ? 3 : 2}
                         placeholder={`Enter ${field}`}
                         value={content[field] || ""}
                         onChange={(e) => handleContentChange(field, e.target.value)}
-                        style={{ resize: "vertical" }}
                       />
                   )}
                 </div>
@@ -142,10 +140,6 @@ export default function CardCreatePage() {
           text-transform: uppercase;
           letter-spacing: 1px;
           font-weight: 600;
-        }
-        .input-field:focus {
-          background: #fff;
-          border-color: #ffb7b2;
         }
       `}</style>
     </Layout>
