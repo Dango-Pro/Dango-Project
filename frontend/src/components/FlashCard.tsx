@@ -32,10 +32,22 @@ export default function FlashCard({ card, isFlipped, onFlip, onReview }: FlashCa
         </div>
         <div className="card-face card-back">
           <span className="card-label">{t("study.meaning_label")}</span>
+          {card.content && card.content['pronunciation'] && (
+            <h3 style={{ fontSize: '1.5rem', marginBottom: '8px', color: 'rgba(255,255,255,0.9)', fontWeight: 'normal' }}>
+              {card.content['pronunciation']}
+            </h3>
+          )}
           <h2>{card.meaning}</h2>
           <button
             className="icon-btn"
-            onClick={(e) => { e.stopPropagation(); speak(card.meaning || "", "en-US"); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (card.content && card.content['pronunciation']) {
+                speak(card.content['pronunciation'], "ja-JP");
+              } else {
+                speak(card.meaning || "", "ko-KR");
+              }
+            }}
             style={{ position: 'absolute', top: 16, right: 16 }}
           >
             🔊
