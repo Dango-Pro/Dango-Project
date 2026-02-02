@@ -7,6 +7,7 @@ import com.jpcard.domain.user.Role;
 import com.jpcard.repository.PostAttachmentRepository;
 import com.jpcard.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -125,42 +126,54 @@ public class PostService {
         return postRepository.findById(id)
                 .orElseThrow(() -> new com.jpcard.util.ResourceNotFoundException("Post not found with id: " + id));
     }
-
-    @Transactional
-    public Post update(Long id, String title, String content, boolean isNotice, User user) {
-        Post post = findById(id);
-        checkOwner(post, user);
-        post.setTitle(title);
-        post.setContent(content);
-        post.setNotice(isNotice);
-        return post;
-    }
-
-    @Transactional
-    public void delete(Long id, User user) {
-        Post post = findById(id);
-        checkOwner(post, user);
-        postRepository.deleteById(id);
-    }
-
-    private void checkOwner(Post post, User user) {
-        if (user == null) {
-             throw new IllegalArgumentException("User required");
-        }
-        // Admin or Manager can delete/update? Usually yes.
-        boolean isManager = user.getRoles().contains(Role.ROLE_MANAGER) || user.getRoles().contains(Role.ROLE_ADMIN);
-
-        if (post.getAuthor() != null) {
-            if (!post.getAuthor().getId().equals(user.getId()) && !isManager) {
-                throw new IllegalArgumentException("Not authorized to modify this post");
-            }
-        } else {
-            // Anonymous posts or legacy posts - who can delete?
-            // Maybe authorName matches? But that's spoofable.
-            // Only Manager should touch legacy posts.
-            if (!isManager) {
-                 throw new IllegalArgumentException("Not authorized to modify this post");
-            }
+	
+	@Transactional
+	public Post update(Long id, String title, String content, boolean isNotice, User currentUser) { // String -> User로 변경
+		// 1. 게시글 존재 여부 확인
+		Post post = findById(id);
+		
+		// 2. 권한 체크 (수정한 checkOwner 메서드 호출)
+		checkOwner(post, currentUser);
+		
+		// 3. 데이터 업데이트
+		post.setTitle(title);
+		post.setContent(content);
+		post.setNotice(isNotice);
+		
+		return post;
+	}
+	
+	@Transactional
+	public void delete(Long id, User currentUser) { // String -> User로 변경
+		// 1. 게시글 존재 여부 확인
+		Post post = findById(id);
+		
+		// 2. 권한 체크
+		checkOwner(post, currentUser);
+		
+		// 3. 삭제 수행
+		postRepository.deleteById(id);
+	}
+	
+	private void checkOwner(Post post, User user) {
+		if (user == null) {
+			throw new AccessDeniedException("로그인이 필요한 서비스입니다.");
+		}
+		
+		// 관리자 또는 매니저 권한 확인
+		boolean isManager = user.getRoles().contains(Role.ROLE_MANAGER) ||
+				user.getRoles().contains(Role.ROLE_ADMIN);
+		
+		if (post.getAuthor() != null) {
+			// 작성자 본인도 아니고 관리자도 아닌 경우
+			if (!post.getAuthor().getId().equals(user.getId()) && !isManager) {
+				throw new AccessDeniedException("해당 게시글에 대한 수정/삭제 권한이 없습니다.");
+			}
+		} else {
+			// 작성자 정보가 없는 구버전/익명 게시글의 경우 관리자만 제어 가능
+			if (!isManager) {
+				throw new AccessDeniedException("해당 게시글을 수정/삭제할 권한이 없습니다.");
+			}
         }
     }
 

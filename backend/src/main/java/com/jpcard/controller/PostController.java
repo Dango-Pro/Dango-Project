@@ -77,22 +77,26 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PostResponse> update(@PathVariable Long id, @RequestBody @Valid PostRequest request) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        com.jpcard.domain.user.User user = (auth != null && auth.getPrincipal() instanceof com.jpcard.domain.user.User) ? (com.jpcard.domain.user.User) auth.getPrincipal() : null;
-
-        var post = postService.update(id, request.title(), request.content(), request.isNotice(), user);
-        return ResponseEntity.ok(mapToResponse(post));
+    public ResponseEntity<PostResponse> update(@PathVariable Long id, @Valid @RequestBody PostRequest request) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		com.jpcard.domain.user.User user = (auth != null && auth.getPrincipal() instanceof com.jpcard.domain.user.User)
+				? (com.jpcard.domain.user.User) auth.getPrincipal() : null;
+		
+		// 서비스의 update 메서드가 User 타입을 받게 되었으므로 이제 정상 동작합니다.
+		var post = postService.update(id, request.title(), request.content(), request.isNotice(), user);
+		return ResponseEntity.ok(mapToResponse(post));
     }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        com.jpcard.domain.user.User user = (auth != null && auth.getPrincipal() instanceof com.jpcard.domain.user.User) ? (com.jpcard.domain.user.User) auth.getPrincipal() : null;
-
-        postService.delete(id, user);
-        return ResponseEntity.noContent().build();
-    }
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> delete(@PathVariable Long id) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		com.jpcard.domain.user.User user = (auth != null && auth.getPrincipal() instanceof com.jpcard.domain.user.User)
+				? (com.jpcard.domain.user.User) auth.getPrincipal() : null;
+		
+		// 서비스의 delete 메서드가 User 타입을 받게 수정되었으므로 이제 정상 동작합니다.
+		postService.delete(id, user);
+		return ResponseEntity.noContent().build();
+	}
 
     @PostMapping("/{id}/like")
     public ResponseEntity<PostResponse> like(@PathVariable Long id) {
