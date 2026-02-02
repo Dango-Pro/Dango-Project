@@ -16,19 +16,26 @@ public class DataInitializer implements CommandLineRunner {
 	
 	@Override
 	public void run(String... args) throws Exception {
-		// 1. 관리자 계정이 있는지 '이메일'로 확인 (username 아님)
-		if (userRepository.findByEmail("manager@dango.com").isEmpty()) {
+		// 관리자 계정 있는지 확인
+		if (!userRepository.existsByEmail("admin@dango.com")) {
 			
-			// 2. 없으면 생성 (생성자 사용: 이메일, 비번, 닉네임, 권한)
-			User manager = new User(
-					"manager@dango.com",           // email
-					passwordEncoder.encode("1234"), // password
-					"관리자",                       // nickname
-					"ROLE_MANAGER"                 // role (String)
+			// 관리자 계정 생성
+			User admin = new User(
+					"admin@dango.com",
+					passwordEncoder.encode("admin1234"),
+					"시스템관리자",
+					"ROLE_ADMIN"
 			);
 			
-			userRepository.save(manager);
-			System.out.println("초기 관리자 계정 생성 완료: manager@dango.com / 1234");
+			// DB에 저장
+			userRepository.save(admin);
+			
+			System.out.println("=========================");
+			System.out.println("관리자 계정 생성");
+			System.out.println("ID: admin@dango.com");
+			System.out.println("PW: admin1234");
+			System.out.println("=========================");
 		}
 	}
+	
 }

@@ -1,51 +1,63 @@
 package com.jpcard.config;
 
+import com.jpcard.domain.user.Role;
+import com.jpcard.domain.user.User;
 import com.jpcard.repository.UserRepository;
 import com.jpcard.util.JwtUtil;
-import com.jpcard.domain.user.User;
-import jakarta.servlet.*;
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j; // 로그 사용을 위해 추가
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j // 로깅 기능 활성화 (e.getMessage 오류 해결)
 @Component
 @RequiredArgsConstructor
-public class JwtAuthenticationFilter extends GenericFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	
 	private final JwtUtil jwtUtil;
 	private final UserRepository userRepository;
 	
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response,
-						 FilterChain chain) throws IOException, ServletException {
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+			throws ServletException, IOException {
 		
-		HttpServletRequest httpReq = (HttpServletRequest) request;
-		String token = resolveToken(httpReq);
+		String token = resolveToken(request);
 		
-		// [수정 1] validateToken은 이제 boolean을 반환하므로 조건식에 바로 사용
-		if (token != null && jwtUtil.validateToken(token)) {
+		if (token != null) {
 			try {
-				// [수정 2] 토큰에서 ID 대신 '이메일'을 꺼냄 (JwtUtil에 추가한 메서드 사용)
-				String email = jwtUtil.getEmailFromToken(token);
+				// (유효하지 않은 토큰이면 여기서 에러 발생 -> catch로 이동)
+				Claims claims = jwtUtil.validateToken(token);
 				
-				// [수정 3] 이메일로 유저 찾기 (findById -> findByEmail)
-				User user = userRepository.findByEmail(email).orElse(null);
+				// 이메일 대신 'ID(Long)'로 찾기 (맨 처음 코드 방식)
+				Long userId = Long.valueOf(claims.getSubject());
+				
+				// findByEmail 대신 findById 사용
+				User user = userRepository.findById(userId).orElse(null);
 				
 				if (user != null) {
-					// [수정 4] 단일 Role 처리 (String -> SimpleGrantedAuthority)
-					// user.getRole()은 "ROLE_USER" 같은 문자열임
-					List<GrantedAuthority> authorities = Collections.singletonList(
-							new SimpleGrantedAuthority(user.getRole())
-					);
+					List<GrantedAuthority> authorities = new ArrayList<>();
+					
+					// getRole() 대신 getRoles() (여러 권한 루프) 사용
+					// Enum이 이미 'ROLE_'을 가지고 있으므로 .name()만 사용
+					if (user.getRoles() != null) {
+						for (Role role : user.getRoles()) {
+							authorities.add(new SimpleGrantedAuthority(role.name()));
+						}
+					}
 					
 					Authentication auth =
 							new UsernamePasswordAuthenticationToken(user, null, authorities);
@@ -54,8 +66,8 @@ public class JwtAuthenticationFilter extends GenericFilter {
 				}
 				
 			} catch (Exception e) {
-				// 인증 실패 시 예외 처리 (로그 등)
-				// SecurityContext에 저장하지 않고 넘어감 -> 403 에러 발생
+				// 토큰 검증 실패 시 로그 출력 (Slf4j 어노테이션 덕분에 가능)
+				log.error("Invalid JWT token: {}", e.getMessage());
 			}
 		}
 		

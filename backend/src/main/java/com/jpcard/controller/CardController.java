@@ -3,11 +3,18 @@ package com.jpcard.controller;
 import com.jpcard.controller.dto.CardRequest;
 import com.jpcard.controller.dto.CardResponse;
 import com.jpcard.domain.card.Card;
+import com.jpcard.domain.user.User;
 import com.jpcard.service.CardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 @RestController
@@ -16,6 +23,7 @@ import java.util.stream.Collectors;
 public class CardController {
 
     private final CardService cardService;
+    private final ObjectMapper objectMapper;
 
     @GetMapping
     public ResponseEntity<List<CardResponse>> list(
@@ -25,6 +33,7 @@ public class CardController {
 
         List<Card> cards = cardService.search(deckId, memorized, q);
         List<CardResponse> responses = cards.stream()
+                .map(this::toResponse)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(responses);
     }
@@ -32,18 +41,66 @@ public class CardController {
     @GetMapping("/{id}")
     public ResponseEntity<CardResponse> get(@PathVariable Long id) {
         var card = cardService.findById(id);
+        return ResponseEntity.ok(toResponse(card));
     }
 
     @PostMapping
+    public ResponseEntity<List<CardResponse>> create(@RequestBody CardRequest request, Authentication auth) {
+        User user = (auth != null) ? (User) auth.getPrincipal() : null;
+        if (user == null) return ResponseEntity.status(401).build();
+
+        List<Card> cards;
+        if (Boolean.TRUE.equals(request.createReverse())) {
+            cards = cardService.createSiblings(request.term(), request.meaning(), request.deckId(), request.content(), user);
+        } else {
+            cards = Collections.singletonList(cardService.create(request.term(), request.meaning(), request.deckId(), request.content(), user));
+        }
+
+        List<CardResponse> responses = cards.stream().map(this::toResponse).collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
     @PutMapping("/{id}")
+    public ResponseEntity<CardResponse> update(@PathVariable Long id, @RequestBody CardRequest request, Authentication auth) {
+        User user = (auth != null) ? (User) auth.getPrincipal() : null;
+        if (user == null) return ResponseEntity.status(401).build();
+
+        var card = cardService.update(id, request.term(), request.meaning(), request.deckId(), request.content(), user);
+        return ResponseEntity.ok(toResponse(card));
     }
 
     @PatchMapping("/{id}/memorized")
+    public ResponseEntity<CardResponse> updateMemorizedStatus(@PathVariable Long id, @RequestBody boolean isMemorized, Authentication auth) {
+        User user = (auth != null) ? (User) auth.getPrincipal() : null;
+        // Memorized status update might be allowed for study session logic?
+        // But changeMemorizedStatus in CardService updates the Card entity directly.
+        // So it requires owner permission.
+        if (user == null) return ResponseEntity.status(401).build();
+
+        var card = cardService.changeMemorizedStatus(id, isMemorized, user);
+        return ResponseEntity.ok(toResponse(card));
     }
 
     @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id, Authentication auth) {
+        User user = (auth != null) ? (User) auth.getPrincipal() : null;
+        if (user == null) return ResponseEntity.status(401).build();
+
+        cardService.delete(id, user);
         return ResponseEntity.noContent().build();
+    }
+
+    private CardResponse toResponse(Card card) {
+        Map<String, String> content = parseContent(card.getContentJson());
+        return new CardResponse(card.getId(), card.getTerm(), card.getMeaning(), card.isMemorized(), card.getDeck() != null ? card.getDeck().getId() : null, content);
+    }
+
+    private Map<String, String> parseContent(String json) {
+        if (json == null || json.isEmpty()) return Collections.emptyMap();
+        try {
+            return objectMapper.readValue(json, new TypeReference<Map<String, String>>() {});
+        } catch (Exception e) {
+            return Collections.emptyMap();
+        }
     }
 }
