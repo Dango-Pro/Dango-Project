@@ -1,12 +1,12 @@
-@import './styles/variables.css';
-
 .app-shell {
   position: relative;
   min-height: 100vh;
   padding: 28px;
 }
 
+/* Removed the dark overlay to show the pastel body gradient */
 .app-shell::before {
+  display: none;
 }
 
 .app-frame {
@@ -16,12 +16,17 @@
   z-index: 1;
 }
 
+/* TOP NAVIGATION */
 .top-nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 16px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 18px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(200, 200, 200, 0.15);
   margin-bottom: 28px;
 }
 
@@ -32,12 +37,16 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  color: #333333;
 }
 
 .brand-dot {
   width: 12px;
   height: 12px;
   border-radius: 12px;
+  /* Pastel Pink to Mint Gradient */
+  background: linear-gradient(135deg, #ffb7b2, #b5ead7);
+  box-shadow: 0 0 0 4px rgba(255, 183, 178, 0.2);
 }
 
 .nav-links {
@@ -51,29 +60,41 @@
   border-radius: 12px;
   border: 1px solid transparent;
   transition: all 0.2s ease;
+  color: #666666;
   font-weight: 500;
 }
 
 .nav-link:hover {
+  border-color: rgba(255, 183, 178, 0.4);
+  background: rgba(255, 183, 178, 0.15); /* Soft pink tint */
+  color: #d9534f; /* Darker pink for text */
 }
 
+/* CONTENT AREA */
 .content-area {
   display: grid;
   grid-template-columns: 1fr;
   gap: 20px;
 }
 
+/* GLASS CARD (Main Container) */
 .glass-card {
   border-radius: 24px;
   padding: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  /* Lighter glass effect */
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6));
+  box-shadow: 0 20px 60px rgba(100, 100, 100, 0.05);
   position: relative;
   overflow: hidden;
 }
 
+/* Soft inner glow instead of dark radial */
 .glass-card::after {
   content: "";
   position: absolute;
   inset: 0;
+  background: radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.8), transparent 50%);
   pointer-events: none;
 }
 
@@ -83,6 +104,8 @@
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 18px;
+  position: relative;
+  z-index: 2; /* Ensure header is above background effects */
 }
 
 .card-title {
@@ -90,17 +113,23 @@
   font-weight: 700;
   letter-spacing: 0.01em;
   margin: 0;
+  color: #333333;
 }
 
 .muted {
+  color: #444444;
 }
 
+/* PILLS / TAGS */
 .pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   border-radius: 999px;
   padding: 8px 14px;
+  border: 1px solid rgba(255, 183, 178, 0.3);
+  background: rgba(255, 255, 255, 0.6);
+  color: #555555;
   font-weight: 600;
   font-size: 0.9rem;
 }
@@ -109,25 +138,35 @@
   width: 8px;
   height: 8px;
   border-radius: 8px;
+  background: linear-gradient(135deg, #ffb7b2, #ff9aa2);
 }
 
+/* ACTION GRID */
 .action-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 16px;
   margin-top: 12px;
+  position: relative;
+  z-index: 2;
 }
 
 .action-card {
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 18px;
   padding: 18px;
+  background: rgba(255, 255, 255, 0.5);
   transition: all 0.2s ease;
 }
 
 .action-card:hover {
   transform: translateY(-2px);
+  border-color: #ffb7b2; /* Pink border on hover */
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(255, 183, 178, 0.15);
 }
 
+/* FORMS */
 .form-grid {
   display: grid;
   gap: 16px;
@@ -141,19 +180,30 @@
 
 .input-field label {
   font-size: 0.95rem;
+  color: #555555;
   font-weight: 600;
 }
 
 .text-input,
 .text-area {
+  border: 1px solid #e0e0e0;
   border-radius: 14px;
+  background: #ffffff;
+  color: #333333;
   padding: 12px 14px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+select.text-input option {
+  color: #333333;
+  background: #ffffff;
 }
 
 .text-input:focus,
 .text-area:focus {
   outline: none;
+  border-color: #ffb7b2;
+  box-shadow: 0 0 0 4px rgba(255, 183, 178, 0.25);
 }
 
 .text-area {
@@ -161,6 +211,7 @@
   resize: vertical;
 }
 
+/* BUTTONS */
 .primary-btn {
   display: inline-flex;
   align-items: center;
@@ -168,25 +219,36 @@
   gap: 8px;
   padding: 12px 18px;
   border-radius: 14px;
+  border: 1px solid transparent;
+  /* Pastel Pink Gradient */
+  background: linear-gradient(135deg, #ffb7b2, #ff9aa2);
+  color: #333333;
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 8px 20px rgba(255, 154, 162, 0.3);
 }
 
 .primary-btn:hover {
   transform: translateY(-1px);
+  box-shadow: 0 12px 25px rgba(255, 154, 162, 0.5);
+  filter: brightness(1.05);
 }
 
 .secondary-btn {
   padding: 12px 18px;
   border-radius: 14px;
+  border: 1px solid #b5ead7; /* Mint border */
   background: transparent;
+  color: #00796b; /* Darker teal/mint */
   font-weight: 600;
   cursor: pointer;
   transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .secondary-btn:hover {
+  border-color: #80cbc4;
+  background: rgba(181, 234, 215, 0.15);
 }
 
 .badge-grid {
@@ -201,19 +263,30 @@
   gap: 14px;
 }
 
+/* LIST ITEMS */
 .item-tile {
   border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
   padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.5);
   min-height: 90px;
+  transition: background 0.2s ease;
+}
+
+.item-tile:hover {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
 }
 
 .item-title {
   font-weight: 700;
   margin: 0 0 6px;
+  color: #333333;
 }
 
 .item-subtitle {
   margin: 0;
+  color: #777777;
 }
 
 .status {
@@ -221,12 +294,15 @@
   align-items: center;
   gap: 8px;
   font-size: 0.95rem;
+  color: #666666;
 }
 
 .status-dot {
   width: 10px;
   height: 10px;
   border-radius: 10px;
+  background: linear-gradient(135deg, #b5ead7, #80cbc4);
+  box-shadow: 0 0 0 4px rgba(181, 234, 215, 0.3);
 }
 
 .two-column {
@@ -237,10 +313,13 @@
 
 .subtitle {
   margin: 10px 0 4px;
+  color: #555555;
+  font-weight: 600;
 }
 
 .footer {
   margin-top: 24px;
+  color: #999999;
   font-size: 0.95rem;
   display: flex;
   gap: 14px;
@@ -259,24 +338,39 @@
   }
 }
 
+/* Quill Overrides for Light Mode */
 .quill-wrapper {
+  background: #ffffff;
   border-radius: 14px;
   overflow: hidden;
+  border: 1px solid #e0e0e0;
 }
 
 .quill-wrapper .ql-toolbar {
   border: none !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+  background: #f9f9f9;
 }
 
 .quill-wrapper .ql-container {
   border: none !important;
   font-family: inherit;
   font-size: 1rem;
+  color: #333333;
   min-height: 200px;
 }
 
 .quill-wrapper .ql-editor.ql-blank::before {
+  color: #bbbbbb;
   font-style: normal;
+}
+
+/* Quill Toolbar Icons - Override White to Dark Gray */
+.ql-snow.ql-toolbar button,
+.ql-snow .ql-toolbar button,
+.ql-snow.ql-toolbar .ql-picker-label,
+.ql-snow .ql-toolbar .ql-picker-label {
+    color: #555 !important;
 }
 
 .ql-snow.ql-toolbar button:hover,
@@ -293,13 +387,27 @@
 .ql-snow .ql-toolbar .ql-picker-item:hover,
 .ql-snow.ql-toolbar .ql-picker-item.ql-selected,
 .ql-snow .ql-toolbar .ql-picker-item.ql-selected {
+  color: #ffb7b2 !important; /* Pink on hover/active */
 }
 
 .ql-snow .ql-stroke {
+  stroke: #555 !important;
 }
 .ql-snow .ql-fill {
+  fill: #555 !important;
 }
 .ql-snow .ql-picker {
+  color: #555 !important;
+}
+
+/* Hover state overrides for SVG icons in Quill */
+.ql-snow.ql-toolbar button:hover .ql-stroke,
+.ql-snow.ql-toolbar button.ql-active .ql-stroke {
+    stroke: #ffb7b2 !important;
+}
+.ql-snow.ql-toolbar button:hover .ql-fill,
+.ql-snow.ql-toolbar button.ql-active .ql-fill {
+    fill: #ffb7b2 !important;
 }
 
 /* Post Detail Content Styles */
@@ -307,10 +415,12 @@
   margin-top: 1.5em;
   margin-bottom: 0.5em;
   line-height: 1.3;
+  color: #333;
 }
 .post-content ul, .post-content ol {
   padding-left: 1.5em;
   margin-bottom: 1em;
+  color: #444;
 }
 .post-content ul {
   list-style-type: disc;
@@ -320,15 +430,24 @@
 }
 .post-content p {
   margin-bottom: 1em;
+  color: #333;
 }
 .post-content blockquote {
+  border-left: 4px solid #ffb7b2;
   padding-left: 1em;
   margin-left: 0;
+  color: #777;
   font-style: italic;
+  background: rgba(255, 183, 178, 0.1);
+  padding: 12px;
+  border-radius: 0 8px 8px 0;
 }
 .post-content pre {
+  background: #f4f4f4;
   padding: 1em;
   border-radius: 8px;
   overflow-x: auto;
   font-family: monospace;
+  color: #333;
+  border: 1px solid #e0e0e0;
 }

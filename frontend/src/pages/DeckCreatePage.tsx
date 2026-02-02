@@ -8,6 +8,7 @@ export default function DeckCreatePage() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [isPublic, setIsPublic] = useState(false);
   const [status, setStatus] = useState("");
 
   const [templates, setTemplates] = useState<CardTemplate[]>([]);
@@ -58,6 +59,7 @@ export default function DeckCreatePage() {
     e.preventDefault();
     try {
       if (selectedTemplateId) localStorage.setItem("lastTemplateId", String(selectedTemplateId));
+      await api.post("/decks", { name, description, templateId: selectedTemplateId, isPublic });
       navigate("/decks");
     } catch (err) {
       console.error(err);
@@ -78,10 +80,12 @@ export default function DeckCreatePage() {
               </label>
               <input
                 id="deck-name"
+                className="text-input"
                 placeholder="e.g., JLPT N5 Vocabulary"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
+                style={{ fontSize: "1.1rem" }}
               />
             </div>
             <div className="input-group">
@@ -90,6 +94,7 @@ export default function DeckCreatePage() {
               </label>
               <textarea
                 id="deck-desc"
+                className="text-area"
                 rows={4}
                 placeholder="What is this deck about?"
                 value={description}
@@ -98,12 +103,27 @@ export default function DeckCreatePage() {
               />
             </div>
 
+            <div className="input-group" style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                <input
+                    type="checkbox"
+                    id="is-public"
+                    checked={isPublic}
+                    onChange={e => setIsPublic(e.target.checked)}
+                    style={{ width: 18, height: 18, cursor: "pointer" }}
+                />
+                <label htmlFor="is-public" className="input-label" style={{ cursor: "pointer", marginBottom: 0 }}>
+                    Make Public
+                </label>
+                <span className="muted" style={{ fontSize: "0.8rem" }}>(Visible to community)</span>
+            </div>
+
             {/* Template Selection */}
             <div className="input-group">
                 <label className="input-label">Card Template</label>
                 {!isCreatingTemplate ? (
                     <div style={{ display: "flex", gap: 10 }}>
                         <select
+                            className="text-input"
                             style={{ flex: 1 }}
                             value={selectedTemplateId || ""}
                             onChange={e => setSelectedTemplateId(Number(e.target.value))}
@@ -113,9 +133,11 @@ export default function DeckCreatePage() {
                         <button type="button" className="secondary-btn" onClick={() => setIsCreatingTemplate(true)}>New</button>
                     </div>
                 ) : (
+                    <div className="glass-card" style={{ background: "rgba(255,255,255,0.4)", padding: 15 }}>
                         <div style={{ marginBottom: 10 }}>
                             <label className="input-label" style={{ fontSize: "0.8rem" }}>Template Name</label>
                             <input
+                                className="text-input"
                                 value={newTemplateName}
                                 onChange={e => setNewTemplateName(e.target.value)}
                                 placeholder="My Custom Template"
@@ -125,6 +147,7 @@ export default function DeckCreatePage() {
                         {newFields.map((f, i) => (
                             <div key={i} style={{ display: "flex", gap: 5, marginBottom: 5 }}>
                                 <input
+                                    className="text-input"
                                     value={f}
                                     onChange={e => updateField(i, e.target.value)}
                                     placeholder={`Field ${i+1}`}
@@ -156,6 +179,7 @@ export default function DeckCreatePage() {
         }
         .input-label {
           font-size: 0.9rem;
+          color: #555;
           text-transform: uppercase;
           letter-spacing: 1px;
           font-weight: 600;

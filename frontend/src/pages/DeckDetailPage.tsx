@@ -16,6 +16,7 @@ export default function DeckDetailPage() {
   const [cards, setCards] = useState<Card[]>([]);
   const [status, setStatus] = useState(t("common.loading"));
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     // Fetch user to check ownership
@@ -98,8 +99,25 @@ export default function DeckDetailPage() {
 
         {status && <p className="muted" style={{marginTop: 10}}>{status}</p>}
 
+        {/* Search Input */}
+        <div style={{ margin: "20px 0" }}>
+           <input
+             className="text-input"
+             style={{ width: "100%", maxWidth: 400 }}
+             placeholder={t("common.search_placeholder", { defaultValue: "Search cards..." })}
+             value={searchQuery}
+             onChange={(e) => setSearchQuery(e.target.value)}
+           />
+        </div>
+
         <div className="card-grid" style={{ marginTop: 14 }}>
-          {cards.map((c) => (
+          {cards
+            .filter(c =>
+               !searchQuery ||
+               c.term.toLowerCase().includes(searchQuery.toLowerCase()) ||
+               c.meaning.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+            .map((c) => (
             <article key={c.id} className="item-tile">
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start" }}>
                 <div>

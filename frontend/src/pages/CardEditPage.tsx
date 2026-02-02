@@ -25,11 +25,20 @@ export default function CardEditPage() {
 
             setDeckId(card.deckId ? String(card.deckId) : "");
 
+            let initialContent = card.content || {};
 
-                const deck = decksData.find(d => d.id === card.deckId);
-                const fields = deck?.fieldNames && deck.fieldNames.length > 0 ? deck.fieldNames : ["Front", "Back"];
+            // If content is empty but legacy fields exist (though interface marks them optional)
+            if (Object.keys(initialContent).length === 0 && (card.term || card.meaning)) {
+                 const deck = decksData.find(d => d.id === card.deckId);
+                 const fields = deck?.fieldNames && deck.fieldNames.length > 0 ? deck.fieldNames : ["Front", "Back"];
 
+                 const newContent: Record<string, string> = {};
+                 if (fields.length > 0 && card.term) newContent[fields[0]] = card.term;
+                 if (fields.length > 1 && card.meaning) newContent[fields[1]] = card.meaning;
+                 initialContent = newContent;
             }
+
+            setContent(initialContent);
 
         } catch (err) {
             console.error(err);
@@ -139,8 +148,11 @@ export default function CardEditPage() {
                  className="input-field"
                  value={deckId}
                  onChange={e => handleDeckChange(e.target.value)}
+                 style={{ padding: "12px 16px" }}
                >
+                  <option value="">No Deck (Unassigned - Basic)</option>
                   {decks.map(d => (
+                      <option key={d.id} value={d.id}>{d.name}</option>
                   ))}
                </select>
             </div>
@@ -184,20 +196,26 @@ export default function CardEditPage() {
         }
         .input-label {
           font-size: 0.9rem;
+          color: #555;
           text-transform: uppercase;
           letter-spacing: 1px;
           font-weight: 600;
         }
         .input-field:focus {
+          background: #fff;
+          border-color: #ffb7b2;
         }
         .nav-btn {
           background: none;
+          border: 1px solid #ccc;
+          color: #555;
           padding: 8px 16px;
           border-radius: 20px;
           cursor: pointer;
           transition: all 0.2s;
         }
         .nav-btn:hover {
+          background: rgba(0,0,0,0.05);
         }
       `}</style>
     </Layout>

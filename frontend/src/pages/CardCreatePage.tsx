@@ -12,6 +12,7 @@ export default function CardCreatePage() {
   const [deckId, setDeckId] = useState(preSelectedDeckId || localStorage.getItem("lastDeckId") || "");
   const [decks, setDecks] = useState<Deck[]>([]);
   const [status, setStatus] = useState<string | null>(null);
+  const [createReverse, setCreateReverse] = useState(false);
 
   const [content, setContent] = useState<Record<string, string>>({});
 
@@ -40,6 +41,8 @@ export default function CardCreatePage() {
           term,
           meaning,
           deckId: deckId ? Number(deckId) : null,
+          content,
+          createReverse
       });
       if (deckId) {
           navigate(`/decks/${deckId}`);
@@ -69,10 +72,13 @@ export default function CardCreatePage() {
                <label htmlFor="card-deck" className="input-label">Assign to Deck</label>
                <select
                  id="card-deck"
+                 className="text-input"
                  value={deckId}
                  onChange={e => setDeckId(e.target.value)}
                >
+                  <option value="">No Deck (Unassigned - Basic)</option>
                   {decks.map(d => (
+                      <option key={d.id} value={d.id}>{d.name}</option>
                   ))}
                </select>
             </div>
@@ -82,13 +88,16 @@ export default function CardCreatePage() {
                   <label className="input-label">{field}</label>
                   {idx === 0 ? (
                       <input
+                        className="text-input"
                         placeholder={`Enter ${field}`}
                         value={content[field] || ""}
                         onChange={(e) => handleContentChange(field, e.target.value)}
                         required
+                        style={{ fontSize: "1.1rem" }}
                       />
                   ) : (
                       <textarea
+                        className="text-area"
                         rows={idx === 1 ? 3 : 2}
                         placeholder={`Enter ${field}`}
                         value={content[field] || ""}
@@ -97,6 +106,20 @@ export default function CardCreatePage() {
                   )}
                 </div>
             ))}
+
+            <div className="input-group" style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                <input
+                    type="checkbox"
+                    id="create-reverse"
+                    checked={createReverse}
+                    onChange={e => setCreateReverse(e.target.checked)}
+                    style={{ width: 18, height: 18, cursor: "pointer" }}
+                />
+                <label htmlFor="create-reverse" className="input-label" style={{ cursor: "pointer", marginBottom: 0 }}>
+                    Create Reverse Card
+                </label>
+                <span className="muted" style={{ fontSize: "0.8rem" }}>(Meaning → Term)</span>
+            </div>
 
             <button type="submit" className="primary-btn" style={{ marginTop: 10, padding: "14px", fontSize: "1.1rem" }}>
               Add Card
@@ -113,6 +136,7 @@ export default function CardCreatePage() {
         }
         .input-label {
           font-size: 0.9rem;
+          color: #555;
           text-transform: uppercase;
           letter-spacing: 1px;
           font-weight: 600;
