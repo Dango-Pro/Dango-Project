@@ -1,27 +1,32 @@
-import { useEffect, useState } from "react";
-import { api } from "../libs/api";
-import Layout from "../components/Layout";
-import { useNavigate, useParams } from "react-router-dom";
-import { type Deck } from "../types/deck";
+import { useEffect, useState } from 'react';
+import { api } from '../libs/api';
+import Layout from '../components/Layout';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { type Deck } from '../types/deck';
 
 export default function DeckEditPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const { t } = useTranslation();
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   const [isPublic, setIsPublic] = useState(false);
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState('');
 
   useEffect(() => {
-    api.get<Deck>(`/decks/${id}`).then(res => {
+    api
+      .get<Deck>(`/decks/${id}`)
+      .then((res) => {
         setName(res.data.name);
-        setDescription(res.data.description || "");
+        setDescription(res.data.description || '');
         setIsPublic(res.data.isPublic || false);
-    }).catch(err => {
+      })
+      .catch((err) => {
         console.error(err);
-        setStatus("Failed to load deck.");
-    });
-  }, [id]);
+        setStatus(t('deck.fail_load_deck'));
+      });
+  }, [id, t]);
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,40 +35,50 @@ export default function DeckEditPage() {
       navigate(`/decks/${id}`);
     } catch (err) {
       console.error(err);
-      setStatus("Failed to update deck.");
+      setStatus(t('deck.fail_update_deck'));
     }
   };
 
   const handleDelete = async () => {
-      if (!window.confirm("Are you sure you want to delete this deck? All cards in it will be lost/unassigned.")) {
-          return;
-      }
-      try {
-          await api.delete(`/decks/${id}`);
-          navigate("/decks");
-      } catch (err) {
-          console.error(err);
-          setStatus("Failed to delete deck.");
-      }
+    if (!window.confirm(t('deck.delete_deck_confirm'))) {
+      return;
+    }
+    try {
+      await api.delete(`/decks/${id}`);
+      navigate('/decks');
+    } catch (err) {
+      console.error(err);
+      setStatus(t('deck.fail_delete_deck'));
+    }
   };
 
   return (
-    <Layout pageTitle="Edit Deck">
-      <div style={{ maxWidth: 600, margin: "0 auto" }}>
+    <Layout pageTitle={t('deck.edit_deck_title')}>
+      <div style={{ maxWidth: 600, margin: '0 auto' }}>
         <section className="glass-card" style={{ padding: 40 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 30 }}>
-             <h2 className="card-title" style={{ margin: 0 }}>Edit Deck</h2>
-             <button type="button" className="nav-btn" onClick={handleDelete} style={{ color: '#ff4d4f', borderColor: '#ff4d4f', fontSize: '0.9rem', padding: '6px 12px' }}>
-               Delete Deck
-             </button>
+            <h2 className="card-title" style={{ margin: 0 }}>
+              {t('deck.edit_deck_title')}
+            </h2>
+            <button
+              type="button"
+              className="nav-btn"
+              onClick={handleDelete}
+              style={{ color: '#ff4d4f', borderColor: '#ff4d4f', fontSize: '0.9rem', padding: '6px 12px' }}>
+              {t('deck.delete_deck')}
+            </button>
           </div>
 
-          {status && <p className="muted" style={{ textAlign: "center" }}>{status}</p>}
+          {status && (
+            <p className="muted" style={{ textAlign: 'center' }}>
+              {status}
+            </p>
+          )}
 
-          <form onSubmit={handleUpdate} style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+          <form onSubmit={handleUpdate} style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             <div className="input-group">
               <label htmlFor="deck-name" className="input-label">
-                Deck Name
+                {t('deck.deck_name')}
               </label>
               <input
                 id="deck-name"
@@ -71,12 +86,12 @@ export default function DeckEditPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                style={{ padding: "12px 16px", fontSize: "1.1rem" }}
+                style={{ padding: '12px 16px', fontSize: '1.1rem' }}
               />
             </div>
             <div className="input-group">
               <label htmlFor="deck-desc" className="input-label">
-                Description
+                {t('deck.description')}
               </label>
               <textarea
                 id="deck-desc"
@@ -84,26 +99,28 @@ export default function DeckEditPage() {
                 rows={4}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                style={{ resize: "vertical" }}
+                style={{ resize: 'vertical' }}
               />
             </div>
 
-            <div className="input-group" style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-                <input
-                    type="checkbox"
-                    id="is-public"
-                    checked={isPublic}
-                    onChange={e => setIsPublic(e.target.checked)}
-                    style={{ width: 18, height: 18, cursor: "pointer" }}
-                />
-                <label htmlFor="is-public" className="input-label" style={{ cursor: "pointer", marginBottom: 0 }}>
-                    Make Public
-                </label>
-                <span className="muted" style={{ fontSize: "0.8rem" }}>(Visible to community)</span>
+            <div className="input-group" style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+              <input
+                type="checkbox"
+                id="is-public"
+                checked={isPublic}
+                onChange={(e) => setIsPublic(e.target.checked)}
+                style={{ width: 18, height: 18, cursor: 'pointer' }}
+              />
+              <label htmlFor="is-public" className="input-label" style={{ cursor: 'pointer', marginBottom: 0 }}>
+                {t('deck.make_public')}
+              </label>
+              <span className="muted" style={{ fontSize: '0.8rem' }}>
+                {t('deck.visible_to_community')}
+              </span>
             </div>
 
-            <button type="submit" className="primary-btn" style={{ marginTop: 10, padding: "14px", fontSize: "1.1rem" }}>
-              Save Changes
+            <button type="submit" className="primary-btn" style={{ marginTop: 10, padding: '14px', fontSize: '1.1rem' }}>
+              {t('cards.save_changes')}
             </button>
           </form>
         </section>
