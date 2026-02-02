@@ -29,7 +29,8 @@ public class DataInitializer implements CommandLineRunner {
 			
 			
 			// 권한 설정 (Set<Role>)
-			admin.setRoles(Collections.singleton(Role.ROLE_ADMIN));
+			admin.addRole(Role.ROLE_ADMIN); // 관리자 기능 (사이트 관리)
+			admin.addRole(Role.ROLE_USER);
 			
 
 			admin.setDailyLimit(100);
