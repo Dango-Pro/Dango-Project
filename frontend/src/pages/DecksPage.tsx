@@ -42,18 +42,18 @@ export default function DecksPage() {
         </div>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', gap: 10, margin: '20px 0', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: 10 }}>
+        <div style={{ display: 'flex', gap: 10, margin: '20px 0', borderBottom: '1px solid rgba(0,0,0,0.1)', paddingBottom: 10 }}>
             <button
                 onClick={() => setActiveTab('my')}
                 className={activeTab === 'my' ? 'primary-btn' : 'secondary-btn'}
-                style={{ borderRadius: 20 }}
+                style={{ borderRadius: 20, fontWeight: "bold" }}
             >
                 {t("nav.my_decks")}
             </button>
             <button
                 onClick={() => setActiveTab('public')}
                 className={activeTab === 'public' ? 'primary-btn' : 'secondary-btn'}
-                style={{ borderRadius: 20 }}
+                style={{ borderRadius: 20, fontWeight: "bold" }}
             >
                 {t("nav.community")}
             </button>

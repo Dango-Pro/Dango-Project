@@ -72,14 +72,13 @@ export default function CardCreatePage() {
                <label htmlFor="card-deck" className="input-label">Assign to Deck</label>
                <select
                  id="card-deck"
-                 className="input-field"
+                 className="text-input"
                  value={deckId}
                  onChange={e => setDeckId(e.target.value)}
-                 style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: "12px 16px" }}
                >
-                  <option value="" style={{ color: "black" }}>No Deck (Unassigned - Basic)</option>
+                  <option value="">No Deck (Unassigned - Basic)</option>
                   {decks.map(d => (
-                      <option key={d.id} value={d.id} style={{ color: "black" }}>{d.name}</option>
+                      <option key={d.id} value={d.id}>{d.name}</option>
                   ))}
                </select>
             </div>
@@ -89,21 +88,20 @@ export default function CardCreatePage() {
                   <label className="input-label">{field}</label>
                   {idx === 0 ? (
                       <input
-                        className="input-field"
+                        className="text-input"
                         placeholder={`Enter ${field}`}
                         value={content[field] || ""}
                         onChange={(e) => handleContentChange(field, e.target.value)}
                         required
-                        style={{ padding: "12px 16px", fontSize: "1.1rem" }}
+                        style={{ fontSize: "1.1rem" }}
                       />
                   ) : (
                       <textarea
-                        className="input-field"
+                        className="text-area"
                         rows={idx === 1 ? 3 : 2}
                         placeholder={`Enter ${field}`}
                         value={content[field] || ""}
                         onChange={(e) => handleContentChange(field, e.target.value)}
-                        style={{ resize: "vertical" }}
                       />
                   )}
                 </div>
@@ -138,14 +136,10 @@ export default function CardCreatePage() {
         }
         .input-label {
           font-size: 0.9rem;
-          color: rgba(255, 255, 255, 0.7);
+          color: #555;
           text-transform: uppercase;
           letter-spacing: 1px;
           font-weight: 600;
-        }
-        .input-field:focus {
-          background: rgba(255, 255, 255, 0.1);
-          border-color: rgba(255, 255, 255, 0.5);
         }
       `}</style>
     </Layout>

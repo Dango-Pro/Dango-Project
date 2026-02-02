@@ -4,14 +4,9 @@
   padding: 28px;
 }
 
+/* Removed the dark overlay to show the pastel body gradient */
 .app-shell::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), transparent 50%),
-    linear-gradient(45deg, rgba(255, 255, 255, 0.03), transparent 40%);
-  pointer-events: none;
-  z-index: 0;
+  display: none;
 }
 
 .app-frame {
@@ -21,16 +16,17 @@
   z-index: 1;
 }
 
+/* TOP NAVIGATION */
 .top-nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 16px 22px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.55);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(200, 200, 200, 0.15);
   margin-bottom: 28px;
 }
 
@@ -41,15 +37,16 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #f8f8f8;
+  color: #333333;
 }
 
 .brand-dot {
   width: 12px;
   height: 12px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #ffffff, #b9b9b9);
-  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.08);
+  /* Pastel Pink to Mint Gradient */
+  background: linear-gradient(135deg, #ffb7b2, #b5ead7);
+  box-shadow: 0 0 0 4px rgba(255, 183, 178, 0.2);
 }
 
 .nav-links {
@@ -63,37 +60,41 @@
   border-radius: 12px;
   border: 1px solid transparent;
   transition: all 0.2s ease;
-  color: #e0e0e0;
+  color: #666666;
   font-weight: 500;
 }
 
 .nav-link:hover {
-  border-color: rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.06);
-  color: #ffffff;
+  border-color: rgba(255, 183, 178, 0.4);
+  background: rgba(255, 183, 178, 0.15); /* Soft pink tint */
+  color: #d9534f; /* Darker pink for text */
 }
 
+/* CONTENT AREA */
 .content-area {
   display: grid;
   grid-template-columns: 1fr;
   gap: 20px;
 }
 
+/* GLASS CARD (Main Container) */
 .glass-card {
   border-radius: 24px;
   padding: 26px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  /* Lighter glass effect */
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.6));
+  box-shadow: 0 20px 60px rgba(100, 100, 100, 0.05);
   position: relative;
   overflow: hidden;
 }
 
+/* Soft inner glow instead of dark radial */
 .glass-card::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.08), transparent 40%);
+  background: radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.8), transparent 50%);
   pointer-events: none;
 }
 
@@ -103,6 +104,8 @@
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 18px;
+  position: relative;
+  z-index: 2; /* Ensure header is above background effects */
 }
 
 .card-title {
@@ -110,21 +113,23 @@
   font-weight: 700;
   letter-spacing: 0.01em;
   margin: 0;
+  color: #333333;
 }
 
 .muted {
-  color: #bdbdbd;
+  color: #444444;
 }
 
+/* PILLS / TAGS */
 .pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   border-radius: 999px;
   padding: 8px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.04);
-  color: #f0f0f0;
+  border: 1px solid rgba(255, 183, 178, 0.3);
+  background: rgba(255, 255, 255, 0.6);
+  color: #555555;
   font-weight: 600;
   font-size: 0.9rem;
 }
@@ -133,30 +138,35 @@
   width: 8px;
   height: 8px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #ffffff, #cfcfcf);
+  background: linear-gradient(135deg, #ffb7b2, #ff9aa2);
 }
 
+/* ACTION GRID */
 .action-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 16px;
   margin-top: 12px;
+  position: relative;
+  z-index: 2;
 }
 
 .action-card {
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 18px;
   padding: 18px;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.5);
   transition: all 0.2s ease;
 }
 
 .action-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.05);
+  border-color: #ffb7b2; /* Pink border on hover */
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(255, 183, 178, 0.15);
 }
 
+/* FORMS */
 .form-grid {
   display: grid;
   gap: 16px;
@@ -170,25 +180,30 @@
 
 .input-field label {
   font-size: 0.95rem;
-  color: #e6e6e6;
+  color: #555555;
   font-weight: 600;
 }
 
 .text-input,
 .text-area {
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid #e0e0e0;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.03);
-  color: #f8f8f8;
+  background: #ffffff;
+  color: #333333;
   padding: 12px 14px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+select.text-input option {
+  color: #333333;
+  background: #ffffff;
 }
 
 .text-input:focus,
 .text-area:focus {
   outline: none;
-  border-color: rgba(255, 255, 255, 0.4);
-  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.05);
+  border-color: #ffb7b2;
+  box-shadow: 0 0 0 4px rgba(255, 183, 178, 0.25);
 }
 
 .text-area {
@@ -196,6 +211,7 @@
   resize: vertical;
 }
 
+/* BUTTONS */
 .primary-btn {
   display: inline-flex;
   align-items: center;
@@ -203,33 +219,36 @@
   gap: 8px;
   padding: 12px 18px;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: linear-gradient(135deg, #ffffff, #d7d7d7);
-  color: #0a0a0a;
+  border: 1px solid transparent;
+  /* Pastel Pink Gradient */
+  background: linear-gradient(135deg, #ffb7b2, #ff9aa2);
+  color: #333333;
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 8px 20px rgba(255, 154, 162, 0.3);
 }
 
 .primary-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 12px 35px rgba(255, 255, 255, 0.14);
+  box-shadow: 0 12px 25px rgba(255, 154, 162, 0.5);
+  filter: brightness(1.05);
 }
 
 .secondary-btn {
   padding: 12px 18px;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid #b5ead7; /* Mint border */
   background: transparent;
-  color: #f5f5f5;
+  color: #00796b; /* Darker teal/mint */
   font-weight: 600;
   cursor: pointer;
   transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .secondary-btn:hover {
-  border-color: rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.05);
+  border-color: #80cbc4;
+  background: rgba(181, 234, 215, 0.15);
 }
 
 .badge-grid {
@@ -244,22 +263,30 @@
   gap: 14px;
 }
 
+/* LIST ITEMS */
 .item-tile {
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   padding: 14px 16px;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.5);
   min-height: 90px;
+  transition: background 0.2s ease;
+}
+
+.item-tile:hover {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
 }
 
 .item-title {
   font-weight: 700;
   margin: 0 0 6px;
+  color: #333333;
 }
 
 .item-subtitle {
   margin: 0;
-  color: #cfcfcf;
+  color: #777777;
 }
 
 .status {
@@ -267,15 +294,15 @@
   align-items: center;
   gap: 8px;
   font-size: 0.95rem;
-  color: #d9d9d9;
+  color: #666666;
 }
 
 .status-dot {
   width: 10px;
   height: 10px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #ffffff, #d7d7d7);
-  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.08);
+  background: linear-gradient(135deg, #b5ead7, #80cbc4);
+  box-shadow: 0 0 0 4px rgba(181, 234, 215, 0.3);
 }
 
 .two-column {
@@ -286,12 +313,13 @@
 
 .subtitle {
   margin: 10px 0 4px;
-  color: #d8d8d8;
+  color: #555555;
+  font-weight: 600;
 }
 
 .footer {
   margin-top: 24px;
-  color: #a0a0a0;
+  color: #999999;
   font-size: 0.95rem;
   display: flex;
   gap: 14px;
@@ -310,34 +338,41 @@
   }
 }
 
-/* Quill Overrides */
+/* Quill Overrides for Light Mode */
 .quill-wrapper {
-  background: rgba(255, 255, 255, 0.03);
+  background: #ffffff;
   border-radius: 14px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid #e0e0e0;
 }
 
 .quill-wrapper .ql-toolbar {
   border: none !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid #f0f0f0 !important;
+  background: #f9f9f9;
 }
 
 .quill-wrapper .ql-container {
   border: none !important;
   font-family: inherit;
   font-size: 1rem;
-  color: #f8f8f8;
+  color: #333333;
   min-height: 200px;
 }
 
 .quill-wrapper .ql-editor.ql-blank::before {
-  color: rgba(255, 255, 255, 0.4);
+  color: #bbbbbb;
   font-style: normal;
 }
 
-/* Quill Toolbar Icons Dark Mode */
+/* Quill Toolbar Icons - Override White to Dark Gray */
+.ql-snow.ql-toolbar button,
+.ql-snow .ql-toolbar button,
+.ql-snow.ql-toolbar .ql-picker-label,
+.ql-snow .ql-toolbar .ql-picker-label {
+    color: #555 !important;
+}
+
 .ql-snow.ql-toolbar button:hover,
 .ql-snow .ql-toolbar button:hover,
 .ql-snow.ql-toolbar button:focus,
@@ -352,17 +387,27 @@
 .ql-snow .ql-toolbar .ql-picker-item:hover,
 .ql-snow.ql-toolbar .ql-picker-item.ql-selected,
 .ql-snow .ql-toolbar .ql-picker-item.ql-selected {
-  color: #fff !important;
+  color: #ffb7b2 !important; /* Pink on hover/active */
 }
 
 .ql-snow .ql-stroke {
-  stroke: #ccc !important;
+  stroke: #555 !important;
 }
 .ql-snow .ql-fill {
-  fill: #ccc !important;
+  fill: #555 !important;
 }
 .ql-snow .ql-picker {
-  color: #ccc !important;
+  color: #555 !important;
+}
+
+/* Hover state overrides for SVG icons in Quill */
+.ql-snow.ql-toolbar button:hover .ql-stroke,
+.ql-snow.ql-toolbar button.ql-active .ql-stroke {
+    stroke: #ffb7b2 !important;
+}
+.ql-snow.ql-toolbar button:hover .ql-fill,
+.ql-snow.ql-toolbar button.ql-active .ql-fill {
+    fill: #ffb7b2 !important;
 }
 
 /* Post Detail Content Styles */
@@ -370,10 +415,12 @@
   margin-top: 1.5em;
   margin-bottom: 0.5em;
   line-height: 1.3;
+  color: #333;
 }
 .post-content ul, .post-content ol {
   padding-left: 1.5em;
   margin-bottom: 1em;
+  color: #444;
 }
 .post-content ul {
   list-style-type: disc;
@@ -383,18 +430,24 @@
 }
 .post-content p {
   margin-bottom: 1em;
+  color: #333;
 }
 .post-content blockquote {
-  border-left: 4px solid rgba(255,255,255,0.2);
+  border-left: 4px solid #ffb7b2;
   padding-left: 1em;
   margin-left: 0;
-  color: #bbb;
+  color: #777;
   font-style: italic;
+  background: rgba(255, 183, 178, 0.1);
+  padding: 12px;
+  border-radius: 0 8px 8px 0;
 }
 .post-content pre {
-  background: rgba(0,0,0,0.3);
+  background: #f4f4f4;
   padding: 1em;
   border-radius: 8px;
   overflow-x: auto;
   font-family: monospace;
+  color: #333;
+  border: 1px solid #e0e0e0;
 }

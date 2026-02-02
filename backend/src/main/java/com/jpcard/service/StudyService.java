@@ -13,8 +13,11 @@ import com.jpcard.util.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,29 +37,35 @@ public class StudyService {
     private final CardRepository cardRepository;
     private final UserRepository userRepository;
     private final StudyLogRepository studyLogRepository;
+    private final PlatformTransactionManager transactionManager;
     private final Random random = new Random();
 
-    // Learning steps in minutes: 1min -> 10min -> Graduation (1 day)
-    private static final int[] LEARNING_STEPS = {1, 10};
+    // Default Fallback. Now we use deck-specific steps.
+    private static final int[] DEFAULT_LEARNING_STEPS = {1, 10};
     private static final int GRADUATING_INTERVAL = 1440; // 1 day in minutes
     private static final int EASY_INTERVAL = 4 * 1440;   // 4 days
     private static final int LEECH_THRESHOLD = 8; // Fail count to suspend
+
+    private int[] parseLearningSteps(String steps) {
+        if (steps == null || steps.isEmpty()) return DEFAULT_LEARNING_STEPS;
+        try {
+            String[] parts = steps.split(",");
+            int[] result = new int[parts.length];
+            for (int i = 0; i < parts.length; i++) {
+                result[i] = Integer.parseInt(parts[i].trim());
+            }
+            return result;
+        } catch (NumberFormatException e) {
+            return DEFAULT_LEARNING_STEPS;
+        }
+    }
 
     @Transactional(readOnly = true)
     public StudySessionResult getDueCards(Long userId, Long deckId, boolean studyMore) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        // 1. Get existing progress that is due (Exclude SUSPENDED)
-        List<UserCardProgress> dueProgress = progressRepository.findDueCards(userId, deckId, LocalDateTime.now())
-                .stream()
-                .filter(p -> p.getStatus() != StudyStatus.SUSPENDED)
-                .collect(Collectors.toList());
-
-        List<Card> dueCards = dueProgress.stream().map(UserCardProgress::getCard).collect(Collectors.toList());
-
-        // 2. Get NEW cards with limits (Timezone Aware)
-        int dailyLimit = user.getDailyLimit();
+        // 1. Timezone Setup
         String userZone = user.getTimezone() != null ? user.getTimezone() : "UTC";
         ZoneId zoneId = ZoneId.of(userZone);
 
@@ -67,21 +76,54 @@ public class StudyService {
         LocalDateTime startParam = userStartOfDay.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
         LocalDateTime endParam = userEndOfDay.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
 
+        // 2. Check Review Limit (For DUE cards)
+        int reviewLimit = user.getReviewLimit();
+        long reviewsToday = studyLogRepository.countReviewsToday(userId, deckId, startParam, endParam);
+
+        boolean reviewLimitReached = false;
+        int remainingReviews = reviewLimit - (int) reviewsToday;
+        if (remainingReviews <= 0 && !studyMore) {
+            reviewLimitReached = true;
+        }
+
+        List<Card> dueCards = Collections.emptyList();
+        if (!reviewLimitReached || studyMore) {
+             int fetchLimit = 100; // Default safety cap
+             if (!studyMore && remainingReviews > 0) {
+                 fetchLimit = Math.min(remainingReviews, 100);
+             } else if (!studyMore && remainingReviews <= 0) {
+                 fetchLimit = 0;
+             }
+
+             if (fetchLimit > 0) {
+                 List<UserCardProgress> dueProgress = progressRepository.findDueCardsWithLimit(
+                     userId,
+                     deckId,
+                     LocalDateTime.now(),
+                     PageRequest.of(0, fetchLimit)
+                 );
+                 dueCards = dueProgress.stream().map(UserCardProgress::getCard).collect(Collectors.toList());
+             }
+        }
+
+
+        // 3. Get NEW cards with limits
+        int dailyLimit = user.getDailyLimit();
         long newCardsStudiedToday = progressRepository.countNewCardsStudiedToday(userId, deckId, startParam, endParam);
 
-        int remainingLimit = dailyLimit - (int) newCardsStudiedToday;
-        boolean limitReached = false;
+        int remainingNewLimit = dailyLimit - (int) newCardsStudiedToday;
+        boolean newLimitReached = false;
 
-        if (remainingLimit <= 0 && !studyMore) {
-            limitReached = true;
+        if (remainingNewLimit <= 0 && !studyMore) {
+            newLimitReached = true;
         }
 
         int fetchCount = 0;
-        if (!limitReached) {
+        if (!newLimitReached) {
             if (studyMore) {
-                fetchCount = (remainingLimit > 0) ? remainingLimit : 10;
+                fetchCount = (remainingNewLimit > 0) ? remainingNewLimit : 10;
             } else {
-                fetchCount = remainingLimit;
+                fetchCount = remainingNewLimit;
             }
         }
 
@@ -100,9 +142,17 @@ public class StudyService {
              allCards = allCards.subList(0, 100);
         }
 
+        // "limitReached" generally implies either limit is hit preventing further study.
+        // We can combine them or return separate flags.
+        // For frontend compatibility (StudySessionResult), let's say limitReached if BOTH are reached?
+        // Or if the one relevant to current potential cards is reached.
+        // If we have 0 cards returned, and it's because of limits, limitReached = true.
+
+        boolean isLimitReached = (allCards.isEmpty() && (newLimitReached || reviewLimitReached));
+
         return new StudySessionResult(
             allCards,
-            limitReached,
+            isLimitReached,
             newCardsStudiedToday,
             dailyLimit,
             newCards.size(),
@@ -110,65 +160,84 @@ public class StudyService {
         );
     }
 
-    @Transactional
     public void processReview(Long userId, Long cardId, String rating) {
+        TransactionTemplate tmpl = new TransactionTemplate(transactionManager);
+        int maxRetries = 3;
+
+        for (int i = 0; i < maxRetries; i++) {
+            try {
+                tmpl.execute(status -> {
+                    processReviewLogic(userId, cardId, rating);
+                    return null;
+                });
+                return; // Success
+            } catch (DataIntegrityViolationException | ObjectOptimisticLockingFailureException e) {
+                if (i == maxRetries - 1) {
+                    throw e; // Rethrow on last attempt
+                }
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+    }
+
+    private void processReviewLogic(Long userId, Long cardId, String rating) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new ResourceNotFoundException("Card not found"));
 
-        try {
-            UserCardProgress progress = progressRepository.findByUserIdAndCardId(userId, cardId)
-                    .orElse(new UserCardProgress());
+        UserCardProgress progress = progressRepository.findByUserIdAndCardId(userId, cardId)
+                .orElse(new UserCardProgress());
 
-            if (progress.getId() == null) {
-                progress.setUser(user);
-                progress.setCard(card);
-                progress.setStatus(StudyStatus.NEW);
-                progress.setLearningStep(0); // Initialize step
-            }
-
-            if (progress.getFirstStudiedAt() == null) {
-                progress.setFirstStudiedAt(LocalDateTime.now());
-            }
-
-            // Save History Log
-            StudyLog log = new StudyLog();
-            log.setUser(user);
-            log.setCard(card);
-            log.setRating(rating);
-            log.setStudiedAt(LocalDateTime.now());
-            studyLogRepository.save(log);
-
-            applyAlgorithm(progress, rating);
-
-            // Leech Check
-            if ("FAIL".equalsIgnoreCase(rating)) {
-                progress.setLapses(progress.getLapses() + 1);
-                if (progress.getLapses() >= LEECH_THRESHOLD) {
-                    progress.setStatus(StudyStatus.SUSPENDED);
-                }
-            }
-
-            progressRepository.save(progress);
-
-            // 4. Sibling Burying
-            burySiblings(user.getId(), card);
-
-        } catch (DataIntegrityViolationException e) {
-            System.out.println("Concurrency conflict handled for User " + userId + " Card " + cardId);
+        if (progress.getId() == null) {
+            progress.setUser(user);
+            progress.setCard(card);
+            progress.setStatus(StudyStatus.NEW);
+            progress.setLearningStep(0); // Initialize step
         }
+
+        if (progress.getFirstStudiedAt() == null) {
+            progress.setFirstStudiedAt(LocalDateTime.now());
+        }
+
+        // Save History Log
+        StudyLog log = new StudyLog();
+        log.setUser(user);
+        log.setCard(card);
+        log.setRating(rating);
+        log.setStudiedAt(LocalDateTime.now());
+        studyLogRepository.save(log);
+
+        applyAlgorithm(progress, rating);
+
+        // Leech Check
+        if ("FAIL".equalsIgnoreCase(rating)) {
+            progress.setLapses(progress.getLapses() + 1);
+            if (progress.getLapses() >= LEECH_THRESHOLD) {
+                progress.setStatus(StudyStatus.SUSPENDED);
+            }
+        }
+
+        progressRepository.save(progress);
+
+        // 4. Sibling Burying
+        burySiblings(user.getId(), card);
     }
 
     private void applyAlgorithm(UserCardProgress p, String rating) {
         LocalDateTime now = LocalDateTime.now();
+        int[] learningSteps = parseLearningSteps(p.getCard().getDeck().getLearningSteps());
 
         switch (rating.toUpperCase()) {
             case "FAIL": // Again
                 // Reset to first step
                 p.setStatus(StudyStatus.LEARNING);
                 p.setLearningStep(0);
-                p.setIntervalMinutes(LEARNING_STEPS[0]); // 1 min
+                p.setIntervalMinutes(learningSteps[0]); // First step
                 p.setNextReview(now.plusMinutes(p.getIntervalMinutes()));
 
                 // Penalty
@@ -190,8 +259,8 @@ public class StudyService {
                 } else {
                     // In learning, Hard means "repeat current step" or avg
                     // We just keep current step interval
-                    int currentStepInterval = (p.getLearningStep() < LEARNING_STEPS.length)
-                            ? LEARNING_STEPS[p.getLearningStep()]
+                    int currentStepInterval = (p.getLearningStep() < learningSteps.length)
+                            ? learningSteps[p.getLearningStep()]
                             : GRADUATING_INTERVAL;
                     p.setIntervalMinutes(currentStepInterval);
                     p.setNextReview(now.plusMinutes(currentStepInterval));
@@ -201,10 +270,10 @@ public class StudyService {
             case "GOOD":
                 if (p.getStatus() == StudyStatus.NEW || p.getStatus() == StudyStatus.LEARNING) {
                     // 3. Multi-step Learning
-                    if (p.getLearningStep() < LEARNING_STEPS.length - 1) {
+                    if (p.getLearningStep() < learningSteps.length - 1) {
                         // Advance to next learning step
                         p.setLearningStep(p.getLearningStep() + 1);
-                        p.setIntervalMinutes(LEARNING_STEPS[p.getLearningStep()]);
+                        p.setIntervalMinutes(learningSteps[p.getLearningStep()]);
                         p.setStatus(StudyStatus.LEARNING);
                     } else {
                         // Graduate
@@ -250,11 +319,12 @@ public class StudyService {
         }
     }
 
-    // 1. Fuzzing: ±5-10% variation for intervals > 2 days
+    // 1. Fuzzing: +0-5% variation for intervals > 2 days (Prevents "too soon" regressions)
     private int applyFuzz(int intervalMinutes) {
         if (intervalMinutes < 2 * 1440) return intervalMinutes; // No fuzz for < 2 days
 
-        double fuzzFactor = 0.95 + (random.nextDouble() * 0.1); // 0.95 ~ 1.05
+        // Only extend the interval (1.0 ~ 1.05) to avoid showing cards sooner than algorithm intended
+        double fuzzFactor = 1.0 + (random.nextDouble() * 0.05);
         return (int) (intervalMinutes * fuzzFactor);
     }
 

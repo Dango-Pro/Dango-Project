@@ -148,11 +148,11 @@ export default function CardEditPage() {
                  className="input-field"
                  value={deckId}
                  onChange={e => handleDeckChange(e.target.value)}
-                 style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: "12px 16px" }}
+                 style={{ padding: "12px 16px" }}
                >
-                  <option value="" style={{ color: "black" }}>No Deck (Unassigned - Basic)</option>
+                  <option value="">No Deck (Unassigned - Basic)</option>
                   {decks.map(d => (
-                      <option key={d.id} value={d.id} style={{ color: "black" }}>{d.name}</option>
+                      <option key={d.id} value={d.id}>{d.name}</option>
                   ))}
                </select>
             </div>
@@ -196,26 +196,26 @@ export default function CardEditPage() {
         }
         .input-label {
           font-size: 0.9rem;
-          color: rgba(255, 255, 255, 0.7);
+          color: #555;
           text-transform: uppercase;
           letter-spacing: 1px;
           font-weight: 600;
         }
         .input-field:focus {
-          background: rgba(255, 255, 255, 0.1);
-          border-color: rgba(255, 255, 255, 0.5);
+          background: #fff;
+          border-color: #ffb7b2;
         }
         .nav-btn {
           background: none;
-          border: 1px solid rgba(255,255,255,0.2);
-          color: white;
+          border: 1px solid #ccc;
+          color: #555;
           padding: 8px 16px;
           border-radius: 20px;
           cursor: pointer;
           transition: all 0.2s;
         }
         .nav-btn:hover {
-          background: rgba(255,255,255,0.1);
+          background: rgba(0,0,0,0.05);
         }
       `}</style>
     </Layout>

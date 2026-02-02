@@ -44,9 +44,9 @@ export default function Layout({ children }: LayoutProps) {
           </div>
           <div className="nav-links">
              <div className="lang-switcher" style={{marginRight: '20px', display: 'flex', gap: '5px'}}>
-                <button onClick={() => changeLanguage('ko')} style={{background: 'none', border: 'none', color: i18n.language === 'ko' ? '#fff' : '#aaa', cursor: 'pointer'}}>KO</button>
-                <button onClick={() => changeLanguage('en')} style={{background: 'none', border: 'none', color: i18n.language === 'en' ? '#fff' : '#aaa', cursor: 'pointer'}}>EN</button>
-                <button onClick={() => changeLanguage('ja')} style={{background: 'none', border: 'none', color: i18n.language === 'ja' ? '#fff' : '#aaa', cursor: 'pointer'}}>JA</button>
+                <button onClick={() => changeLanguage('ko')} style={{background: 'none', border: 'none', color: i18n.language === 'ko' ? '#333' : '#aaa', fontWeight: i18n.language === 'ko' ? 'bold' : 'normal', cursor: 'pointer'}}>KO</button>
+                <button onClick={() => changeLanguage('en')} style={{background: 'none', border: 'none', color: i18n.language === 'en' ? '#333' : '#aaa', fontWeight: i18n.language === 'en' ? 'bold' : 'normal', cursor: 'pointer'}}>EN</button>
+                <button onClick={() => changeLanguage('ja')} style={{background: 'none', border: 'none', color: i18n.language === 'ja' ? '#333' : '#aaa', fontWeight: i18n.language === 'ja' ? 'bold' : 'normal', cursor: 'pointer'}}>JA</button>
              </div>
             {links.map((link) => (
               <Link
@@ -55,10 +55,11 @@ export default function Layout({ children }: LayoutProps) {
                 className="nav-link"
                 style={{
                   borderColor:
-                    pathname === link.to ? "rgba(255, 255, 255, 0.25)" : undefined,
+                    pathname === link.to ? "rgba(255, 183, 178, 0.6)" : undefined,
                   background:
-                    pathname === link.to ? "rgba(255, 255, 255, 0.08)" : undefined,
-                  color: pathname === link.to ? "#ffffff" : undefined,
+                    pathname === link.to ? "rgba(255, 183, 178, 0.25)" : undefined,
+                  color: pathname === link.to ? "#d9534f" : undefined,
+                  fontWeight: pathname === link.to ? "bold" : undefined,
                 }}
               >
                 {link.label}
@@ -69,9 +70,10 @@ export default function Layout({ children }: LayoutProps) {
                 to="/login"
                 className="nav-link"
                 style={{
-                  borderColor: pathname === "/login" ? "rgba(255, 255, 255, 0.25)" : undefined,
-                  background: pathname === "/login" ? "rgba(255, 255, 255, 0.08)" : undefined,
-                  color: pathname === "/login" ? "#ffffff" : undefined,
+                  borderColor: pathname === "/login" ? "rgba(255, 183, 178, 0.6)" : undefined,
+                  background: pathname === "/login" ? "rgba(255, 183, 178, 0.25)" : undefined,
+                  color: pathname === "/login" ? "#d9534f" : undefined,
+                  fontWeight: pathname === "/login" ? "bold" : undefined,
                 }}
               >
                 {t("nav.login")}

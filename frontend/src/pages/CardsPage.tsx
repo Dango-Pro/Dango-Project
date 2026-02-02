@@ -43,14 +43,14 @@ export default function CardsPage() {
         {/* Search & Filter Bar */}
         <div style={{ display: "flex", gap: 10, margin: "20px 0", flexWrap: "wrap" }}>
            <input
-             className="input-field"
+             className="text-input"
              style={{ flex: 1, minWidth: 200 }}
              placeholder="Search term or meaning..."
              value={query}
              onChange={(e) => setQuery(e.target.value)}
            />
            <select
-             className="input-field"
+             className="text-input"
              style={{ width: "auto" }}
              value={filterType}
              onChange={(e) => setFilterType(e.target.value as any)}

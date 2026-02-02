@@ -15,8 +15,12 @@ public interface UserCardProgressRepository extends JpaRepository<UserCardProgre
     Optional<UserCardProgress> findByUserIdAndCardId(Long userId, Long cardId);
 
     // Find progress for a specific deck that is due
-    @Query("SELECT p FROM UserCardProgress p JOIN p.card c WHERE p.user.id = :userId AND c.deck.id = :deckId AND p.nextReview <= :now")
+    @Query("SELECT p FROM UserCardProgress p JOIN FETCH p.card c JOIN FETCH c.deck WHERE p.user.id = :userId AND c.deck.id = :deckId AND p.nextReview <= :now")
     List<UserCardProgress> findDueCards(@Param("userId") Long userId, @Param("deckId") Long deckId, @Param("now") LocalDateTime now);
+
+    // Optimized due cards fetch with limit
+    @Query("SELECT p FROM UserCardProgress p JOIN FETCH p.card c JOIN FETCH c.deck WHERE p.user.id = :userId AND c.deck.id = :deckId AND p.nextReview <= :now AND p.status != 'SUSPENDED'")
+    List<UserCardProgress> findDueCardsWithLimit(@Param("userId") Long userId, @Param("deckId") Long deckId, @Param("now") LocalDateTime now, org.springframework.data.domain.Pageable pageable);
 
     @Query("SELECT COUNT(p) FROM UserCardProgress p JOIN p.card c WHERE p.user.id = :userId AND c.deck.id = :deckId AND p.firstStudiedAt BETWEEN :start AND :end")
     long countNewCardsStudiedToday(@Param("userId") Long userId, @Param("deckId") Long deckId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);

@@ -80,12 +80,12 @@ export default function DeckCreatePage() {
               </label>
               <input
                 id="deck-name"
-                className="input-field"
+                className="text-input"
                 placeholder="e.g., JLPT N5 Vocabulary"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                style={{ padding: "12px 16px", fontSize: "1.1rem" }}
+                style={{ fontSize: "1.1rem" }}
               />
             </div>
             <div className="input-group">
@@ -94,7 +94,7 @@ export default function DeckCreatePage() {
               </label>
               <textarea
                 id="deck-desc"
-                className="input-field"
+                className="text-area"
                 rows={4}
                 placeholder="What is this deck about?"
                 value={description}
@@ -123,7 +123,7 @@ export default function DeckCreatePage() {
                 {!isCreatingTemplate ? (
                     <div style={{ display: "flex", gap: 10 }}>
                         <select
-                            className="input-field"
+                            className="text-input"
                             style={{ flex: 1 }}
                             value={selectedTemplateId || ""}
                             onChange={e => setSelectedTemplateId(Number(e.target.value))}
@@ -133,11 +133,11 @@ export default function DeckCreatePage() {
                         <button type="button" className="secondary-btn" onClick={() => setIsCreatingTemplate(true)}>New</button>
                     </div>
                 ) : (
-                    <div className="glass-card" style={{ background: "rgba(0,0,0,0.2)", padding: 15 }}>
+                    <div className="glass-card" style={{ background: "rgba(255,255,255,0.4)", padding: 15 }}>
                         <div style={{ marginBottom: 10 }}>
                             <label className="input-label" style={{ fontSize: "0.8rem" }}>Template Name</label>
                             <input
-                                className="input-field"
+                                className="text-input"
                                 value={newTemplateName}
                                 onChange={e => setNewTemplateName(e.target.value)}
                                 placeholder="My Custom Template"
@@ -147,7 +147,7 @@ export default function DeckCreatePage() {
                         {newFields.map((f, i) => (
                             <div key={i} style={{ display: "flex", gap: 5, marginBottom: 5 }}>
                                 <input
-                                    className="input-field"
+                                    className="text-input"
                                     value={f}
                                     onChange={e => updateField(i, e.target.value)}
                                     placeholder={`Field ${i+1}`}
@@ -179,14 +179,10 @@ export default function DeckCreatePage() {
         }
         .input-label {
           font-size: 0.9rem;
-          color: rgba(255, 255, 255, 0.7);
+          color: #555;
           text-transform: uppercase;
           letter-spacing: 1px;
           font-weight: 600;
-        }
-        .input-field:focus {
-          background: rgba(255, 255, 255, 0.1);
-          border-color: rgba(255, 255, 255, 0.5);
         }
       `}</style>
     </Layout>

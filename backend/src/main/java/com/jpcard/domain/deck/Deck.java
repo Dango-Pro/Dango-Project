@@ -31,4 +31,8 @@ public class Deck {
 
     @Column(nullable = false)
     private boolean isPublic = false;
+
+    // Default learning steps in minutes: 1 -> 10. Comma separated.
+    @Column(nullable = false)
+    private String learningSteps = "1,10";
 }

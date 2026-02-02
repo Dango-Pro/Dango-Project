@@ -20,4 +20,7 @@ public interface StudyLogRepository extends JpaRepository<StudyLog, Long> {
            "FROM StudyLog s WHERE s.user.id = :userId " +
            "GROUP BY CAST(s.studiedAt AS java.time.LocalDate)")
     List<StudyLogCount> countByDate(@Param("userId") Long userId);
+
+    @Query("SELECT COUNT(s) FROM StudyLog s WHERE s.user.id = :userId AND s.studiedAt BETWEEN :start AND :end AND s.card.deck.id = :deckId")
+    long countReviewsToday(@Param("userId") Long userId, @Param("deckId") Long deckId, @Param("start") java.time.LocalDateTime start, @Param("end") java.time.LocalDateTime end);
 }
