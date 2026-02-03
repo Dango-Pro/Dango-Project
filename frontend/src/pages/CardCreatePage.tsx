@@ -1,15 +1,17 @@
-import { useEffect, useState } from "react";
-import { api } from "../libs/api";
-import Layout from "../components/Layout";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import type { Deck } from "../types/deck";
+import { useEffect, useState } from 'react';
+import { api } from '../libs/api';
+import Layout from '../components/Layout';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import type { Deck } from '../types/deck';
 
 export default function CardCreatePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const preSelectedDeckId = searchParams.get("deckId");
+  const preSelectedDeckId = searchParams.get('deckId');
 
-  const [deckId, setDeckId] = useState(preSelectedDeckId || localStorage.getItem("lastDeckId") || "");
+  const [deckId, setDeckId] = useState(preSelectedDeckId || localStorage.getItem('lastDeckId') || '');
   const [decks, setDecks] = useState<Deck[]>([]);
   const [status, setStatus] = useState<string | null>(null);
   const [createReverse, setCreateReverse] = useState(false);
@@ -17,114 +19,121 @@ export default function CardCreatePage() {
   const [content, setContent] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    api.get<Deck[]>("/decks").then(res => setDecks(res.data)).catch(console.error);
+    api
+      .get<Deck[]>('/decks')
+      .then((res) => setDecks(res.data))
+      .catch(console.error);
   }, []);
 
-  const selectedDeck = decks.find(d => d.id === Number(deckId));
-  const fieldNames = selectedDeck?.fieldNames && selectedDeck.fieldNames.length > 0
-      ? selectedDeck.fieldNames
-      : ["Front", "Back"];
+  const selectedDeck = decks.find((d) => d.id === Number(deckId));
+  const fieldNames = selectedDeck?.fieldNames && selectedDeck.fieldNames.length > 0 ? selectedDeck.fieldNames : ['Front', 'Back'];
 
   const handleContentChange = (field: string, val: string) => {
-      setContent(prev => ({ ...prev, [field]: val }));
+    setContent((prev) => ({ ...prev, [field]: val }));
   };
 
   const onCreate = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const term = content[fieldNames[0]] || "";
-    const meaning = fieldNames.length > 1 ? content[fieldNames[1]] : "";
+    const term = content[fieldNames[0]] || '';
+    const meaning = fieldNames.length > 1 ? content[fieldNames[1]] : '';
 
     try {
-      if (deckId) localStorage.setItem("lastDeckId", String(deckId));
-      await api.post("/cards", {
-          term,
-          meaning,
-          deckId: deckId ? Number(deckId) : null,
-          content,
-          createReverse
+      if (deckId) localStorage.setItem('lastDeckId', String(deckId));
+      await api.post('/cards', {
+        term,
+        meaning,
+        deckId: deckId ? Number(deckId) : null,
+        content,
+        createReverse,
       });
       if (deckId) {
-          navigate(`/decks/${deckId}`);
+        navigate(`/decks/${deckId}`);
       } else {
-          navigate("/cards");
+        navigate('/cards');
       }
     } catch (err) {
       console.error(err);
-      setStatus("Failed to create card.");
+      setStatus(t('cards.fail_create'));
     }
   };
 
   return (
-    <Layout pageTitle="Create Card">
-      <div style={{ maxWidth: 600, margin: "0 auto" }}>
+    <Layout pageTitle={t('cards.create_page_title')}>
+      <div style={{ maxWidth: 600, margin: '0 auto' }}>
         <section className="glass-card" style={{ padding: 40 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 30 }}>
-             <h2 className="card-title" style={{ margin: 0 }}>New Flash Card</h2>
-             <button className="secondary-btn" onClick={() => setContent({})} style={{ fontSize: '0.8rem', padding: '6px 12px' }}>
-               Clear
-             </button>
+            <h2 className="card-title" style={{ margin: 0 }}>
+              {t('cards.new_flash_card')}
+            </h2>
+            <button className="secondary-btn" onClick={() => setContent({})} style={{ fontSize: '0.8rem', padding: '6px 12px' }}>
+              {t('cards.clear')}
+            </button>
           </div>
 
-          <form onSubmit={onCreate} style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-
+          <form onSubmit={onCreate} style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             <div className="input-group">
-               <label htmlFor="card-deck" className="input-label">Assign to Deck</label>
-               <select
-                 id="card-deck"
-                 className="text-input"
-                 value={deckId}
-                 onChange={e => setDeckId(e.target.value)}
-               >
-                  <option value="">No Deck (Unassigned - Basic)</option>
-                  {decks.map(d => (
-                      <option key={d.id} value={d.id}>{d.name}</option>
-                  ))}
-               </select>
+              <label htmlFor="card-deck" className="input-label">
+                {t('cards.assign_to_deck')}
+              </label>
+              <select id="card-deck" className="text-input" value={deckId} onChange={(e) => setDeckId(e.target.value)}>
+                <option value="">{t('cards.no_deck_option')}</option>
+                {decks.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {fieldNames.map((field, idx) => (
-                <div key={idx} className="input-group">
-                  <label className="input-label">{field}</label>
-                  {idx === 0 ? (
-                      <input
-                        className="text-input"
-                        placeholder={`Enter ${field}`}
-                        value={content[field] || ""}
-                        onChange={(e) => handleContentChange(field, e.target.value)}
-                        required
-                        style={{ fontSize: "1.1rem" }}
-                      />
-                  ) : (
-                      <textarea
-                        className="text-area"
-                        rows={idx === 1 ? 3 : 2}
-                        placeholder={`Enter ${field}`}
-                        value={content[field] || ""}
-                        onChange={(e) => handleContentChange(field, e.target.value)}
-                      />
-                  )}
-                </div>
+              <div key={idx} className="input-group">
+                <label className="input-label">{field}</label>
+                {idx === 0 ? (
+                  <input
+                    className="text-input"
+                    placeholder={`Enter ${field}`}
+                    value={content[field] || ''}
+                    onChange={(e) => handleContentChange(field, e.target.value)}
+                    required
+                    style={{ fontSize: '1.1rem' }}
+                  />
+                ) : (
+                  <textarea
+                    className="text-area"
+                    rows={idx === 1 ? 3 : 2}
+                    placeholder={`Enter ${field}`}
+                    value={content[field] || ''}
+                    onChange={(e) => handleContentChange(field, e.target.value)}
+                  />
+                )}
+              </div>
             ))}
 
-            <div className="input-group" style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-                <input
-                    type="checkbox"
-                    id="create-reverse"
-                    checked={createReverse}
-                    onChange={e => setCreateReverse(e.target.checked)}
-                    style={{ width: 18, height: 18, cursor: "pointer" }}
-                />
-                <label htmlFor="create-reverse" className="input-label" style={{ cursor: "pointer", marginBottom: 0 }}>
-                    Create Reverse Card
-                </label>
-                <span className="muted" style={{ fontSize: "0.8rem" }}>(Meaning → Term)</span>
+            <div className="input-group" style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+              <input
+                type="checkbox"
+                id="create-reverse"
+                checked={createReverse}
+                onChange={(e) => setCreateReverse(e.target.checked)}
+                style={{ width: 18, height: 18, cursor: 'pointer' }}
+              />
+              <label htmlFor="create-reverse" className="input-label" style={{ cursor: 'pointer', marginBottom: 0 }}>
+                {t('cards.create_reverse')}
+              </label>
+              <span className="muted" style={{ fontSize: '0.8rem' }}>
+                {t('cards.create_reverse_hint')}
+              </span>
             </div>
 
-            <button type="submit" className="primary-btn" style={{ marginTop: 10, padding: "14px", fontSize: "1.1rem" }}>
-              Add Card
+            <button type="submit" className="primary-btn" style={{ marginTop: 10, padding: '14px', fontSize: '1.1rem' }}>
+              {t('cards.add_card')}
             </button>
-            {status && <p className="muted" style={{ textAlign: "center" }}>{status}</p>}
+            {status && (
+              <p className="muted" style={{ textAlign: 'center' }}>
+                {status}
+              </p>
+            )}
           </form>
         </section>
       </div>
