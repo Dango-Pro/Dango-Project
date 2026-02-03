@@ -44,11 +44,12 @@ public class SecurityConfig {
 								"/uploads/**",
 								"/favicon.ico",
 								"/error",
-								
 								"/swagger-ui/**",     // Swagger 화면(HTML) 접근 허용
 								"/v3/api-docs/**"     // Swagger가 사용하는 데이터(JSON) 접근 허용
 						).permitAll()
 						
+						// 관리자 전용 구역 (반드시 anyRequest보다 위에 있어야 함!)
+						.requestMatchers("/api/admin/**").hasRole("ADMIN")
 						// (2) 그 외 모든 요청은 인증 필요 (★ 무조건 맨 마지막에!)
 						.anyRequest().authenticated()
 				)

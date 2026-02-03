@@ -2,6 +2,7 @@ package com.jpcard.controller;
 
 import com.jpcard.controller.dto.CommentRequest;
 import com.jpcard.controller.dto.CommentResponse;
+import com.jpcard.domain.post.Comment;
 import com.jpcard.service.CommentService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -21,9 +24,11 @@ public class CommentController {
 
     @GetMapping("/posts/{postId}/comments")
     public ResponseEntity<List<CommentResponse>> list(@PathVariable Long postId) {
+        return ResponseEntity.ok(commentService.getCommentsForPost(postId));
     }
 
     @PostMapping("/posts/{postId}/comments")
+    public ResponseEntity<CommentResponse> create(@PathVariable Long postId, @RequestBody CommentRequest request, @RequestParam(required = false) Long parentId, HttpServletRequest httpRequest) {
         String authorName = determineAuthorName(httpRequest);
         String ipAddress = httpRequest.getRemoteAddr();
 
@@ -32,6 +37,8 @@ public class CommentController {
     }
 
     @DeleteMapping("/comments/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        commentService.deleteComment(id);
         return ResponseEntity.noContent().build();
     }
 

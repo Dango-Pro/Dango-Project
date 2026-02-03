@@ -275,7 +275,8 @@ select.text-input option {
 
 .item-tile:hover {
   background: #ffffff;
-  border-color: rgba(0, 0, 0, 0.1);
+  border-color: #ffb7b2;
+  box-shadow: 0 8px 16px rgba(255, 183, 178, 0.1);
 }
 
 .item-title {
