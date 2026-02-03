@@ -36,7 +36,7 @@ public class UserController {
                 : Collections.emptySet();
 
         return ResponseEntity.ok(
-                new UserInfoResponse(user.getId(), user.getUsername(), roles, user.getDailyLimit(), user.getReviewLimit(), user.getTimezone())
+                new UserInfoResponse(user.getId(), user.getUsername(), user.getNickname(), roles, user.getDailyLimit(), user.getReviewLimit(), user.getTimezone())
         );
     }
 
@@ -55,7 +55,7 @@ public class UserController {
 
         int reviewLimit = request.reviewLimit() > 0 ? request.reviewLimit() : 200;
 
-        User updated = userService.updateSettings(principal.getId(), request.dailyLimit(), reviewLimit, request.timezone());
+        User updated = userService.updateSettings(principal.getId(), request.nickname(), request.dailyLimit(), reviewLimit, request.timezone());
 
         return ResponseEntity.ok().build();
     }

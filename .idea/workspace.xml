@@ -5,30 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4eebc830-b713-4009-a673-66238d89241d" name="Changes" comment="package change">
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/DataInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/DataInitializer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/ErrorPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/ErrorPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/SuccessModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/SuccessModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/locales/en.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/locales/en.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/locales/ja.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/locales/ja.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/SignupRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/SignupRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/UserInfoResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/UserInfoResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/UserSettingsRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/UserSettingsRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/domain/user/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/domain/user/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/service/UserService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/locales/ko.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/locales/ko.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/CardCreatePage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/CardCreatePage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/CardEditPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/CardEditPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/CardsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/CardsPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/DashboardPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/DashboardPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/DeckCreatePage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/DeckCreatePage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/DeckDetailPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/DeckDetailPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/DeckEditPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/DeckEditPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/DecksPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/DecksPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/HomePage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/HomePage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/LoginPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/LoginPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PostDetailPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PostDetailPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PostEditPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PostEditPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PostsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PostsPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/UserPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/UserPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/RegisterPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/RegisterPage.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,12 +64,12 @@
     &quot;assignee&quot;: &quot;yss1902&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Dango-Pro/Dango-Project&quot;,
-    &quot;accountId&quot;: &quot;9bebf114-5015-45a7-8b79-6fa6c7501efc&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Dango-Pro/Dango-Project.git",
+    "accountId": "3415b20f-252f-4185-aa33-4b266c90ec85"
   }
-}</component>
+}]]></component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -98,8 +88,14 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "feature/cards-jmj",
-    "ignore.virus.scanning.warn.message": "true"
+    "git-widget-placeholder": "feature/member-lsh",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "project.structure.last.edited": "프로젝트",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
+    "애플리케이션.JpcardApplication.executor": "Run"
   }
 }]]></component>
   <component name="RunManager">

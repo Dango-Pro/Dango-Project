@@ -9,6 +9,7 @@ export default function RegisterPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [id, setId] = useState("");
+  const [nickname, setNickname] = useState("");
   const [pw, setPw] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -17,6 +18,7 @@ export default function RegisterPage() {
     try {
       await api.post("/auth/signup", {
         username: id,
+        nickname: nickname,
         password: pw,
       });
       setShowSuccess(true);
@@ -48,6 +50,16 @@ export default function RegisterPage() {
               placeholder={t("auth.username_placeholder")}
               value={id}
               onChange={(e) => setId(e.target.value)}
+            />
+          </div>
+          <div className="input-field">
+            <label htmlFor="signup-nickname">{t("auth.nickname_label")}</label>
+            <input
+              id="signup-nickname"
+              className="text-input"
+              placeholder={t("auth.nickname_placeholder")}
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
             />
           </div>
           <div className="input-field">
