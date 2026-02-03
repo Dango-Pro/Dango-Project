@@ -38,8 +38,14 @@ public class CommentController {
 
     @DeleteMapping("/comments/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        commentService.deleteComment(id);
-        return ResponseEntity.noContent().build();
+		// 1. 현재 보안 컨텍스트에서 User 객체 추출
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		com.jpcard.domain.user.User user = (auth != null && auth.getPrincipal() instanceof com.jpcard.domain.user.User)
+				? (com.jpcard.domain.user.User) auth.getPrincipal() : null;
+		
+		// 2. 서비스 호출 시 user 객체 전달
+		commentService.deleteComment(id, user);
+		return ResponseEntity.noContent().build();
     }
 
     private String determineAuthorName(HttpServletRequest request) {
