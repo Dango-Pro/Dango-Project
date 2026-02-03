@@ -33,7 +33,7 @@ export default function FlashCard({ card, isFlipped, onFlip, onReview }: FlashCa
         <div className="card-face card-back">
           <span className="card-label">{t("study.meaning_label")}</span>
           {card.content && card.content['pronunciation'] && (
-            <h3 style={{ fontSize: '1.5rem', marginBottom: '8px', color: 'rgba(255,255,255,0.9)', fontWeight: 'normal' }}>
+            <h3 style={{ fontSize: '1.5rem', marginBottom: '8px', color: '#666', fontWeight: 'normal' }}>
               {card.content['pronunciation']}
             </h3>
           )}
@@ -97,18 +97,17 @@ export default function FlashCard({ card, isFlipped, onFlip, onReview }: FlashCa
           height: 100%;
           backface-visibility: hidden;
           transition: transform 0.6s;
-          background: rgba(20, 20, 20, 0.7);
-          backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 16px;
-          color: #ffffff;
+          background: #ffffff;
+          border: 2px solid #ffb7b2;
+          border-radius: 20px;
+          color: #333333;
           display: flex;
           flex-direction: column;
           justify-content: center;
           align-items: center;
           padding: 20px;
           text-align: center;
-          box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+          box-shadow: 0 8px 24px rgba(255, 183, 178, 0.15);
         }
         .card-front {
           transform: rotateY(0deg);
@@ -127,15 +126,16 @@ export default function FlashCard({ card, isFlipped, onFlip, onReview }: FlashCa
           top: 16px;
           left: 16px;
           font-size: 0.75rem;
-          color: rgba(255, 255, 255, 0.4);
+          color: #ffb7b2;
           letter-spacing: 1px;
           text-transform: uppercase;
+          font-weight: 700;
         }
         .click-hint {
           position: absolute;
           bottom: 16px;
           font-size: 0.8rem;
-          color: rgba(255, 255, 255, 0.3);
+          color: #999;
         }
         .controls {
           display: flex;
@@ -143,16 +143,19 @@ export default function FlashCard({ card, isFlipped, onFlip, onReview }: FlashCa
           gap: 20px;
         }
         .nav-btn {
-          background: none;
-          border: 1px solid rgba(255,255,255,0.2);
-          color: white;
+          background: #ffffff;
+          border: 1px solid #ffb7b2;
+          color: #333;
           padding: 8px 16px;
           border-radius: 20px;
           cursor: pointer;
           transition: all 0.2s;
+          font-weight: 600;
         }
         .nav-btn:hover {
-          background: rgba(255,255,255,0.1);
+          background: #fff0f0;
+          border-color: #ffb7b2;
+          transform: translateY(-1px);
         }
       `}</style>
     </div>

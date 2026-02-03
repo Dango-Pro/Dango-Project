@@ -28,11 +28,13 @@ public class CommentController {
     }
 
     @PostMapping("/posts/{postId}/comments")
-    public ResponseEntity<CommentResponse> create(@PathVariable Long postId, @RequestBody CommentRequest request, @RequestParam(required = false) Long parentId, HttpServletRequest httpRequest) {
+    public ResponseEntity<CommentResponse> create(@PathVariable Long postId, @RequestBody CommentRequest request,
+            @RequestParam(required = false) Long parentId, HttpServletRequest httpRequest) {
         String authorName = determineAuthorName(httpRequest);
         String ipAddress = httpRequest.getRemoteAddr();
 
-        CommentResponse response = commentService.addComment(postId, request.content(), authorName, ipAddress, parentId);
+        CommentResponse response = commentService.addComment(postId, request.content(), authorName, ipAddress,
+                parentId);
         return ResponseEntity.ok(response);
     }
 
@@ -44,7 +46,15 @@ public class CommentController {
 
     private String determineAuthorName(HttpServletRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+        if (authentication != null && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getPrincipal())) {
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof com.jpcard.domain.user.User) {
+                return ((com.jpcard.domain.user.User) principal).getUsername();
+            }
+            if (principal instanceof String) {
+                return (String) principal;
+            }
             return authentication.getName();
         }
 
@@ -53,7 +63,8 @@ public class CommentController {
     }
 
     private String maskIpAddress(String ip) {
-        if (ip == null) return "Unknown";
+        if (ip == null)
+            return "Unknown";
         String[] parts = ip.split("\\.");
         if (parts.length == 4) {
             return parts[0] + "." + parts[1] + ".***.***";

@@ -1,7 +1,7 @@
-import type { ReactNode } from 'react';
-
+import { useEffect, useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { api } from '../libs/api';
 
 interface LayoutProps {
   children: ReactNode;
@@ -12,13 +12,25 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const { t, i18n } = useTranslation();
   const { pathname } = useLocation();
-  const token = localStorage.getItem('token');
+  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+
+  useEffect(() => {
+    if (token) {
+      api.get('/users/me')
+        .catch(() => {
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
+          setToken(null);
+        });
+    }
+  }, [token]);
 
   const handleLogout = () => {
     if (confirm(t('common.confirm') + '?')) {
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
-      window.location.href = '/login';
+      setToken(null);
+      // Optional: navigate('/login') or just let the state update the UI
     }
   };
 
