@@ -11,6 +11,18 @@ export default function PostsPage() {
   const [status, setStatus] = useState('');
   const [query, setQuery] = useState('');
 
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      api
+        .get<{ id: number }>('/users/me')
+        .then((res) => setCurrentUserId(res.data.id))
+        .catch(() => setCurrentUserId(null));
+    }
+  }, []);
+
   useEffect(() => {
     setStatus(t('common.loading'));
     const params = new URLSearchParams();
@@ -69,26 +81,28 @@ export default function PostsPage() {
                     </Link>
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <Link to={`/posts/${p.id}/edit`} className="muted" style={{ fontSize: '0.8rem', textDecoration: 'underline' }}>
-                    {t('common.edit')}
-                  </Link>
-                  <button
-                    onClick={() => {
-                      if (window.confirm(t('post_detail.delete_post_confirm'))) {
-                        api
-                          .delete(`/posts/${p.id}`)
-                          .then(() => {
-                            setPosts(posts.filter((post) => post.id !== p.id));
-                          })
-                          .catch(() => alert(t('post_detail.fail_delete_post')));
-                      }
-                    }}
-                    className="muted"
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.8rem', textDecoration: 'underline', padding: 0 }}>
-                    {t('common.delete')}
-                  </button>
-                </div>
+                {currentUserId && p.authorId === currentUserId && (
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <Link to={`/posts/${p.id}/edit`} className="muted" style={{ fontSize: '0.8rem', textDecoration: 'underline' }}>
+                      {t('common.edit')}
+                    </Link>
+                    <button
+                      onClick={() => {
+                        if (window.confirm(t('post_detail.delete_post_confirm'))) {
+                          api
+                            .delete(`/posts/${p.id}`)
+                            .then(() => {
+                              setPosts(posts.filter((post) => post.id !== p.id));
+                            })
+                            .catch(() => alert(t('post_detail.fail_delete_post')));
+                        }
+                      }}
+                      className="muted"
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.8rem', textDecoration: 'underline', padding: 0 }}>
+                      {t('common.delete')}
+                    </button>
+                  </div>
+                )}
               </div>
             </article>
           ))}
