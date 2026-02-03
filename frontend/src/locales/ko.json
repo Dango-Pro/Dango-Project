@@ -34,6 +34,8 @@
   "auth": {
     "login_title": "로그인",
     "quick_fill": "빠른 입력",
+    "nickname_label": "닉네임",
+    "nickname_placeholder": "닉네임 입력 (비속어 금지)",
     "id_label": "아이디",
     "pw_label": "비밀번호",
     "username_placeholder": "아이디 입력",

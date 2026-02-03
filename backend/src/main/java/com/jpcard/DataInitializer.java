@@ -53,6 +53,7 @@ public class DataInitializer implements CommandLineRunner {
             manager.setPassword(passwordEncoder.encode("password"));
             manager.addRole(Role.ROLE_USER);
             manager.addRole(Role.ROLE_MANAGER);
+            manager.setNickname("Manager");
             manager = userRepository.save(manager);
             System.out.println("Manager account created: manager / password");
         } else {
@@ -71,6 +72,7 @@ public class DataInitializer implements CommandLineRunner {
             admin.setPassword(passwordEncoder.encode("admin"));
             admin.addRole(Role.ROLE_USER);
             admin.addRole(Role.ROLE_MANAGER);
+            admin.setNickname("Admin");
             admin = userRepository.save(admin);
             System.out.println("Admin account created: admin / admin");
             return admin;
