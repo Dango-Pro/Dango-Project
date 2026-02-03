@@ -22,23 +22,24 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-      // If 401, maybe redirect to login or refresh?
-      // For now just reject
-      if (error.response?.status === 401) {
-          // localStorage.removeItem("token");
-          // window.location.href = "/login";
-      }
-      return Promise.reject(error);
+    // If 401, maybe redirect to login or refresh?
+    // For now just reject
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
+      // Not redirecting automatically to allow quiet failures on mount checks
+    }
+    return Promise.reject(error);
   }
 );
 
 export const DeckApi = {
-    list: () => api.get("/decks"),
-    listMy: () => api.get("/decks/my"),
-    listPublic: () => api.get("/decks/public"),
-    get: (id: number | string) => api.get(`/decks/${id}`),
-    create: (data: any) => api.post("/decks", data),
-    update: (id: number | string, data: any) => api.put(`/decks/${id}`, data),
-    delete: (id: number | string) => api.delete(`/decks/${id}`),
-    fork: (id: number | string) => api.post(`/decks/${id}/fork`),
+  list: () => api.get("/decks"),
+  listMy: () => api.get("/decks/my"),
+  listPublic: () => api.get("/decks/public"),
+  get: (id: number | string) => api.get(`/decks/${id}`),
+  create: (data: any) => api.post("/decks", data),
+  update: (id: number | string, data: any) => api.put(`/decks/${id}`, data),
+  delete: (id: number | string) => api.delete(`/decks/${id}`),
+  fork: (id: number | string) => api.post(`/decks/${id}/fork`),
 };
