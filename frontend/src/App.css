@@ -16,6 +16,13 @@
   z-index: 1;
 }
 
+/* 모든 요소에 일본어 표준 폰트 적용 */
+body, button, input, select, textarea {
+    font-family: 'Noto Sans JP', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 /* TOP NAVIGATION */
 .top-nav {
   display: flex;
@@ -40,12 +47,10 @@
   color: #333333;
 }
 
-.brand-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 12px;
-  background: #d9534f;
-  box-shadow: 0 0 0 4px rgba(217, 83, 79, 0.2);
+.brand-logo {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
 }
 
 .nav-links {
@@ -65,8 +70,10 @@
 
 .nav-link:hover {
   border-color: rgba(255, 183, 178, 0.4);
-  background: rgba(255, 183, 178, 0.15); /* Soft pink tint */
-  color: #d9534f; /* Darker pink for text */
+  background: rgba(255, 183, 178, 0.15);
+  /* Soft pink tint */
+  color: #d9534f;
+  /* Darker pink for text */
 }
 
 /* CONTENT AREA */
@@ -98,7 +105,8 @@
   gap: 12px;
   margin-bottom: 18px;
   position: relative;
-  z-index: 2; /* Ensure header is above background effects */
+  z-index: 2;
+  /* Ensure header is above background effects */
 }
 
 .card-title {
@@ -154,7 +162,8 @@
 
 .action-card:hover {
   transform: translateY(-2px);
-  border-color: #ffb7b2; /* Pink border on hover */
+  border-color: #ffb7b2;
+  /* Pink border on hover */
   background: #ffffff;
   box-shadow: 0 10px 30px rgba(255, 183, 178, 0.15);
 }
@@ -230,9 +239,11 @@ select.text-input option {
 .secondary-btn {
   padding: 12px 18px;
   border-radius: 14px;
-  border: 1px solid #b5ead7; /* Mint border */
+  border: 1px solid #b5ead7;
+  /* Mint border */
   background: transparent;
-  color: #00796b; /* Darker teal/mint */
+  color: #00796b;
+  /* Darker teal/mint */
   font-weight: 600;
   cursor: pointer;
   transition: border-color 0.2s ease, background 0.2s ease;
@@ -363,7 +374,7 @@ select.text-input option {
 .ql-snow .ql-toolbar button,
 .ql-snow.ql-toolbar .ql-picker-label,
 .ql-snow .ql-toolbar .ql-picker-label {
-    color: #222 !important;
+  color: #222 !important;
 }
 
 .ql-snow.ql-toolbar button:hover,
@@ -380,15 +391,18 @@ select.text-input option {
 .ql-snow .ql-toolbar .ql-picker-item:hover,
 .ql-snow.ql-toolbar .ql-picker-item.ql-selected,
 .ql-snow .ql-toolbar .ql-picker-item.ql-selected {
-  color: #ffb7b2 !important; /* Pink on hover/active */
+  color: #ffb7b2 !important;
+  /* Pink on hover/active */
 }
 
 .ql-snow .ql-stroke {
   stroke: #333 !important;
 }
+
 .ql-snow .ql-fill {
   fill: #333 !important;
 }
+
 .ql-snow .ql-picker {
   color: #333 !important;
 }
@@ -396,35 +410,44 @@ select.text-input option {
 /* Hover state overrides for SVG icons in Quill */
 .ql-snow.ql-toolbar button:hover .ql-stroke,
 .ql-snow.ql-toolbar button.ql-active .ql-stroke {
-    stroke: #ffb7b2 !important;
+  stroke: #ffb7b2 !important;
 }
+
 .ql-snow.ql-toolbar button:hover .ql-fill,
 .ql-snow.ql-toolbar button.ql-active .ql-fill {
-    fill: #ffb7b2 !important;
+  fill: #ffb7b2 !important;
 }
 
 /* Post Detail Content Styles */
-.post-content h1, .post-content h2, .post-content h3 {
+.post-content h1,
+.post-content h2,
+.post-content h3 {
   margin-top: 1.5em;
   margin-bottom: 0.5em;
   line-height: 1.3;
   color: #333;
 }
-.post-content ul, .post-content ol {
+
+.post-content ul,
+.post-content ol {
   padding-left: 1.5em;
   margin-bottom: 1em;
   color: #333;
 }
+
 .post-content ul {
   list-style-type: disc;
 }
+
 .post-content ol {
   list-style-type: decimal;
 }
+
 .post-content p {
   margin-bottom: 1em;
   color: #333;
 }
+
 .post-content blockquote {
   border-left: 4px solid #ffb7b2;
   padding-left: 1em;
@@ -435,6 +458,7 @@ select.text-input option {
   padding: 12px;
   border-radius: 0 8px 8px 0;
 }
+
 .post-content pre {
   background: #f4f4f4;
   padding: 1em;

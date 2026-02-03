@@ -35,7 +35,8 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping
-    public ResponseEntity<List<PostResponse>> list(@RequestParam(required = false) String q, @RequestParam(required = false, defaultValue = "false") boolean notice) {
+    public ResponseEntity<List<PostResponse>> list(@RequestParam(required = false) String q,
+            @RequestParam(required = false, defaultValue = "false") boolean notice) {
         List<Post> posts;
         if (notice) {
             posts = postService.findNotices();
@@ -57,7 +58,7 @@ public class PostController {
 
     @PostMapping(consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PostResponse> create(
-            @RequestParam("title") @NotBlank @Size(max=255) String title,
+            @RequestParam("title") @NotBlank @Size(max = 255) String title,
             @RequestParam("content") @NotBlank String content,
             @RequestParam(value = "isNotice", required = false, defaultValue = "false") boolean isNotice,
             @RequestParam(value = "files", required = false) List<org.springframework.web.multipart.MultipartFile> files,
@@ -65,7 +66,8 @@ public class PostController {
 
         com.jpcard.domain.user.User author = null;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof com.jpcard.domain.user.User) {
+        if (authentication != null && authentication.isAuthenticated()
+                && authentication.getPrincipal() instanceof com.jpcard.domain.user.User) {
             author = (com.jpcard.domain.user.User) authentication.getPrincipal();
         }
 
@@ -79,7 +81,9 @@ public class PostController {
     @PutMapping("/{id}")
     public ResponseEntity<PostResponse> update(@PathVariable Long id, @RequestBody @Valid PostRequest request) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        com.jpcard.domain.user.User user = (auth != null && auth.getPrincipal() instanceof com.jpcard.domain.user.User) ? (com.jpcard.domain.user.User) auth.getPrincipal() : null;
+        com.jpcard.domain.user.User user = (auth != null && auth.getPrincipal() instanceof com.jpcard.domain.user.User)
+                ? (com.jpcard.domain.user.User) auth.getPrincipal()
+                : null;
 
         var post = postService.update(id, request.title(), request.content(), request.isNotice(), user);
         return ResponseEntity.ok(mapToResponse(post));
@@ -88,7 +92,9 @@ public class PostController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        com.jpcard.domain.user.User user = (auth != null && auth.getPrincipal() instanceof com.jpcard.domain.user.User) ? (com.jpcard.domain.user.User) auth.getPrincipal() : null;
+        com.jpcard.domain.user.User user = (auth != null && auth.getPrincipal() instanceof com.jpcard.domain.user.User)
+                ? (com.jpcard.domain.user.User) auth.getPrincipal()
+                : null;
 
         postService.delete(id, user);
         return ResponseEntity.noContent().build();
@@ -101,16 +107,19 @@ public class PostController {
     }
 
     private PostResponse mapToResponse(Post post) {
-        List<String> attachmentUrls = post.getAttachments() == null ? java.util.Collections.emptyList() :
-                post.getAttachments().stream()
+        List<String> attachmentUrls = post.getAttachments() == null ? java.util.Collections.emptyList()
+                : post.getAttachments().stream()
                         .map(a -> "/uploads/" + a.getStoreFilename())
                         .collect(Collectors.toList());
-        return new PostResponse(post.getId(), post.getTitle(), post.getContent(), post.getLikeCount(), post.getAuthorName(), attachmentUrls, post.isNotice());
+        return new PostResponse(post.getId(), post.getTitle(), post.getContent(), post.getLikeCount(),
+                post.getAuthorName(), attachmentUrls, post.isNotice(),
+                post.getAuthor() != null ? post.getAuthor().getId() : null);
     }
 
     private String determineAuthorName(HttpServletRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
+        if (authentication != null && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getPrincipal())) {
             Object principal = authentication.getPrincipal();
             if (principal instanceof com.jpcard.domain.user.User) {
                 return ((com.jpcard.domain.user.User) principal).getUsername();
@@ -123,7 +132,8 @@ public class PostController {
     }
 
     private String maskIpAddress(String ip) {
-        if (ip == null) return "Unknown";
+        if (ip == null)
+            return "Unknown";
         String[] parts = ip.split("\\.");
         if (parts.length == 4) {
             return parts[0] + "." + parts[1] + ".***.***";
