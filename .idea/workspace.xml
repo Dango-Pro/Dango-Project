@@ -4,31 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4eebc830-b713-4009-a673-66238d89241d" name="Changes" comment="package change">
+    <list default="true" id="4eebc830-b713-4009-a673-66238d89241d" name="Changes" comment="improved version">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/DataInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/DataInitializer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/ErrorPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/ErrorPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/Layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/SuccessModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/SuccessModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/locales/en.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/locales/en.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/locales/ja.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/locales/ja.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/locales/ko.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/locales/ko.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/CardCreatePage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/CardCreatePage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/CardEditPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/CardEditPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/CardsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/CardsPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/DashboardPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/DashboardPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/DeckCreatePage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/DeckCreatePage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/DeckDetailPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/DeckDetailPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/DeckEditPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/DeckEditPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/DecksPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/DecksPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/HomePage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/HomePage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/LoginPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/LoginPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PostDetailPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PostDetailPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PostEditPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PostEditPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PostsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PostsPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/UserPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/UserPage.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,7 +35,7 @@
     </system>
   </component>
   <component name="Git.Merge.Settings">
-    <option name="BRANCH" value="origin/fix/text-visibility-improvements-4670695915054036153" />
+    <option name="BRANCH" value="origin/feature/cards-jmj" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -91,17 +68,17 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.backend [:com.jpcard.JpcardApplication.main()].executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "feature/cards-jmj",
-    "ignore.virus.scanning.warn.message": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.backend [:com.jpcard.JpcardApplication.main()].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;merge&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="JpcardApplication" type="Application" factoryName="Application" nameIsGenerated="true">
       <envs>
@@ -136,11 +113,20 @@
       <option name="project" value="LOCAL" />
       <updated>1769742846956</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="improved version">
+      <option name="closed" value="true" />
+      <created>1770079764474</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1770079764474</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="package change" />
-    <option name="LAST_COMMIT_MESSAGE" value="package change" />
+    <MESSAGE value="improved version" />
+    <option name="LAST_COMMIT_MESSAGE" value="improved version" />
   </component>
 </project>

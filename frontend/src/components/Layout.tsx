@@ -40,7 +40,8 @@ export default function Layout({ children }: LayoutProps) {
       <div className="app-frame">
         <header className="top-nav">
           <div className="brand">
-            <span className="brand-dot" /> JP Card Studio
+            <img src="/dango.svg" alt="Dango Logo" className="brand-logo" />
+            <span style={{ fontFamily: '"Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif', color: '#d9534f' }}>DANGO</span>
           </div>
           <div className="nav-links">
             <div className="lang-switcher" style={{ marginRight: '20px', display: 'flex', gap: '5px' }}>
