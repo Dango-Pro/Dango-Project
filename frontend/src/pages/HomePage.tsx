@@ -117,6 +117,69 @@ const NoticeWidget = () => {
         )}
       </div>
       <div style={{ marginTop: '16px', textAlign: 'right' }}>
+        <Link to="/posts?tab=notice" className="muted" style={{ fontSize: '0.85rem', textDecoration: 'underline', color: '#222' }}>
+          {t('home.view_all')}
+        </Link>
+      </div>
+    </div>
+  );
+};
+
+const CommunityWidget = () => {
+  const { t } = useTranslation();
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api
+      .get<Post[]>('/posts')
+      .then((res) => {
+        // Filter out notices if the API returns them, and take top 5
+        const communityPosts = res.data.filter(p => !p.isNotice).slice(0, 5);
+        setPosts(communityPosts);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  return (
+    <div className="glass-card" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <h3 className="card-title" style={{ fontSize: '1.2rem', marginBottom: '16px', color: '#111' }}>
+        {t('nav.community')}
+      </h3>
+      <div style={{ flex: 1 }}>
+        {loading ? (
+          <p className="muted" style={{ color: '#222' }}>
+            {t('common.loading')}
+          </p>
+        ) : (
+          <ul style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {posts.length === 0 && <li style={{ color: '#111' }}>{t('home.no_posts')}</li>}
+            {posts.map((p) => (
+              <li key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Link
+                  to={`/posts/${p.id}`}
+                  style={{
+                    textDecoration: 'none',
+                    color: '#111',
+                    fontSize: '0.95rem',
+                    flex: 1,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    marginRight: '10px',
+                  }}>
+                  {p.title}
+                </Link>
+                <span className="muted" style={{ fontSize: '0.8rem', whiteSpace: 'nowrap', color: '#666' }}>
+                  {p.authorName || 'Anonymous'}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <div style={{ marginTop: '16px', textAlign: 'right' }}>
         <Link to="/posts" className="muted" style={{ fontSize: '0.85rem', textDecoration: 'underline', color: '#222' }}>
           {t('home.view_all')}
         </Link>
@@ -234,9 +297,15 @@ export default function HomePage() {
         <LoginWidget />
       </div>
 
-      {/* Middle Section: Notices */}
-      <div style={{ marginBottom: '30px' }}>
+      {/* Middle Section: Notices & Community */}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: '1fr 1fr', 
+        gap: '20px', 
+        marginBottom: '30px' 
+      }}>
         <NoticeWidget />
+        <CommunityWidget />
       </div>
 
       <div

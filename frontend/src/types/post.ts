@@ -4,6 +4,7 @@ export interface Post {
   content: string;
   likeCount: number;
   authorName?: string;
+  authorId?: number;
   attachmentUrls?: string[];
   isNotice: boolean;
 }
