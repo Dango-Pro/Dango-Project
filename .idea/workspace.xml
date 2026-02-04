@@ -4,8 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4eebc830-b713-4009-a673-66238d89241d" name="Changes" comment="improved version">
+    <list default="true" id="66f71afd-aa52-4d07-984a-f031f6eef31c" name="변경" comment="미사용 자원 정리: CommentController 내 사용하지 않는 import 문 제거 및 코드 최적화&#10;&#10;타입 명시: ResponseEntity에 누락된 제네릭 타입(List&lt;CommentResponse&gt;, Void)을 추가하여 컴파일러 경고 해결 및 타입 안정성 확보&#10;&#10;코드 가독성 개선: 서비스 레이어와 컨트롤러 간의 파라미터 전달 방식 재검토 및 정돈&#10;&#10;기타: 인텔리제이 코드 분석(Static Analysis) 기반 권고사항 반영">
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/CommentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/CommentController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/PostResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/PostResponse.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,13 +38,10 @@
       </state>
     </system>
   </component>
-  <component name="Git.Merge.Settings">
-    <option name="BRANCH" value="origin/feature/cards-jmj" />
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="merge" />
+        <entry key="$PROJECT_DIR$" value="feature/comment-lmh" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -48,13 +49,13 @@
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
     &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;yss1902&quot;
+    &quot;assignee&quot;: &quot;mh151004&quot;
   }
 }</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Dango-Pro/Dango-Project&quot;,
-    &quot;accountId&quot;: &quot;9bebf114-5015-45a7-8b79-6fa6c7501efc&quot;
+    &quot;url&quot;: &quot;https://github.com/Dango-Pro/Dango-Project.git&quot;,
+    &quot;accountId&quot;: &quot;01048888-db2d-41bc-9543-5019efe8cdf9&quot;
   }
 }</component>
   <component name="ProblemsViewState">
@@ -62,28 +63,30 @@
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
-  &quot;associatedIndex&quot;: 0
+  &quot;associatedIndex&quot;: 2
 }</component>
-  <component name="ProjectId" id="38xCxA9wcjoarHFdPH0sYYziTLg" />
+  <component name="ProjectId" id="38xDmDQzH3PppMobGHaoP4camI8" />
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Gradle.backend [:com.jpcard.JpcardApplication.main()].executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;merge&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.backend [:com.jpcard.JpcardApplication.main()].executor": "Run",
+    "Gradle.backend 빌드.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "lmh101504",
+    "kotlin-language-version-configured": "true",
+    "project.structure.last.edited": "프로젝트",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "project.propCompiler"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
-    <configuration name="JpcardApplication" type="Application" factoryName="Application" nameIsGenerated="true">
-      <envs>
-        <env name="JWT_SECRET_KEY" value="vml0YW1pbi1kYW5nby1zZWNyZXQta2V5LXByb2plY3QtamF2YS1zcHJpbmctYm9vdA==" />
-      </envs>
+    <configuration name="JpcardApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.jpcard.JpcardApplication" />
       <module name="jpcard.main" />
       <extension name="coverage">
@@ -96,37 +99,56 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="애플리케이션.JpcardApplication" />
+        <item itemvalue="애플리케이션.JpcardApplication" />
+        <item itemvalue="애플리케이션.JpcardApplication" />
+        <item itemvalue="애플리케이션.JpcardApplication" />
+        <item itemvalue="애플리케이션.JpcardApplication" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="TaskManager">
-    <task active="true" id="Default" summary="Default task">
-      <changelist id="4eebc830-b713-4009-a673-66238d89241d" name="Changes" comment="" />
-      <created>1769732079552</created>
+    <task active="true" id="Default" summary="디폴트 작업">
+      <changelist id="66f71afd-aa52-4d07-984a-f031f6eef31c" name="변경" comment="" />
+      <created>1769732486434</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1769732079552</updated>
+      <updated>1769732486434</updated>
     </task>
-    <task id="LOCAL-00001" summary="package change">
+    <task id="LOCAL-00001" summary="권한 검증 강화: PostService에 checkOwner 로직을 도입하여 작성자 본인 및 관리자(ROLE_ADMIN, ROLE_MANAGER)만 수정/삭제가 가능하도록 변경&#10;&#10;입력값 유효성 검사: PostRequest DTO와 컨트롤러 파라미터에 @Valid, @NotBlank, @Size를 적용하여 데이터 정결성 확보&#10;&#10;파일 업로드 보안: 5MB 크기 제한 및 허용된 확장자 체크 로직을 추가하고, Path Traversal 방지를 위한 경로 검증 적용&#10;&#10;예외 처리 개선: 권한 부족 시 AccessDeniedException을 발생시켜 보안 표준 준수">
       <option name="closed" value="true" />
-      <created>1769742846956</created>
+      <created>1769993140339</created>
       <option name="number" value="00001" />
       <option name="presentableId" value="LOCAL-00001" />
       <option name="project" value="LOCAL" />
-      <updated>1769742846956</updated>
+      <updated>1769993140339</updated>
     </task>
-    <task id="LOCAL-00002" summary="improved version">
+    <task id="LOCAL-00002" summary="권한 검증 도입: CommentService에 checkCommentOwner 메서드를 추가하여 작성자 본인 또는 관리자(ROLE_ADMIN, ROLE_MANAGER)만 댓글을 삭제할 수 있도록 보안 강화&#10;&#10;입력값 유효성 검사: CommentRequest DTO에 @NotBlank를 적용하고 컨트롤러에서 @Valid를 통해 빈 댓글 작성을 방지&#10;&#10;타입 불일치 해결: CommentController에서 User 객체를 추출하여 서비스 레이어로 전달함으로써 컴파일 에러 해결 및 객체 기반 검증 구현&#10;&#10;예외 처리 표준화: 권한 부족 시 org.springframework.security.access.AccessDeniedException을 던지도록 수정하여 보안 예외 흐름 통일">
       <option name="closed" value="true" />
-      <created>1770079764474</created>
+      <created>1770078985424</created>
       <option name="number" value="00002" />
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
-      <updated>1770079764474</updated>
+      <updated>1770078985424</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="미사용 자원 정리: CommentController 내 사용하지 않는 import 문 제거 및 코드 최적화&#10;&#10;타입 명시: ResponseEntity에 누락된 제네릭 타입(List&lt;CommentResponse&gt;, Void)을 추가하여 컴파일러 경고 해결 및 타입 안정성 확보&#10;&#10;코드 가독성 개선: 서비스 레이어와 컨트롤러 간의 파라미터 전달 방식 재검토 및 정돈&#10;&#10;기타: 인텔리제이 코드 분석(Static Analysis) 기반 권고사항 반영">
+      <option name="closed" value="true" />
+      <created>1770082782707</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1770082782707</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="package change" />
-    <MESSAGE value="improved version" />
-    <option name="LAST_COMMIT_MESSAGE" value="improved version" />
+    <MESSAGE value="Add Japanese sample decks and update card display&#10;&#10;- Created SampleDataFactory to generate 3 Japanese decks (N5 Vocab, Verbs, Travel) with ~50 cards each.&#10;- Updated DataInitializer to populate these decks on startup.&#10;- Updated FlashCard.tsx to display 'Pronunciation' and 'Meaning' on the back of the card, using Japanese and Korean TTS respectively.&#10;- Updated SecurityConfig to allow CORS from localhost:3000.&#10;&#10;Co-authored-by: yss1902 &lt;50459192+yss1902@users.noreply.github.com&gt;" />
+    <MESSAGE value="권한 검증 강화: PostService에 checkOwner 로직을 도입하여 작성자 본인 및 관리자(ROLE_ADMIN, ROLE_MANAGER)만 수정/삭제가 가능하도록 변경&#10;&#10;입력값 유효성 검사: PostRequest DTO와 컨트롤러 파라미터에 @Valid, @NotBlank, @Size를 적용하여 데이터 정결성 확보&#10;&#10;파일 업로드 보안: 5MB 크기 제한 및 허용된 확장자 체크 로직을 추가하고, Path Traversal 방지를 위한 경로 검증 적용&#10;&#10;예외 처리 개선: 권한 부족 시 AccessDeniedException을 발생시켜 보안 표준 준수" />
+    <MESSAGE value="권한 검증 도입: CommentService에 checkCommentOwner 메서드를 추가하여 작성자 본인 또는 관리자(ROLE_ADMIN, ROLE_MANAGER)만 댓글을 삭제할 수 있도록 보안 강화&#10;&#10;입력값 유효성 검사: CommentRequest DTO에 @NotBlank를 적용하고 컨트롤러에서 @Valid를 통해 빈 댓글 작성을 방지&#10;&#10;타입 불일치 해결: CommentController에서 User 객체를 추출하여 서비스 레이어로 전달함으로써 컴파일 에러 해결 및 객체 기반 검증 구현&#10;&#10;예외 처리 표준화: 권한 부족 시 org.springframework.security.access.AccessDeniedException을 던지도록 수정하여 보안 예외 흐름 통일" />
+    <MESSAGE value="미사용 자원 정리: CommentController 내 사용하지 않는 import 문 제거 및 코드 최적화&#10;&#10;타입 명시: ResponseEntity에 누락된 제네릭 타입(List&lt;CommentResponse&gt;, Void)을 추가하여 컴파일러 경고 해결 및 타입 안정성 확보&#10;&#10;코드 가독성 개선: 서비스 레이어와 컨트롤러 간의 파라미터 전달 방식 재검토 및 정돈&#10;&#10;기타: 인텔리제이 코드 분석(Static Analysis) 기반 권고사항 반영" />
+    <option name="LAST_COMMIT_MESSAGE" value="미사용 자원 정리: CommentController 내 사용하지 않는 import 문 제거 및 코드 최적화&#10;&#10;타입 명시: ResponseEntity에 누락된 제네릭 타입(List&lt;CommentResponse&gt;, Void)을 추가하여 컴파일러 경고 해결 및 타입 안정성 확보&#10;&#10;코드 가독성 개선: 서비스 레이어와 컨트롤러 간의 파라미터 전달 방식 재검토 및 정돈&#10;&#10;기타: 인텔리제이 코드 분석(Static Analysis) 기반 권고사항 반영" />
   </component>
 </project>
