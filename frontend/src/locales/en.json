@@ -190,7 +190,9 @@
     "algo_desc_fsrs": "Uses modern machine learning to predict your forgetting curve. Highest efficiency.",
     "algo_desc_hlr": "Used by Duolingo. Estimates the 'half-life' of a memory to schedule reviews.",
     "algo_desc_leitner": "Traditional box system. Correct cards move up, incorrect ones reset to the start.",
-    "algo_desc_sprint": "Cramming mode. Designed for high exposure in a short period."
+    "algo_desc_sprint": "Cramming mode. Designed for high exposure in a short period.",
+    "daily_new_cards_limit": "Daily New Cards Limit",
+    "daily_new_cards_limit_desc": "Maximum number of new cards to study per day."
   },
   "cards": {
     "title": "All Cards",
