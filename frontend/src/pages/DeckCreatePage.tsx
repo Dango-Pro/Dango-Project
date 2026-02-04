@@ -195,21 +195,65 @@ export default function DeckCreatePage() {
               )}
             </div>
 
-            <div className="input-group">
-              <label className="input-label">Learning Algorithm</label>
+            <div className="input-group" style={{ position: 'relative' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <label className="input-label" style={{ marginBottom: 0 }}>
+                  {t('deck.algorithm_label')}
+                </label>
+                <div
+                  className="info-icon"
+                  style={{
+                    cursor: 'help',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 18,
+                    height: 18,
+                    borderRadius: '50%',
+                    background: '#ccc',
+                    color: 'white',
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  ?
+                  <div className="tooltip-box">
+                    <p style={{ fontWeight: 'bold', marginBottom: 8, borderBottom: '1px solid rgba(255,255,255,0.3)', paddingBottom: 4 }}>
+                      {t('deck.algorithm_label')}
+                    </p>
+                    <ul style={{ paddingLeft: 16, margin: 0, listStyle: 'disk' }}>
+                      <li style={{ marginBottom: 4 }}>
+                        <strong>SM-2:</strong> {t('deck.algo_desc_sm2')}
+                      </li>
+                      <li style={{ marginBottom: 4 }}>
+                        <strong>FSRS:</strong> {t('deck.algo_desc_fsrs')}
+                      </li>
+                      <li style={{ marginBottom: 4 }}>
+                        <strong>Half-Life Regression:</strong> {t('deck.algo_desc_hlr')}
+                      </li>
+                      <li style={{ marginBottom: 4 }}>
+                        <strong>Leitner:</strong> {t('deck.algo_desc_leitner')}
+                      </li>
+                      <li>
+                        <strong>Sprint:</strong> {t('deck.algo_desc_sprint')}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
               <select
                 className="text-input"
                 value={algorithmType}
                 onChange={(e) => setAlgorithmType(e.target.value)}
                 style={{ fontSize: '1rem' }}>
-                <option value="SM2">SM-2 - Classic spaced repetition (balanced)</option>
-                <option value="FSRS">FSRS - Modern ML-based algorithm (optimized)</option>
-                <option value="HALF_LIFE_REGRESSION">Half-Life Regression - Duolingo-style learning</option>
-                <option value="LEITNER_SYSTEM">Leitner System - Traditional box method</option>
-                <option value="SPRINT">Sprint - Intensive short-term learning</option>
+                <option value="SM2">{t('deck.algo_sm2')}</option>
+                <option value="FSRS">{t('deck.algo_fsrs')}</option>
+                <option value="HALF_LIFE_REGRESSION">{t('deck.algo_hlr')}</option>
+                <option value="LEITNER_SYSTEM">{t('deck.algo_leitner')}</option>
+                <option value="SPRINT">{t('deck.algo_sprint')}</option>
               </select>
               <span className="muted" style={{ fontSize: '0.8rem', marginTop: 5 }}>
-                Choose the spaced repetition algorithm for this deck
+                {t('deck.algorithm_helper')}
               </span>
             </div>
 
@@ -231,6 +275,45 @@ export default function DeckCreatePage() {
           text-transform: uppercase;
           letter-spacing: 1px;
           font-weight: 600;
+        }
+        .info-icon {
+          position: relative;
+        }
+        .tooltip-box {
+          visibility: hidden;
+          opacity: 0;
+          position: absolute;
+          bottom: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 300px;
+          background: rgba(0, 0, 0, 0.85);
+          color: #fff;
+          padding: 12px;
+          border-radius: 8px;
+          font-size: 0.85rem;
+          line-height: 1.4;
+          z-index: 100;
+          transition: opacity 0.2s;
+          pointer-events: none;
+          margin-bottom: 8px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .tooltip-box::after {
+          content: "";
+          position: absolute;
+          top: 100%;
+          left: 50%;
+          margin-left: -5px;
+          border-width: 5px;
+          border-style: solid;
+          border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
+        }
+
+        .info-icon:hover .tooltip-box {
+          visibility: visible;
+          opacity: 1;
         }
       `}</style>
     </Layout>

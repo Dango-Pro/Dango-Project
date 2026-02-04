@@ -185,7 +185,12 @@
     "algo_fsrs": "FSRS - 최신 머신러닝 기반 알고리즘 (최적화)",
     "algo_hlr": "Half-Life Regression - 듀오링고 스타일 학습",
     "algo_leitner": "Leitner System - 전통적인 상자형 방식",
-    "algo_sprint": "Sprint - 단기 집중 학습"
+    "algo_sprint": "Sprint - 단기 집중 학습",
+    "algo_desc_sm2": "가장 고전적이고 검증된 간격 반복 알고리즘입니다. 균형 잡힌 학습 스케줄을 제공합니다.",
+    "algo_desc_fsrs": "최신 머신러닝 기술을 사용하여 개인의 망각 곡선을 정밀하게 예측합니다. 학습 효율이 가장 높습니다.",
+    "algo_desc_hlr": "듀오링고가 사용하는 방식입니다. 단어의 반감기를 추정하여 복습 시점을 정합니다.",
+    "algo_desc_leitner": "전통적인 상자 이동 방식입니다. 맞추면 다음 상자로, 틀리면 첫 상자로 이동합니다.",
+    "algo_desc_sprint": "벼락치기용 모드입니다. 단기간에 최대한 많이 노출되도록 설계되었습니다."
   },
   "cards": {
     "title": "전체 카드",
