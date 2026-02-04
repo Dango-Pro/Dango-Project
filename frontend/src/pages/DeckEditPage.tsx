@@ -14,6 +14,8 @@ export default function DeckEditPage() {
   const [isPublic, setIsPublic] = useState(false);
   const [status, setStatus] = useState('');
   const [algorithmType, setAlgorithmType] = useState('SM2');
+  const [dailyNewCardLimit, setDailyNewCardLimit] = useState(20);
+
 
   useEffect(() => {
     api
@@ -23,6 +25,7 @@ export default function DeckEditPage() {
         setDescription(res.data.description || '');
         setIsPublic(res.data.isPublic || false);
         setAlgorithmType(res.data.algorithmType || 'SM2');
+        setDailyNewCardLimit(res.data.dailyNewCardLimit || 20);
       })
       .catch((err) => {
         console.error(err);
@@ -33,7 +36,7 @@ export default function DeckEditPage() {
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.put(`/decks/${id}`, { name, description, isPublic, algorithmType });
+      await api.put(`/decks/${id}`, { name, description, isPublic, algorithmType, dailyNewCardLimit });
       navigate(`/decks/${id}`);
     } catch (err) {
       console.error(err);
@@ -104,6 +107,25 @@ export default function DeckEditPage() {
                 style={{ resize: 'vertical' }}
               />
             </div>
+            
+            <div className="input-group">
+              <label htmlFor="daily-limit" className="input-label">
+                {t('deck.daily_new_cards_limit')}
+              </label>
+              <input
+                id="daily-limit"
+                type="number"
+                className="input-field"
+                value={dailyNewCardLimit}
+                onChange={(e) => setDailyNewCardLimit(e.target.valueAsNumber)}
+                min={0}
+                style={{ padding: '12px 16px', fontSize: '1.1rem' }}
+              />
+              <span className="muted" style={{ fontSize: '0.8rem' }}>
+                {t('deck.daily_new_cards_limit_desc')}
+              </span>
+            </div>
+
 
             <div className="input-group" style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
               <input

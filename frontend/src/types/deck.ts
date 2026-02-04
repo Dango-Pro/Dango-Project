@@ -10,4 +10,5 @@ export interface Deck {
   ownerId?: number;
   isPublic?: boolean;
   algorithmType?: AlgorithmType;
+  dailyNewCardLimit?: number;
 }

@@ -10,9 +10,9 @@ export default function UserPage() {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [status, setStatus] = useState(t('common.loading'));
-  const [editingLimit, setEditingLimit] = useState(false);
-  const [newLimit, setNewLimit] = useState(20);
+
   const [editingTimezone, setEditingTimezone] = useState(false);
+
   const [newTimezone, setNewTimezone] = useState('UTC');
 
   const timezones = ['UTC', 'Asia/Seoul', 'Asia/Tokyo', 'America/New_York', 'Europe/London', 'Australia/Sydney'];
@@ -26,7 +26,7 @@ export default function UserPage() {
       .get<User>('/users/me')
       .then((res) => {
         setUser(res.data);
-        setNewLimit(res.data.dailyLimit);
+
         setNewTimezone(res.data.timezone || 'UTC');
         setStatus('');
       })
@@ -44,8 +44,9 @@ export default function UserPage() {
 
   const onUpdateSettings = async () => {
     try {
-      await api.patch('/users/me', { dailyLimit: Number(newLimit), timezone: newTimezone });
-      setEditingLimit(false);
+      await api.patch('/users/me', { timezone: newTimezone });
+
+
       setEditingTimezone(false);
       fetchUser();
     } catch (err) {
@@ -84,46 +85,7 @@ export default function UserPage() {
               </div>
             </div>
 
-            <div className="action-card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <p className="muted">{t('user.daily_new_cards_limit')}</p>
-                  {editingLimit ? (
-                    <input
-                      type="number"
-                      className="input-field"
-                      style={{ width: 100, padding: '4px 8px' }}
-                      value={newLimit}
-                      onChange={(e) => setNewLimit(e.target.valueAsNumber)}
-                    />
-                  ) : (
-                    <h3 className="item-title">{t('user.cards_count', { count: user.dailyLimit })}</h3>
-                  )}
-                </div>
-                <div>
-                  {editingLimit ? (
-                    <div style={{ display: 'flex', gap: 5 }}>
-                      <button className="primary-btn" style={{ padding: '6px 12px', fontSize: '0.8rem' }} onClick={onUpdateSettings}>
-                        {t('common.save')}
-                      </button>
-                      <button
-                        className="secondary-btn"
-                        style={{ padding: '6px 12px', fontSize: '0.8rem' }}
-                        onClick={() => {
-                          setEditingLimit(false);
-                          setNewLimit(user.dailyLimit);
-                        }}>
-                        {t('common.cancel')}
-                      </button>
-                    </div>
-                  ) : (
-                    <button className="secondary-btn" style={{ padding: '6px 12px', fontSize: '0.8rem' }} onClick={() => setEditingLimit(true)}>
-                      {t('common.edit')}
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
+
 
             <div className="action-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

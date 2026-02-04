@@ -84,7 +84,8 @@ public class DeckController {
             return ResponseEntity.status(401).build();
 
         var d = deckService.create(request.name(), request.description(), request.templateId(), request.isPublic(),
-                request.learningSteps(), request.algorithmType(), user);
+                request.learningSteps(), request.algorithmType(), request.dailyNewCardLimit(), user);
+
         return ResponseEntity.ok(mapToResponse(d));
     }
 
@@ -98,7 +99,8 @@ public class DeckController {
         boolean isPublic = request.isPublic() != null ? request.isPublic() : false;
 
         var d = deckService.update(id, request.name(), request.description(), isPublic, request.learningSteps(),
-                request.algorithmType(), user);
+                request.algorithmType(), request.dailyNewCardLimit(), user);
+
         return ResponseEntity.ok(mapToResponse(d));
     }
 
@@ -130,6 +132,8 @@ public class DeckController {
         String algorithmType = d.getAlgorithmType() != null ? d.getAlgorithmType().name() : "SM2";
 
         return new DeckResponse(d.getId(), d.getName(), d.getDescription(), templateId, templateName, fieldNames,
-                d.getOwner() != null ? d.getOwner().getId() : null, d.isPublic(), d.getLearningSteps(), algorithmType);
+                d.getOwner() != null ? d.getOwner().getId() : null, d.isPublic(), d.getLearningSteps(), algorithmType,
+                d.getDailyNewCardLimit());
     }
+
 }

@@ -41,4 +41,7 @@ public class Deck {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AlgorithmType algorithmType = AlgorithmType.SM2;
+
+    @Column(name = "daily_new_card_limit", nullable = false)
+    private Integer dailyNewCardLimit = 20;
 }

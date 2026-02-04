@@ -50,12 +50,16 @@ public class DeckService {
 
     @Transactional
     public Deck create(String name, String description, Long templateId, Boolean isPublic, String learningSteps,
-            String algorithmType, User owner) {
+            String algorithmType, Integer dailyNewCardLimit, User owner) {
+
         Deck deck = new Deck();
         deck.setName(name);
         deck.setDescription(description);
         deck.setOwner(owner);
         deck.setPublic(isPublic != null ? isPublic : false);
+        if (dailyNewCardLimit != null && dailyNewCardLimit > 0) {
+            deck.setDailyNewCardLimit(dailyNewCardLimit);
+        }
         if (learningSteps != null && !learningSteps.trim().isEmpty()) {
             deck.setLearningSteps(learningSteps);
         }
@@ -77,7 +81,8 @@ public class DeckService {
 
     @Transactional
     public Deck update(Long id, String name, String description, boolean isPublic, String learningSteps,
-            String algorithmType, User owner) {
+            String algorithmType, Integer dailyNewCardLimit, User owner) {
+
         Deck deck = findById(id);
         if (!deck.getOwner().getId().equals(owner.getId())) {
             throw new IllegalArgumentException("Not authorized to update this deck");
@@ -87,6 +92,9 @@ public class DeckService {
         deck.setPublic(isPublic);
         if (learningSteps != null && !learningSteps.trim().isEmpty()) {
             deck.setLearningSteps(learningSteps);
+        }
+        if (dailyNewCardLimit != null && dailyNewCardLimit > 0) {
+            deck.setDailyNewCardLimit(dailyNewCardLimit);
         }
         if (algorithmType != null && !algorithmType.trim().isEmpty()) {
             try {

@@ -13,6 +13,8 @@ export default function DeckCreatePage() {
   const [isPublic, setIsPublic] = useState(false);
   const [status, setStatus] = useState('');
   const [algorithmType, setAlgorithmType] = useState('SM2');
+  const [dailyNewCardLimit, setDailyNewCardLimit] = useState(20);
+
 
   const [templates, setTemplates] = useState<CardTemplate[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
@@ -65,7 +67,7 @@ export default function DeckCreatePage() {
     e.preventDefault();
     try {
       if (selectedTemplateId) localStorage.setItem('lastTemplateId', String(selectedTemplateId));
-      await api.post('/decks', { name, description, templateId: selectedTemplateId, isPublic, algorithmType });
+      await api.post('/decks', { name, description, templateId: selectedTemplateId, isPublic, algorithmType, dailyNewCardLimit });
       navigate('/decks');
     } catch (err) {
       console.error(err);
@@ -114,6 +116,25 @@ export default function DeckCreatePage() {
                 style={{ resize: 'vertical' }}
               />
             </div>
+            
+            <div className="input-group">
+              <label htmlFor="daily-limit" className="input-label">
+                {t('deck.daily_new_cards_limit')}
+              </label>
+              <input
+                id="daily-limit"
+                type="number"
+                className="text-input"
+                value={dailyNewCardLimit}
+                onChange={(e) => setDailyNewCardLimit(e.target.valueAsNumber)}
+                min={0}
+                style={{ fontSize: '1.1rem' }}
+              />
+              <span className="muted" style={{ fontSize: '0.8rem' }}>
+                {t('deck.daily_new_cards_limit_desc')}
+              </span>
+            </div>
+
 
             <div className="input-group" style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
               <input

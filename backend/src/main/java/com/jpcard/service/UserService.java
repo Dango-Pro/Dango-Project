@@ -21,7 +21,9 @@ public class UserService {
     public User signup(String username, String rawPassword) {
 
         userRepository.findByUsername(username)
-                .ifPresent(u -> { throw new IllegalArgumentException("이미 존재하는 사용자"); });
+                .ifPresent(u -> {
+                    throw new IllegalArgumentException("이미 존재하는 사용자");
+                });
 
         User user = new User();
         user.setUsername(username);
@@ -42,10 +44,10 @@ public class UserService {
     }
 
     @Transactional
-    public User updateSettings(Long userId, int dailyLimit, int reviewLimit, String timezone) {
+    public User updateSettings(Long userId, int reviewLimit, String timezone) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        user.setDailyLimit(dailyLimit);
+
         user.setReviewLimit(reviewLimit);
         if (timezone != null) {
             user.setTimezone(timezone);

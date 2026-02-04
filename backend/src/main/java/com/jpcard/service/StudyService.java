@@ -38,6 +38,7 @@ public class StudyService {
     private final StudyLogRepository studyLogRepository;
     private final PlatformTransactionManager transactionManager;
     private final com.jpcard.service.algorithm.AlgorithmFactory algorithmFactory;
+    private final com.jpcard.repository.DeckRepository deckRepository;
 
     // Leech detection threshold
     private static final int LEECH_THRESHOLD = 8; // Fail count to suspend
@@ -46,6 +47,9 @@ public class StudyService {
     public StudySessionResult getDueCards(Long userId, Long deckId, boolean studyMore) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        com.jpcard.domain.deck.Deck deck = deckRepository.findById(deckId)
+                .orElseThrow(() -> new ResourceNotFoundException("Deck not found"));
 
         // 1. Timezone Setup
         String userZone = user.getTimezone() != null ? user.getTimezone() : "UTC";
@@ -88,7 +92,10 @@ public class StudyService {
         }
 
         // 3. Get NEW cards with limits
-        int dailyLimit = user.getDailyLimit();
+        int dailyLimit = deck.getDailyNewCardLimit() != null ? deck.getDailyNewCardLimit() : 20; // Fallback to 20 if
+                                                                                                 // null (though schema
+                                                                                                 // says non-null)
+
         long newCardsStudiedToday = progressRepository.countNewCardsStudiedToday(userId, deckId, startParam, endParam);
 
         int remainingNewLimit = dailyLimit - (int) newCardsStudiedToday;
