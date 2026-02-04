@@ -12,6 +12,7 @@ export default function DeckCreatePage() {
   const [description, setDescription] = useState('');
   const [isPublic, setIsPublic] = useState(false);
   const [status, setStatus] = useState('');
+  const [algorithmType, setAlgorithmType] = useState('SM2');
 
   const [templates, setTemplates] = useState<CardTemplate[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
@@ -64,7 +65,7 @@ export default function DeckCreatePage() {
     e.preventDefault();
     try {
       if (selectedTemplateId) localStorage.setItem('lastTemplateId', String(selectedTemplateId));
-      await api.post('/decks', { name, description, templateId: selectedTemplateId, isPublic });
+      await api.post('/decks', { name, description, templateId: selectedTemplateId, isPublic, algorithmType });
       navigate('/decks');
     } catch (err) {
       console.error(err);
@@ -192,6 +193,24 @@ export default function DeckCreatePage() {
                   </div>
                 </div>
               )}
+            </div>
+
+            <div className="input-group">
+              <label className="input-label">Learning Algorithm</label>
+              <select
+                className="text-input"
+                value={algorithmType}
+                onChange={(e) => setAlgorithmType(e.target.value)}
+                style={{ fontSize: '1rem' }}>
+                <option value="SM2">SM-2 - Classic spaced repetition (balanced)</option>
+                <option value="FSRS">FSRS - Modern ML-based algorithm (optimized)</option>
+                <option value="HALF_LIFE_REGRESSION">Half-Life Regression - Duolingo-style learning</option>
+                <option value="LEITNER_SYSTEM">Leitner System - Traditional box method</option>
+                <option value="SPRINT">Sprint - Intensive short-term learning</option>
+              </select>
+              <span className="muted" style={{ fontSize: '0.8rem', marginTop: 5 }}>
+                Choose the spaced repetition algorithm for this deck
+              </span>
             </div>
 
             <button type="submit" className="primary-btn" style={{ marginTop: 10, padding: '14px', fontSize: '1.1rem' }}>
