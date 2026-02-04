@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import { Link } from 'react-router-dom';
+import Toast from '../components/Toast';
 import { api } from '../libs/api';
 import type { Post } from '../types/post';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../context/AuthContext';
 
 const Carousel = () => {
   const { t } = useTranslation();
@@ -190,18 +192,18 @@ const CommunityWidget = () => {
 
 const LoginWidget = () => {
   const { t } = useTranslation();
-  const token = localStorage.getItem('token');
+  const { token, login, logout } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   const handleLogin = async () => {
     if (!username || !password) return;
     try {
       const res = await api.post('/auth/login', { username, password });
-      localStorage.setItem('token', res.data.accessToken);
-      if (res.data.refreshToken) localStorage.setItem('refreshToken', res.data.refreshToken);
-      window.location.reload();
+      login(res.data.accessToken, res.data.refreshToken);
     } catch (err) {
       console.error(err);
       setError(t('auth.login_fail'));
@@ -213,6 +215,12 @@ const LoginWidget = () => {
       <div
         className="glass-card"
         style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+        <Toast 
+          isOpen={showToast} 
+          message={toastMessage} 
+          type="success" 
+          onClose={() => setShowToast(false)} 
+        />
         <h3 className="card-title" style={{ marginBottom: '10px', color: '#111' }}>
           {t('home.welcome_back')}
         </h3>
@@ -226,11 +234,9 @@ const LoginWidget = () => {
           <button
             className="secondary-btn"
             onClick={() => {
-              if (window.confirm(t('common.confirm') + '?')) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('refreshToken');
-                window.location.reload();
-              }
+              setToastMessage(t('auth.logout_success'));
+              setShowToast(true);
+              logout();
             }}>
             {t('nav.logout')}
           </button>

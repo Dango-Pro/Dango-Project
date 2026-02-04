@@ -12,6 +12,31 @@ interface FlashCardProps {
 export default function FlashCard({ card, isFlipped, onFlip, onReview }: FlashCardProps) {
   const { t } = useTranslation();
 
+  // Determine if this is a custom template card or a legacy card
+  const isCustomTemplate = card.templateFieldNames && card.templateFieldNames.length > 0;
+  
+  // For custom template cards, use templateFieldNames and content
+  // For legacy cards, fall back to term/meaning
+  const frontFieldName = isCustomTemplate ? card.templateFieldNames![0] : "term";
+  const frontFieldValue = isCustomTemplate ? card.content[frontFieldName] : (card.term || "");
+  
+  // For back, show all remaining fields (or just meaning for legacy)
+  const backFields: Array<{ name: string; value: string }> = [];
+  if (isCustomTemplate) {
+    // Skip the first field (already shown on front)
+    for (let i = 1; i < card.templateFieldNames!.length; i++) {
+      const fieldName = card.templateFieldNames![i];
+      const fieldValue = card.content[fieldName] || "";
+      backFields.push({ name: fieldName, value: fieldValue });
+    }
+  } else {
+    // Legacy: just show meaning
+    backFields.push({ name: "meaning", value: card.meaning || "" });
+  }
+
+  // Special handling for pronunciation (for Japanese cards)
+  const pronunciationField = backFields.find(f => f.name.toLowerCase() === 'pronunciation');
+
   return (
     <div className="study-container">
       <div
@@ -19,11 +44,11 @@ export default function FlashCard({ card, isFlipped, onFlip, onReview }: FlashCa
         onClick={onFlip}
       >
         <div className="card-face card-front">
-          <span className="card-label">{t("study.term_label")}</span>
-          <h2>{card.term}</h2>
+          <span className="card-label">{isCustomTemplate ? frontFieldName : t("study.term_label")}</span>
+          <h2>{frontFieldValue}</h2>
           <button
             className="icon-btn"
-            onClick={(e) => { e.stopPropagation(); speak(card.term || ""); }}
+            onClick={(e) => { e.stopPropagation(); speak(frontFieldValue || ""); }}
             style={{ position: 'absolute', top: 16, right: 16 }}
           >
             🔊
@@ -31,21 +56,40 @@ export default function FlashCard({ card, isFlipped, onFlip, onReview }: FlashCa
           <p className="click-hint">{t("study.click_flip")}</p>
         </div>
         <div className="card-face card-back">
-          <span className="card-label">{t("study.meaning_label")}</span>
-          {card.content && card.content['pronunciation'] && (
+          {/* Show pronunciation first if it exists */}
+          {pronunciationField && (
             <h3 style={{ fontSize: '1.5rem', marginBottom: '8px', color: '#666', fontWeight: 'normal' }}>
-              {card.content['pronunciation']}
+              {pronunciationField.value}
             </h3>
           )}
-          <h2>{card.meaning}</h2>
+          
+          {/* Display all back fields */}
+          {backFields.map((field, idx) => {
+            // Skip pronunciation since we displayed it separately above
+            if (field.name.toLowerCase() === 'pronunciation') return null;
+            
+            return (
+              <div key={idx} style={{ marginBottom: idx < backFields.length - 1 ? '12px' : '0' }}>
+                {isCustomTemplate && backFields.length > 1 && (
+                  <span className="card-label" style={{ position: 'relative', top: 'auto', left: 'auto', display: 'block', marginBottom: '4px' }}>
+                    {field.name}
+                  </span>
+                )}
+                <h2 style={{ margin: 0 }}>{field.value}</h2>
+              </div>
+            );
+          })}
+          
           <button
             className="icon-btn"
             onClick={(e) => {
               e.stopPropagation();
-              if (card.content && card.content['pronunciation']) {
-                speak(card.content['pronunciation'], "ja-JP");
+              if (pronunciationField) {
+                speak(pronunciationField.value, "ja-JP");
               } else {
-                speak(card.meaning || "", "ko-KR");
+                // Speak the first non-pronunciation back field
+                const firstBackValue = backFields.find(f => f.name.toLowerCase() !== 'pronunciation')?.value || "";
+                speak(firstBackValue, "ko-KR");
               }
             }}
             style={{ position: 'absolute', top: 16, right: 16 }}
@@ -86,7 +130,7 @@ export default function FlashCard({ card, isFlipped, onFlip, onReview }: FlashCa
         .flash-card {
           width: 100%;
           max-width: 400px;
-          height: 250px;
+          min-height: 250px;
           position: relative;
           perspective: 1000px;
           cursor: pointer;
@@ -94,7 +138,7 @@ export default function FlashCard({ card, isFlipped, onFlip, onReview }: FlashCa
         .card-face {
           position: absolute;
           width: 100%;
-          height: 100%;
+          min-height: 250px;
           backface-visibility: hidden;
           transition: transform 0.6s;
           background: #ffffff;
