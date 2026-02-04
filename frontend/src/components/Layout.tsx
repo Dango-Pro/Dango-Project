@@ -1,7 +1,9 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { api } from '../libs/api';
+import { useAuth } from '../context/AuthContext';
+import Toast from './Toast';
+import { useState } from 'react';
 
 interface LayoutProps {
   children: ReactNode;
@@ -12,26 +14,18 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const { t, i18n } = useTranslation();
   const { pathname } = useLocation();
-  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const { token, logout } = useAuth();
 
-  useEffect(() => {
-    if (token) {
-      api.get('/users/me')
-        .catch(() => {
-          localStorage.removeItem('token');
-          localStorage.removeItem('refreshToken');
-          setToken(null);
-        });
-    }
-  }, [token]);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   const handleLogout = () => {
-    if (confirm(t('common.confirm') + '?')) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('refreshToken');
-      setToken(null);
-      // Optional: navigate('/login') or just let the state update the UI
-    }
+    // Remove confirmation, just logout with toast
+    setToastMessage(t('auth.logout_success'));
+    setShowToast(true);
+    setTimeout(() => {
+      logout();
+    }, 1000); 
   };
 
   const links = [
@@ -51,6 +45,12 @@ export default function Layout({ children }: LayoutProps) {
     <div className="app-shell">
       <div className="app-frame">
         <header className="top-nav">
+          <Toast 
+            isOpen={showToast} 
+            message={toastMessage} 
+            type="success" 
+            onClose={() => setShowToast(false)} 
+          />
           <div className="brand">
             <img src="/dango.svg" alt="Dango Logo" className="brand-logo" />
             <span style={{ fontFamily: '"Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif', color: '#d9534f' }}>DANGO</span>
@@ -178,10 +178,10 @@ export default function Layout({ children }: LayoutProps) {
               borderRadius: '4px',
               marginRight: '12px'
             }}>
-              Version 1.02
+              Version 1.03
             </span>
             <span style={{ color: '#000' }}>
-              <span style={{ color: 'crimson', fontWeight: 'bold' }}>Latest update.</span> 2026.02.04
+              <span style={{ color: 'crimson', fontWeight: 'bold' }}>최신 업데이트 일자 :&nbsp;&nbsp;</span> 2026.02.04. 18:17
             </span>
           </div>
         </footer>

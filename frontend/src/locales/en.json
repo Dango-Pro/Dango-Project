@@ -51,7 +51,8 @@
     "register_fail": "Registration failed. Please try again.",
     "complete_register": "Complete Registration",
     "email_label": "Email",
-    "email_placeholder": "user@example.com"
+    "email_placeholder": "user@example.com",
+    "logout_success": "Logged out successfully."
   },
   "dashboard": {
     "progress_title": "Progress Overview",

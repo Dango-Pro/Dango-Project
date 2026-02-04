@@ -2,7 +2,7 @@ import { useState } from "react";
 import { api } from "../libs/api";
 import Layout from "../components/Layout";
 import { useNavigate } from "react-router-dom";
-import SuccessModal from "../components/SuccessModal";
+import Toast from "../components/Toast";
 import { useTranslation } from "react-i18next";
 
 export default function RegisterPage() {
@@ -10,8 +10,9 @@ export default function RegisterPage() {
   const navigate = useNavigate();
   const [id, setId] = useState("");
   const [pw, setPw] = useState("");
-  const [message, setMessage] = useState<string | null>(null);
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState<'success' | 'error'>('success');
 
   const onRegister = async () => {
     try {
@@ -19,20 +20,28 @@ export default function RegisterPage() {
         username: id,
         password: pw,
       });
-      setShowSuccess(true);
-      setTimeout(() => navigate("/login"), 1500);
+      
+      setToastMessage(t("auth.register_success"));
+      setToastType('success');
+      setShowToast(true);
+      
+      // Auto redirect without waiting for user interaction
+      setTimeout(() => navigate("/login"), 500);
     } catch (err) {
       console.error(err);
-      setMessage(t("auth.register_fail"));
+      setToastMessage(t("auth.register_fail"));
+      setToastType('error');
+      setShowToast(true);
     }
   };
 
   return (
     <Layout pageTitle={t("auth.register_title")}>
-      <SuccessModal
-        isOpen={showSuccess}
-        message={t("auth.register_success")}
-        onClose={() => navigate("/login")}
+      <Toast
+        isOpen={showToast}
+        message={toastMessage}
+        type={toastType}
+        onClose={() => setShowToast(false)}
       />
       <section className="glass-card">
         <div className="card-header">
@@ -67,7 +76,6 @@ export default function RegisterPage() {
             </button>
             <button className="secondary-btn" onClick={() => setId("")}>{t("common.reset")}</button>
           </div>
-          {message && <p className="muted">{message}</p>}
         </div>
       </section>
     </Layout>

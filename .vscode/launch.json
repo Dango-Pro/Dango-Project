@@ -1,7 +1,4 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
@@ -9,20 +6,7 @@
             "name": "JpcardApplication",
             "request": "launch",
             "mainClass": "com.jpcard.JpcardApplication",
-            "projectName": "jpcard-backend"
-        },
-        {
-            "type": "java",
-            "name": "Current File",
-            "request": "launch",
-            "mainClass": "${file}"
-        },
-        {
-            "type": "java",
-            "name": "JpcardApplication",
-            "request": "launch",
-            "mainClass": "com.jpcard.JpcardApplication",
-            "projectName": "backend",
+            "projectName": "jpcard-backend",
             "env": {
                 "JWT_SECRET_KEY": "vml0YW1pbi1kYW5nby1zZWNyZXQta2V5LXByb2plY3QtamF2YS1zcHJpbmctYm9vdA=="
             }
