@@ -178,7 +178,14 @@
     "template_name_placeholder": "My Custom Template",
     "fields_label": "Fields",
     "field_n": "Field {{n}}",
-    "add_field": "+ Add Field"
+    "add_field": "+ Add Field",
+    "algorithm_label": "Learning Algorithm",
+    "algorithm_helper": "Choose the spaced repetition algorithm for this deck",
+    "algo_sm2": "SM-2 - Classic spaced repetition (balanced)",
+    "algo_fsrs": "FSRS - Modern ML-based algorithm (optimized)",
+    "algo_hlr": "Half-Life Regression - Duolingo-style learning",
+    "algo_leitner": "Leitner System - Traditional box method",
+    "algo_sprint": "Sprint - Intensive short-term learning"
   },
   "cards": {
     "title": "All Cards",

@@ -1,5 +1,6 @@
 package com.jpcard.domain.deck;
 
+import com.jpcard.domain.study.AlgorithmType;
 import com.jpcard.domain.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -35,4 +36,9 @@ public class Deck {
     // Default learning steps in minutes: 1 -> 10. Comma separated.
     @Column(nullable = false)
     private String learningSteps = "1,10";
+
+    // Spaced repetition algorithm to use for this deck
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AlgorithmType algorithmType = AlgorithmType.SM2;
 }

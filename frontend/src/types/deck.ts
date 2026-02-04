@@ -1,3 +1,5 @@
+export type AlgorithmType = 'SM2' | 'FSRS' | 'HALF_LIFE_REGRESSION' | 'LEITNER_SYSTEM' | 'SPRINT';
+
 export interface Deck {
   id: number;
   name: string;
@@ -7,4 +9,5 @@ export interface Deck {
   fieldNames?: string[];
   ownerId?: number;
   isPublic?: boolean;
+  algorithmType?: AlgorithmType;
 }

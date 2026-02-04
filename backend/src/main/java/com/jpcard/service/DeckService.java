@@ -49,7 +49,8 @@ public class DeckService {
     }
 
     @Transactional
-    public Deck create(String name, String description, Long templateId, Boolean isPublic, String learningSteps, User owner) {
+    public Deck create(String name, String description, Long templateId, Boolean isPublic, String learningSteps,
+            String algorithmType, User owner) {
         Deck deck = new Deck();
         deck.setName(name);
         deck.setDescription(description);
@@ -57,6 +58,14 @@ public class DeckService {
         deck.setPublic(isPublic != null ? isPublic : false);
         if (learningSteps != null && !learningSteps.trim().isEmpty()) {
             deck.setLearningSteps(learningSteps);
+        }
+        if (algorithmType != null && !algorithmType.trim().isEmpty()) {
+            try {
+                deck.setAlgorithmType(com.jpcard.domain.study.AlgorithmType.valueOf(algorithmType));
+            } catch (IllegalArgumentException e) {
+                // Default to SM2 if invalid algorithm type
+                deck.setAlgorithmType(com.jpcard.domain.study.AlgorithmType.SM2);
+            }
         }
         if (templateId != null) {
             CardTemplate template = cardTemplateRepository.findById(templateId)
@@ -67,16 +76,24 @@ public class DeckService {
     }
 
     @Transactional
-    public Deck update(Long id, String name, String description, boolean isPublic, String learningSteps, User owner) {
+    public Deck update(Long id, String name, String description, boolean isPublic, String learningSteps,
+            String algorithmType, User owner) {
         Deck deck = findById(id);
         if (!deck.getOwner().getId().equals(owner.getId())) {
-             throw new IllegalArgumentException("Not authorized to update this deck");
+            throw new IllegalArgumentException("Not authorized to update this deck");
         }
         deck.setName(name);
         deck.setDescription(description);
         deck.setPublic(isPublic);
         if (learningSteps != null && !learningSteps.trim().isEmpty()) {
             deck.setLearningSteps(learningSteps);
+        }
+        if (algorithmType != null && !algorithmType.trim().isEmpty()) {
+            try {
+                deck.setAlgorithmType(com.jpcard.domain.study.AlgorithmType.valueOf(algorithmType));
+            } catch (IllegalArgumentException e) {
+                // Keep existing algorithm if invalid type provided
+            }
         }
         return deck;
     }
@@ -85,7 +102,7 @@ public class DeckService {
     public void delete(Long id, User owner) {
         Deck deck = findById(id);
         if (!deck.getOwner().getId().equals(owner.getId())) {
-             throw new IllegalArgumentException("Not authorized to delete this deck");
+            throw new IllegalArgumentException("Not authorized to delete this deck");
         }
         // Cascade delete progress and cards
         progressRepository.deleteByCardDeckId(id);

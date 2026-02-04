@@ -178,7 +178,14 @@
     "template_name_placeholder": "カスタムテンプレート",
     "fields_label": "フィールド",
     "field_n": "フィールド{{n}}",
-    "add_field": "+ フィールド追加"
+    "add_field": "+ フィールド追加",
+    "algorithm_label": "学習アルゴリズム",
+    "algorithm_helper": "この単語帳に使用する間隔反復学習アルゴリズムを選択してください",
+    "algo_sm2": "SM-2 - 古典的な間隔反復 (バランス型)",
+    "algo_fsrs": "FSRS - 最新MLベースのアルゴリズム (最適化)",
+    "algo_hlr": "Half-Life Regression - Duolingoスタイル学習",
+    "algo_leitner": "Leitner System - 伝統的なボックス方式",
+    "algo_sprint": "Sprint - 短期集中学習"
   },
   "cards": {
     "title": "すべてのカード",

@@ -13,6 +13,7 @@ export default function DeckEditPage() {
   const [description, setDescription] = useState('');
   const [isPublic, setIsPublic] = useState(false);
   const [status, setStatus] = useState('');
+  const [algorithmType, setAlgorithmType] = useState('SM2');
 
   useEffect(() => {
     api
@@ -21,6 +22,7 @@ export default function DeckEditPage() {
         setName(res.data.name);
         setDescription(res.data.description || '');
         setIsPublic(res.data.isPublic || false);
+        setAlgorithmType(res.data.algorithmType || 'SM2');
       })
       .catch((err) => {
         console.error(err);
@@ -31,7 +33,7 @@ export default function DeckEditPage() {
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.put(`/decks/${id}`, { name, description, isPublic });
+      await api.put(`/decks/${id}`, { name, description, isPublic, algorithmType });
       navigate(`/decks/${id}`);
     } catch (err) {
       console.error(err);
@@ -119,6 +121,24 @@ export default function DeckEditPage() {
               </span>
             </div>
 
+            <div className="input-group">
+              <label className="input-label">{t('deck.algorithm_label')}</label>
+              <select
+                className="input-field"
+                value={algorithmType}
+                onChange={(e) => setAlgorithmType(e.target.value)}
+                style={{ padding: '12px 16px', fontSize: '1rem' }}>
+                <option value="SM2">{t('deck.algo_sm2')}</option>
+                <option value="FSRS">{t('deck.algo_fsrs')}</option>
+                <option value="HALF_LIFE_REGRESSION">{t('deck.algo_hlr')}</option>
+                <option value="LEITNER_SYSTEM">{t('deck.algo_leitner')}</option>
+                <option value="SPRINT">{t('deck.algo_sprint')}</option>
+              </select>
+              <span className="muted" style={{ fontSize: '0.8rem', marginTop: 5 }}>
+                {t('deck.algorithm_helper')}
+              </span>
+            </div>
+
             <button type="submit" className="primary-btn" style={{ marginTop: 10, padding: '14px', fontSize: '1.1rem' }}>
               {t('cards.save_changes')}
             </button>
@@ -133,7 +153,7 @@ export default function DeckEditPage() {
         }
         .input-label {
           font-size: 0.9rem;
-          color: rgba(255, 255, 255, 0.7);
+          color: #444;
           text-transform: uppercase;
           letter-spacing: 1px;
           font-weight: 600;
@@ -152,7 +172,10 @@ export default function DeckEditPage() {
           transition: all 0.2s;
         }
         .nav-btn:hover {
-          background: rgba(255,255,255,0.1);
+          background: rgba(0,0,0,0.05);
+        }
+        .muted {
+          color: #666;
         }
       `}</style>
     </Layout>
