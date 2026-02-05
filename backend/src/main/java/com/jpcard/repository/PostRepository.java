@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
+    @Query("SELECT p FROM Post p WHERE :keyword IS NULL OR LOWER(p.title) LIKE :keyword OR p.content LIKE :keyword")
     List<Post> search(@Param("keyword") String keyword);
 
     List<Post> findByIsNoticeTrueOrderByIdDesc();
