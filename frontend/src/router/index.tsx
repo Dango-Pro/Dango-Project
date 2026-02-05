@@ -17,6 +17,11 @@ import UserPage from "../pages/UserPage";
 import HomePage from "../pages/HomePage";
 import DashboardPage from "../pages/DashboardPage";
 import ErrorPage from "../components/ErrorPage";
+import AdminLayout from "../components/layouts/AdminLayout";
+import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
+import AdminUserPage from "../pages/admin/AdminUserPage";
+import AdminDeckPage from "../pages/admin/AdminDeckPage";
+import AdminPostPage from "../pages/admin/AdminPostPage";
 
 export const router = createBrowserRouter([
   {
@@ -40,6 +45,16 @@ export const router = createBrowserRouter([
       { path: "posts/:id/edit", element: <PostEditPage /> },
       { path: "posts/:id", element: <PostDetailPage /> },
       { path: "user", element: <UserPage /> },
+    ],
+  },
+  {
+    path: "admin",
+    element: <AdminLayout />,
+    children: [
+        { index: true, element: <AdminDashboardPage /> },
+        { path: "users", element: <AdminUserPage /> },
+        { path: "decks", element: <AdminDeckPage /> },
+        { path: "notices", element: <AdminPostPage /> },
     ],
   },
 ]);

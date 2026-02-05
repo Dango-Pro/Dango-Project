@@ -54,4 +54,55 @@ public class UserService {
         }
         return user;
     }
+
+    @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<User> findAll(org.springframework.data.domain.Pageable pageable) {
+        return userRepository.findAll(pageable);
+    }
+
+    @Transactional
+    public User adminCreateUser(String username, String rawPassword, com.jpcard.domain.user.UserStatus status,
+            java.util.Set<Role> roles) {
+        if (userRepository.existsByUsername(username)) {
+            throw new IllegalArgumentException("Username already exists");
+        }
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(rawPassword));
+        user.setStatus(status);
+        user.setRoles(roles);
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    public User adminUpdateUser(Long userId, String username, String rawPassword,
+            com.jpcard.domain.user.UserStatus status, java.util.Set<Role> roles) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (username != null && !username.isBlank() && !username.equals(user.getUsername())) {
+            if (userRepository.existsByUsername(username)) {
+                throw new IllegalArgumentException("Username already exists");
+            }
+            user.setUsername(username);
+        }
+        if (rawPassword != null && !rawPassword.isBlank()) {
+            user.setPassword(passwordEncoder.encode(rawPassword));
+        }
+        if (status != null) {
+            user.setStatus(status);
+        }
+        if (roles != null && !roles.isEmpty()) {
+            user.setRoles(roles);
+        }
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    public void adminDeleteUser(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new IllegalArgumentException("User not found");
+        }
+        userRepository.deleteById(userId);
+    }
 }

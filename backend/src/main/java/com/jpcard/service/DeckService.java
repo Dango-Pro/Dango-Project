@@ -169,4 +169,9 @@ public class DeckService {
 
         return savedDeck;
     }
+
+    @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<Deck> findAllDecks(org.springframework.data.domain.Pageable pageable) {
+        return deckRepository.findAll(pageable);
+    }
 }

@@ -14,7 +14,12 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const { t, i18n } = useTranslation();
   const { pathname } = useLocation();
-  const { token, logout } = useAuth();
+  const { token, logout, user } = useAuth();
+
+  // Check if user has admin role
+  const isAdmin = user?.roles?.some((r: any) => 
+    r === 'ROLE_ADMIN' || r.name === 'ROLE_ADMIN' || (typeof r === 'object' && r.toString() === 'ROLE_ADMIN')
+  );
 
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
@@ -130,6 +135,21 @@ export default function Layout({ children }: LayoutProps) {
                 {t('nav.logout')}
               </button>
             )}
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className="nav-link admin-link"
+                style={{
+                  borderColor: pathname.startsWith('/admin') ? 'rgba(102, 126, 234, 0.6)' : undefined,
+                  background: pathname.startsWith('/admin') ? 'rgba(102, 126, 234, 0.2)' : undefined,
+                  color: pathname.startsWith('/admin') ? '#667eea' : '#6c757d',
+                  fontWeight: pathname.startsWith('/admin') ? 'bold' : undefined,
+                  fontSize: '12px',
+                  padding: '4px 10px',
+                }}>
+                ⚙️ Admin
+              </Link>
+            )}
           </div>
         </header>
 
@@ -171,7 +191,7 @@ export default function Layout({ children }: LayoutProps) {
           </div>
 
           {/* 버전 및 날짜: Latest update. 만 크림슨 적용 */}
-          <div style={{ fontSize: '12px', fontWeight: '500' }}>
+          <div style={{ fontSize: '12px', fontWeight: '500', marginBottom: '12px' }}>
             <span style={{
               backgroundColor: '#e9ecef',
               padding: '2px 8px',
