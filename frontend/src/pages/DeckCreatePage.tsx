@@ -12,6 +12,9 @@ export default function DeckCreatePage() {
   const [description, setDescription] = useState('');
   const [isPublic, setIsPublic] = useState(false);
   const [status, setStatus] = useState('');
+  const [algorithmType, setAlgorithmType] = useState('SM2');
+  const [dailyNewCardLimit, setDailyNewCardLimit] = useState(20);
+
 
   const [templates, setTemplates] = useState<CardTemplate[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(null);
@@ -64,7 +67,7 @@ export default function DeckCreatePage() {
     e.preventDefault();
     try {
       if (selectedTemplateId) localStorage.setItem('lastTemplateId', String(selectedTemplateId));
-      await api.post('/decks', { name, description, templateId: selectedTemplateId, isPublic });
+      await api.post('/decks', { name, description, templateId: selectedTemplateId, isPublic, algorithmType, dailyNewCardLimit });
       navigate('/decks');
     } catch (err) {
       console.error(err);
@@ -113,6 +116,25 @@ export default function DeckCreatePage() {
                 style={{ resize: 'vertical' }}
               />
             </div>
+            
+            <div className="input-group">
+              <label htmlFor="daily-limit" className="input-label">
+                {t('deck.daily_new_cards_limit')}
+              </label>
+              <input
+                id="daily-limit"
+                type="number"
+                className="text-input"
+                value={dailyNewCardLimit}
+                onChange={(e) => setDailyNewCardLimit(e.target.valueAsNumber)}
+                min={0}
+                style={{ fontSize: '1.1rem' }}
+              />
+              <span className="muted" style={{ fontSize: '0.8rem' }}>
+                {t('deck.daily_new_cards_limit_desc')}
+              </span>
+            </div>
+
 
             <div className="input-group" style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
               <input
@@ -194,6 +216,68 @@ export default function DeckCreatePage() {
               )}
             </div>
 
+            <div className="input-group" style={{ position: 'relative' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <label className="input-label" style={{ marginBottom: 0 }}>
+                  {t('deck.algorithm_label')}
+                </label>
+                <div
+                  className="info-icon"
+                  style={{
+                    cursor: 'help',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 18,
+                    height: 18,
+                    borderRadius: '50%',
+                    background: '#ccc',
+                    color: 'white',
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  ?
+                  <div className="tooltip-box">
+                    <p style={{ fontWeight: 'bold', marginBottom: 8, borderBottom: '1px solid rgba(255,255,255,0.3)', paddingBottom: 4 }}>
+                      {t('deck.algorithm_label')}
+                    </p>
+                    <ul style={{ paddingLeft: 16, margin: 0, listStyle: 'disk' }}>
+                      <li style={{ marginBottom: 4 }}>
+                        <strong>SM-2:</strong> {t('deck.algo_desc_sm2')}
+                      </li>
+                      <li style={{ marginBottom: 4 }}>
+                        <strong>FSRS:</strong> {t('deck.algo_desc_fsrs')}
+                      </li>
+                      <li style={{ marginBottom: 4 }}>
+                        <strong>Half-Life Regression:</strong> {t('deck.algo_desc_hlr')}
+                      </li>
+                      <li style={{ marginBottom: 4 }}>
+                        <strong>Leitner:</strong> {t('deck.algo_desc_leitner')}
+                      </li>
+                      <li>
+                        <strong>Sprint:</strong> {t('deck.algo_desc_sprint')}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <select
+                className="text-input"
+                value={algorithmType}
+                onChange={(e) => setAlgorithmType(e.target.value)}
+                style={{ fontSize: '1rem' }}>
+                <option value="SM2">{t('deck.algo_sm2')}</option>
+                <option value="FSRS">{t('deck.algo_fsrs')}</option>
+                <option value="HALF_LIFE_REGRESSION">{t('deck.algo_hlr')}</option>
+                <option value="LEITNER_SYSTEM">{t('deck.algo_leitner')}</option>
+                <option value="SPRINT">{t('deck.algo_sprint')}</option>
+              </select>
+              <span className="muted" style={{ fontSize: '0.8rem', marginTop: 5 }}>
+                {t('deck.algorithm_helper')}
+              </span>
+            </div>
+
             <button type="submit" className="primary-btn" style={{ marginTop: 10, padding: '14px', fontSize: '1.1rem' }}>
               {t('decks.create_deck_btn')}
             </button>
@@ -212,6 +296,45 @@ export default function DeckCreatePage() {
           text-transform: uppercase;
           letter-spacing: 1px;
           font-weight: 600;
+        }
+        .info-icon {
+          position: relative;
+        }
+        .tooltip-box {
+          visibility: hidden;
+          opacity: 0;
+          position: absolute;
+          bottom: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 300px;
+          background: rgba(0, 0, 0, 0.85);
+          color: #fff;
+          padding: 12px;
+          border-radius: 8px;
+          font-size: 0.85rem;
+          line-height: 1.4;
+          z-index: 100;
+          transition: opacity 0.2s;
+          pointer-events: none;
+          margin-bottom: 8px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .tooltip-box::after {
+          content: "";
+          position: absolute;
+          top: 100%;
+          left: 50%;
+          margin-left: -5px;
+          border-width: 5px;
+          border-style: solid;
+          border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
+        }
+
+        .info-icon:hover .tooltip-box {
+          visibility: visible;
+          opacity: 1;
         }
       `}</style>
     </Layout>

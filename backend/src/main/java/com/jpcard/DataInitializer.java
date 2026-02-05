@@ -53,7 +53,6 @@ public class DataInitializer implements CommandLineRunner {
             manager.setPassword(passwordEncoder.encode("password"));
             manager.addRole(Role.ROLE_USER);
             manager.addRole(Role.ROLE_MANAGER);
-            manager.setNickname("Manager");
             manager = userRepository.save(manager);
             System.out.println("Manager account created: manager / password");
         } else {
@@ -66,18 +65,25 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private User getOrCreateAdmin() {
+        User admin;
         if (userRepository.findByUsername("admin").isEmpty()) {
-            User admin = new User();
+            admin = new User();
             admin.setUsername("admin");
             admin.setPassword(passwordEncoder.encode("admin"));
             admin.addRole(Role.ROLE_USER);
             admin.addRole(Role.ROLE_MANAGER);
-            admin.setNickname("Admin");
+            admin.addRole(Role.ROLE_ADMIN);
             admin = userRepository.save(admin);
             System.out.println("Admin account created: admin / admin");
-            return admin;
+        } else {
+            admin = userRepository.findByUsername("admin").get();
+            if (!admin.getRoles().contains(Role.ROLE_ADMIN)) {
+                admin.addRole(Role.ROLE_ADMIN);
+                userRepository.save(admin);
+                System.out.println("Added ROLE_ADMIN to existing admin user");
+            }
         }
-        return userRepository.findByUsername("admin").get();
+        return admin;
     }
 
     private void createDefaultNoticeIfNotExists(User admin) {
@@ -110,7 +116,7 @@ public class DataInitializer implements CommandLineRunner {
                 .anyMatch(d -> d.getName().equals(name));
 
         if (!exists) {
-            Deck deck = deckService.create(name, description, null, true, "1,10", user);
+            Deck deck = deckService.create(name, description, null, true, "1,10", null, null, user);
             for (CardData item : data) {
                 Map<String, String> content = new HashMap<>();
                 content.put("pronunciation", item.reading());
