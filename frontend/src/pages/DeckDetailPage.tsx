@@ -137,8 +137,8 @@ export default function DeckDetailPage() {
             .filter(
               (c) =>
                 !searchQuery ||
-                c.term.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                c.meaning.toLowerCase().includes(searchQuery.toLowerCase())
+                c.term?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                c.meaning?.toLowerCase().includes(searchQuery.toLowerCase())
             )
             .map((c) => (
               <article key={c.id} className="item-tile">

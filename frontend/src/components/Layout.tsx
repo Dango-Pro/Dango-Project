@@ -39,6 +39,7 @@ export default function Layout({ children }: LayoutProps) {
     { to: '/dashboard', label: t('nav.dashboard') },
     { to: '/decks', label: t('nav.my_decks') },
     { to: '/study', label: t('nav.study') },
+    { to: '/chat', label: 'AI Chat' },
     { to: '/posts', label: t('nav.community') },
     { to: '/user', label: t('nav.mypage') },
   ];
