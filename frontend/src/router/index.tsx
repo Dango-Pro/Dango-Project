@@ -16,6 +16,7 @@ import PostDetailPage from "../pages/PostDetailPage";
 import UserPage from "../pages/UserPage";
 import HomePage from "../pages/HomePage";
 import DashboardPage from "../pages/DashboardPage";
+import ChatPage from "../pages/ChatPage";
 import ErrorPage from "../components/ErrorPage";
 import RootLayout from "../components/layout/RootLayout";
 
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: "dashboard", element: <DashboardPage /> },
+      { path: "chat", element: <ChatPage /> },
       { path: "login", element: <LoginPage /> },
       { path: "register", element: <RegisterPage /> },
       { path: "cards", element: <CardsPage /> },
