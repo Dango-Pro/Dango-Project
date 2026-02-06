@@ -8,7 +8,7 @@ import com.jpcard.service.AiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+//import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -28,26 +28,26 @@ public class ChatController {
 	@PostMapping
 	public ResponseEntity<Map<String, String>> chat(
 			@RequestBody Map<String, String> request,
-			@AuthenticationPrincipal UserDetails userDetails // ✅ 현재 로그인한 유저 정보 가져오기
+			@AuthenticationPrincipal User user // ✅ 현재 로그인한 유저 정보 가져오기
 	) {
 		String userMessage = request.get("message");
 		
 		// 1. 로그인한 유저 찾기 (로그인 안했으면 게스트 처리)
 		String contextInfo = "사용자 정보: 게스트 (로그인하지 않음)";
 		
-		if (userDetails != null) {
-			User user = userRepository.findByUsername(userDetails.getUsername())
+		if (user != null) {
+			User loginUser = userRepository.findByUsername(user.getUsername())
 					.orElseThrow(() -> new RuntimeException("User not found"));
 			
 			// 2. DB에서 학습 데이터 조회
 			// (1) 내 덱 개수
 			int deckCount = deckRepository.findAll().stream()
-					.filter(d -> d.getOwner().getId().equals(user.getId()))
+					.filter(d -> d.getOwner().getId().equals(loginUser.getId()))
 					.toList().size();
 			
 			// (2) 오늘 학습한 카드 수 (StudyLog에서 조회)
 			LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
-			long todayStudyCount = studyLogRepository.countByUserIdAndStudiedAtAfter(user.getId(), startOfDay);
+			long todayStudyCount = studyLogRepository.countByUserIdAndStudiedAtAfter(loginUser.getId(), startOfDay);
 			
 			// 3. AI에게 알려줄 "배경 지식(Context)" 만들기
 			contextInfo = String.format("""
