@@ -137,7 +137,7 @@ public class AdminController {
 	// ==================== Post/Notice Management ====================
 	@Operation(summary = "List All Posts", description = "Get all posts with optional search")
 	@GetMapping("/posts")
-	public ResponseEntity<List<PostResponse>> getAllPosts(@RequestParam(required = false) String q) {
+	public ResponseEntity<List<PostResponse>> getAllPosts(@RequestParam(name = "q", required = false) String q) {
 		List<Post> posts = postService.search(q);
 		List<PostResponse> responses = posts.stream()
 				.map(this::mapToResponse)
@@ -147,7 +147,8 @@ public class AdminController {
 
 	@Operation(summary = "Toggle Notice", description = "Toggle a post's notice status")
 	@PatchMapping("/posts/{id}/notice")
-	public ResponseEntity<PostResponse> toggleNotice(@PathVariable Long id, @RequestParam boolean isNotice,
+	public ResponseEntity<PostResponse> toggleNotice(@PathVariable("id") Long id,
+			@RequestParam(name = "isNotice") boolean isNotice,
 			Authentication auth) {
 		User adminUser = (User) auth.getPrincipal();
 		Post post = postService.findById(id);
