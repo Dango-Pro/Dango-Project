@@ -1,281 +1,291 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { api } from "../libs/api";
 import Layout from "../components/Layout";
-import type { Post, StudyApplication } from "../types/post";
+import type { Post } from "../types/post";
+import type { Comment } from "../types/comment";
+
+interface UserInfo { id: number; username: string; }
 
 export default function PostDetailPage() {
-  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
-  const postId = Number(id);
 
   const [post, setPost] = useState<Post | null>(null);
-  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+  const [currentUser, setCurrentUser] = useState<UserInfo | null>(null);
 
-  // 스터디 신청 관련 상태
-  const [hasApplied, setHasApplied] = useState(false);
-  const [applicants, setApplicants] = useState<StudyApplication[]>([]);
-
-  // 신청 폼 상태
-  const [showApplyForm, setShowApplyForm] = useState(false);
+  // 스터디 관련 상태
+  const [isApplied, setIsApplied] = useState(false);
+  const [applicants, setApplicants] = useState<any[]>([]);
+  const [showApplicants, setShowApplicants] = useState(false);
   const [applyMessage, setApplyMessage] = useState("");
-  const [applyContact, setApplyContact] = useState("");
+  const [contactInfo, setContactInfo] = useState("");
+
+  // 댓글 관련 상태
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [commentContent, setCommentContent] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      api.get<{ id: number }>("/users/me")
-        .then((res) => setCurrentUserId(res.data.id))
-        .catch(() => setCurrentUserId(null));
-    }
-    loadPost();
-  }, [postId]);
+    loadAllData();
+  }, [id]);
 
-  const loadPost = async () => {
+  const loadAllData = async () => {
     try {
-      const res = await api.get<Post>(`/posts/${postId}`);
-      setPost(res.data);
+      // 1. 게시글 정보
+      const postRes = await api.get<Post>(`/posts/${id}`);
+      setPost(postRes.data);
 
-      // 스터디 모집글인 경우 추가 정보 로드
-      if (res.data.category === "STUDY") {
-        checkAppliedStatus();
+      // 2. 댓글 목록
+      loadComments();
+
+      // 3. 내 정보 (작성자 확인용)
+      try {
+        const userRes = await api.get<UserInfo>("/user/me");
+        setCurrentUser(userRes.data);
+
+        // 4. 스터디 신청 여부 확인
+        if (postRes.data.category === 'STUDY') {
+           api.get<boolean>(`/posts/${id}/applied`).then(r => setIsApplied(r.data)).catch(()=>{});
+        }
+      } catch (e) {
+        console.log("비로그인 사용자");
       }
     } catch (err) {
-      console.error(err);
-      alert("게시글을 불러올 수 없습니다.");
+      alert("글을 불러올 수 없습니다.");
       navigate("/posts");
     }
   };
 
-  // 작성자일 때만 신청자 목록 로딩
-  useEffect(() => {
-    if (post && post.category === "STUDY" && currentUserId === post.authorId) {
-      api.get<StudyApplication[]>(`/posts/${postId}/applications`)
-        .then(res => setApplicants(res.data))
-        .catch(err => console.log("신청자 목록 조회 권한 없음"));
-    }
-  }, [post, currentUserId, postId]);
+  const loadComments = () => {
+    api.get<Comment[]>(`/posts/${id}/comments`)
+       .then(res => setComments(res.data))
+       .catch(err => console.error("댓글 로딩 실패", err));
+  };
 
-  const checkAppliedStatus = async () => {
+  // 좋아요
+  const handleLike = async () => {
     try {
-      const res = await api.get<boolean>(`/posts/${postId}/applied`);
-      setHasApplied(res.data);
+      const res = await api.post(`/posts/${id}/like`);
+      setPost(prev => prev ? { ...prev, likeCount: res.data.likeCount } : null);
     } catch (err) {
-      console.error(err);
+      alert("로그인이 필요합니다.");
     }
   };
 
-  const handleApply = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!applyMessage || !applyContact) {
-      alert("메시지와 연락처를 모두 입력해주세요.");
-      return;
-    }
-
-    try {
-      await api.post(`/posts/${postId}/apply`, {
-        message: applyMessage,
-        contactInfo: applyContact
-      });
-      alert("신청이 완료되었습니다!");
-      setHasApplied(true);
-      setShowApplyForm(false);
-    } catch (err) {
-      console.error(err);
-      alert("신청에 실패했습니다. (이미 신청했거나 오류가 발생했습니다)");
-    }
-  };
-
+  // 게시글 삭제
   const handleDelete = async () => {
-    if (!window.confirm("정말 삭제하시겠습니까?")) return;
+    if (!confirm("정말로 삭제하시겠습니까?")) return;
     try {
-      await api.delete(`/posts/${postId}`);
-      alert("삭제되었습니다.");
+      await api.delete(`/posts/${id}`);
       navigate("/posts");
     } catch (err) {
-      console.error(err);
-      alert("삭제 실패");
+      alert("삭제 권한이 없습니다.");
     }
   };
 
-  if (!post) return <Layout pageTitle="Loading..."><div className="p-10 text-center text-white">Loading...</div></Layout>;
+  // --- 스터디 관리 (작성자용) ---
+  const toggleRecruitment = async () => {
+    if (!post) return;
+    const newStatus = post.recruitmentStatus === 'RECRUITING' ? 'CLOSED' : 'RECRUITING';
+    await api.patch(`/posts/${id}/status`, { status: newStatus });
+    setPost({ ...post, recruitmentStatus: newStatus });
+    alert("상태가 변경되었습니다.");
+  };
 
-  const isAuthor = currentUserId === post.authorId;
+  const loadApplicants = async () => {
+    if (showApplicants) { setShowApplicants(false); return; }
+    try {
+      const res = await api.get(`/posts/${id}/applications`);
+      setApplicants(res.data);
+      setShowApplicants(true);
+    } catch (err) { alert("신청자 목록을 불러올 수 없습니다."); }
+  };
+
+  // --- 스터디 신청 (참여자용) ---
+  const handleApply = async () => {
+    if(!applyMessage || !contactInfo) return alert("내용을 입력해주세요.");
+    await api.post(`/posts/${id}/apply`, { message: applyMessage, contactInfo });
+    setIsApplied(true);
+    alert("신청되었습니다.");
+  };
+
+  const handleCancelApply = async () => {
+    if(!confirm("취소하시겠습니까?")) return;
+    await api.delete(`/posts/${id}/apply`);
+    setIsApplied(false);
+    alert("취소되었습니다.");
+  };
+
+  // --- 댓글 작성/삭제 ---
+  const handleCommentSubmit = async () => {
+    if (!commentContent.trim()) return;
+    try {
+      await api.post(`/posts/${id}/comments`, { content: commentContent });
+      setCommentContent("");
+      loadComments();
+    } catch (err) { alert("댓글 작성 실패"); }
+  };
+
+  const handleDeleteComment = async (commentId: number) => {
+    if (!confirm("댓글을 삭제하시겠습니까?")) return;
+    try {
+      await api.delete(`/comments/${commentId}`);
+      loadComments();
+    } catch (err) { alert("삭제 권한이 없습니다."); }
+  };
+
+  if (!post) return <Layout><p>Loading...</p></Layout>;
+
+  // ★ 작성자 판별 (안전장치 포함)
+  const isAuthor = currentUser && (
+      (post.authorId && currentUser.id === post.authorId) ||
+      (!post.authorId && post.authorName === currentUser.username)
+  );
 
   return (
-    <Layout pageTitle={post.title}>
-      <section className="glass-card">
-        {/* 상단 헤더: 카테고리 뱃지 */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <span style={{
-              backgroundColor: post.category === 'STUDY' ? '#3b82f6' : '#9ca3af',
-              color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold'
-            }}>
-              {post.category === 'STUDY' ? '스터디' : (post.category === 'QNA' ? '질문' : '자유')}
-            </span>
-            {post.category === 'STUDY' && (
-              <span style={{ backgroundColor: '#10b981', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold' }}>
-                {post.recruitmentStatus === 'OPEN' ? '모집중' : '마감됨'}
-              </span>
-            )}
+    <Layout pageTitle="게시글 상세">
+      <section className="glass-card" style={{ backgroundColor: '#ffffff', padding: '30px' }}>
+
+        {/* 헤더 영역 */}
+        <div style={{ borderBottom: '1px solid #eee', paddingBottom: '20px', marginBottom: '30px' }}>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px' }}>
+             {post.isNotice && <span style={{ backgroundColor: '#ef4444', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold' }}>공지</span>}
+             <span style={{ backgroundColor: post.category === 'STUDY' ? '#3b82f6' : '#6b7280', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                {post.category === 'STUDY' ? '스터디' : (post.category === 'QNA' ? '질문' : '자유')}
+             </span>
+             {post.category === 'STUDY' && (
+                 <span style={{ backgroundColor: post.recruitmentStatus === 'CLOSED' ? '#9ca3af' : '#10b981', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                    {post.recruitmentStatus === 'CLOSED' ? '모집완료' : '모집중'}
+                 </span>
+             )}
           </div>
 
-          {isAuthor && (
-             <button onClick={handleDelete} style={{ color: '#fca5a5', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}>
-               삭제
-             </button>
-          )}
-        </div>
+          <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: '#000', margin: '0 0 15px 0' }}>{post.title}</h1>
 
-        {/* 제목 & 작성자 */}
-        <h1 className="card-title" style={{ fontSize: '1.8rem', marginBottom: '10px' }}>{post.title}</h1>
-        <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', marginBottom: '20px', borderBottom: '1px solid rgba(255,255,255,0.2)', paddingBottom: '10px' }}>
-          <span>작성자: {post.authorName || "익명"}</span>
-          <span>❤️ {post.likeCount}</span>
-        </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#555', fontSize: '0.95rem' }}>
+            <div>
+              <span style={{ fontWeight: 'bold', color: '#333' }}>{post.authorName || "익명"}</span>
+              <span style={{ margin: '0 10px' }}>|</span>
+              <span>{post.createdAt ? new Date(post.createdAt).toLocaleString() : ''}</span>
+            </div>
 
-        {/* ★ 스터디 정보 박스 (흰 배경 + 검은 글씨) */}
-        {post.category === "STUDY" && (
-          <div style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-            color: '#000000', // 검은 글씨
-            padding: '20px',
-            borderRadius: '8px',
-            marginBottom: '20px',
-            boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-          }}>
-            <h3 style={{ margin: '0 0 10px 0', color: '#2563eb', fontWeight: 'bold', fontSize: '1.1rem' }}>📢 스터디 모집 정보</h3>
-            <p style={{ margin: '5px 0' }}><strong>📍 진행 방식:</strong> {post.studyType === 'ONLINE' ? '온라인' : (post.studyType === 'OFFLINE' ? '오프라인' : '온/오프라인 혼합')}</p>
-            {post.contactLink && (
-              <p style={{ margin: '5px 0' }}>
-                <strong>🔗 오픈채팅방:</strong> <a href={post.contactLink} target="_blank" rel="noreferrer" style={{ color: '#2563eb', textDecoration: 'underline', marginLeft: '5px' }}>바로가기</a>
-              </p>
-            )}
+            {/* ★ 좋아요 숫자 옆에 버튼 배치 */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontWeight: 'bold', color: '#e11d48', fontSize: '1.1rem' }}>❤️ {post.likeCount}</span>
+                <button
+                  onClick={handleLike}
+                  className="secondary-btn"
+                  style={{ padding: '6px 12px', fontSize: '0.85rem', color: '#e11d48', borderColor: '#e11d48' }}
+                >
+                  좋아요
+                </button>
+            </div>
           </div>
-        )}
-
-        {/* 본문 내용 */}
-        <div style={{ minHeight: '150px', lineHeight: '1.6', whiteSpace: 'pre-wrap', marginBottom: '30px', color: 'rgba(255,255,255,0.9)' }}>
-          {post.content}
         </div>
 
-        {/* 첨부파일 */}
-        {post.attachmentUrls && post.attachmentUrls.length > 0 && (
-          <div style={{ marginBottom: '30px', padding: '15px', backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '8px' }}>
-            <h4 style={{ fontSize: '0.9rem', color: '#cbd5e1', marginBottom: '10px' }}>📎 첨부파일</h4>
-            {post.attachmentUrls.map((url, idx) => (
-              <a key={idx} href={url} target="_blank" rel="noreferrer" style={{ display: 'block', color: '#60a5fa', textDecoration: 'underline', marginBottom: '5px' }}>
-                파일 {idx + 1} 다운로드
-              </a>
-            ))}
-          </div>
-        )}
+        {/* 본문 */}
+        <div className="post-content" style={{ minHeight: '150px', lineHeight: '1.8', whiteSpace: 'pre-wrap', color: '#333' }}>
+            {post.content}
+        </div>
 
-        <hr style={{ borderColor: 'rgba(255,255,255,0.1)', margin: '30px 0' }} />
+        {/* ========================================================= */}
+        {/* ★ 스터디 기능 영역 (작성자는 관리 / 참여자는 신청) */}
+        {/* ========================================================= */}
+        {post.category === 'STUDY' && (
+            <div style={{ marginTop: '40px', padding: '20px', backgroundColor: '#f8fafc', borderRadius: '15px', border: '1px solid #e2e8f0' }}>
+                <h3 style={{ margin: '0 0 15px 0', borderBottom: '1px solid #ddd', paddingBottom: '10px', color: '#333' }}>⚡ 스터디 모집 관리</h3>
 
-        {/* === [핵심] 스터디 신청 구역 === */}
-        {post.category === "STUDY" && (
-          <div>
-            {isAuthor ? (
-              // 1. 작성자: 신청자 명단 보기 (흰색 카드 + 검은 글씨)
-              <div style={{ backgroundColor: 'rgba(255,255,255,0.1)', padding: '20px', borderRadius: '10px' }}>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '15px' }}>📝 신청자 명단 ({applicants.length}명)</h3>
-
-                {applicants.length === 0 ? (
-                  <p style={{ color: '#9ca3af' }}>아직 신청자가 없습니다.</p>
+                {isAuthor ? (
+                    // 1. 작성자: 모집 관리 + 신청자 목록
+                    <div>
+                        <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
+                            <button onClick={toggleRecruitment} className="primary-btn" style={{ backgroundColor: post.recruitmentStatus === 'RECRUITING' ? '#ef4444' : '#10b981' }}>
+                                {post.recruitmentStatus === 'RECRUITING' ? '🚫 모집 마감하기' : '✅ 모집 재개하기'}
+                            </button>
+                            <button onClick={loadApplicants} className="secondary-btn">
+                                {showApplicants ? '목록 닫기' : '📋 신청자 목록 보기'}
+                            </button>
+                        </div>
+                        {showApplicants && (
+                            <div style={{ backgroundColor: '#fff', padding: '15px', borderRadius: '10px', border: '1px solid #eee' }}>
+                                <h4 style={{marginTop: 0}}>신청자 목록</h4>
+                                {applicants.length === 0 ? <p style={{color: '#666'}}>아직 신청자가 없습니다.</p> : (
+                                    <ul style={{ paddingLeft: '20px', margin: 0 }}>
+                                        {applicants.map((app: any, idx) => (
+                                            <li key={idx} style={{ marginBottom: '10px', color: '#333' }}>
+                                                <strong>{app.applicantName}</strong>: {app.message} <br/>
+                                                <span style={{ fontSize: '0.9rem', color: '#666' }}>연락처: {app.contactInfo}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
+                        )}
+                    </div>
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    {applicants.map((app, idx) => (
-                      <div key={idx} style={{
-                          backgroundColor: '#ffffff', // 흰색 배경
-                          color: '#000000',           // 검은 글씨
-                          padding: '15px',
-                          borderRadius: '8px',
-                          display: 'flex', flexDirection: 'column', gap: '5px'
-                      }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #e5e7eb', paddingBottom: '5px' }}>
-                          <span style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>{app.applicantName}</span>
-                          <span style={{ fontSize: '0.8rem', color: '#6b7280' }}>{new Date(app.appliedAt).toLocaleDateString()}</span>
-                        </div>
-                        <div style={{ padding: '5px 0' }}>"{app.message}"</div>
-                        <div style={{ fontWeight: 'bold', color: '#16a34a' }}>📞 연락처: {app.contactInfo}</div>
-                      </div>
-                    ))}
-                  </div>
+                    // 2. 참여자: 신청하기
+                    <div>
+                        {post.recruitmentStatus === 'CLOSED' ? (
+                            <p style={{ color: '#ef4444', fontWeight: 'bold' }}>⚠️ 모집이 마감되었습니다.</p>
+                        ) : isApplied ? (
+                            <div style={{ textAlign: 'center' }}>
+                                <p style={{ color: '#10b981', fontWeight: 'bold' }}>✅ 이미 신청했습니다.</p>
+                                <button onClick={handleCancelApply} className="secondary-btn" style={{ marginTop: '5px', borderColor: '#ef4444', color: '#ef4444' }}>신청 취소</button>
+                            </div>
+                        ) : (
+                            <div style={{ maxWidth: '500px' }}>
+                                <input placeholder="각오 한마디" className="text-input" style={{ width: '100%', marginBottom: '8px' }} value={applyMessage} onChange={e=>setApplyMessage(e.target.value)} />
+                                <input placeholder="연락처 (오픈채팅 등)" className="text-input" style={{ width: '100%', marginBottom: '8px' }} value={contactInfo} onChange={e=>setContactInfo(e.target.value)} />
+                                <button onClick={handleApply} className="primary-btn" style={{ width: '100%' }}>📝 신청하기</button>
+                            </div>
+                        )}
+                    </div>
                 )}
-              </div>
-            ) : (
-              // 2. 방문자: 신청하기 기능
-              <div style={{ textAlign: 'center', backgroundColor: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '10px' }}>
-                {hasApplied ? (
-                  <div style={{ padding: '20px', backgroundColor: 'rgba(16, 185, 129, 0.2)', borderRadius: '8px', color: '#34d399', fontWeight: 'bold' }}>
-                    ✅ 이미 신청한 스터디입니다. (작성자의 연락을 기다려주세요)
-                  </div>
-                ) : (
-                  <>
-                    {!showApplyForm ? (
-                      <button
-                        onClick={() => setShowApplyForm(true)}
-                        className="primary-btn"
-                        style={{ width: '100%', padding: '15px', fontSize: '1.1rem' }}
-                      >
-                        ✋ 저도 참여하고 싶어요! (신청하기)
-                      </button>
-                    ) : (
-                      <form onSubmit={handleApply} style={{ display: 'flex', flexDirection: 'column', gap: '15px', textAlign: 'left' }}>
-                        <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#60a5fa' }}>신청서 작성</h3>
-
-                        <div>
-                          <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.9rem' }}>신청 메시지</label>
-                          <textarea
-                            value={applyMessage}
-                            onChange={(e) => setApplyMessage(e.target.value)}
-                            placeholder="예: 열심히 하겠습니다! 평일 저녁 시간 가능합니다."
-                            style={{ width: '100%', height: '80px', padding: '10px', borderRadius: '5px', border: 'none', backgroundColor: '#ffffff', color: '#000000' }} // ★ 흰 배경 검은 글씨
-                            required
-                          />
-                        </div>
-
-                        <div>
-                          <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.9rem' }}>연락처 (필수)</label>
-                          <input
-                            type="text"
-                            value={applyContact}
-                            onChange={(e) => setApplyContact(e.target.value)}
-                            placeholder="예: 카톡ID dango123 또는 010-1234-5678"
-                            style={{ width: '100%', padding: '10px', borderRadius: '5px', border: 'none', backgroundColor: '#ffffff', color: '#000000' }} // ★ 흰 배경 검은 글씨
-                            required
-                          />
-                        </div>
-
-                        <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                          <button
-                            type="button"
-                            onClick={() => setShowApplyForm(false)}
-                            className="secondary-btn"
-                            style={{ flex: 1 }}
-                          >
-                            취소
-                          </button>
-                          <button
-                            type="submit"
-                            className="primary-btn"
-                            style={{ flex: 2 }}
-                          >
-                            신청 완료 보내기
-                          </button>
-                        </div>
-                      </form>
-                    )}
-                  </>
-                )}
-              </div>
-            )}
-          </div>
+            </div>
         )}
+
+        {/* --- ★ 댓글 영역 (복구됨) --- */}
+        <div style={{ marginTop: '50px', paddingTop: '20px', borderTop: '1px solid #eee' }}>
+            <h3 style={{ fontSize: '1.2rem', marginBottom: '15px' }}>💬 댓글 ({comments.length})</h3>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '30px' }}>
+                {comments.length === 0 ? <p className="muted">첫 번째 댓글을 남겨보세요!</p> : comments.map(c => (
+                    <div key={c.id} style={{ padding: '15px', backgroundColor: '#f9fafb', borderRadius: '10px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                            <span style={{ fontWeight: 'bold' }}>{c.authorName || '익명'}</span>
+                            {/* 댓글 삭제 버튼 (작성자 본인만) */}
+                            {currentUser && (c.authorName === currentUser.username) && (
+                                <button onClick={() => handleDeleteComment(c.id)} style={{ border: 'none', background: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '0.8rem' }}>삭제</button>
+                            )}
+                        </div>
+                        <p style={{ margin: 0, color: '#333' }}>{c.content}</p>
+                    </div>
+                ))}
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px' }}>
+                <input
+                    className="text-input"
+                    style={{ flex: 1 }}
+                    placeholder="댓글을 입력하세요..."
+                    value={commentContent}
+                    onChange={(e) => setCommentContent(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleCommentSubmit()}
+                />
+                <button onClick={handleCommentSubmit} className="secondary-btn">등록</button>
+            </div>
+        </div>
+
+        {/* 하단 네비게이션 */}
+        <div style={{ marginTop: '30px', paddingTop: '20px', borderTop: '1px solid #eee', display: 'flex', justifyContent: 'space-between' }}>
+           <button onClick={() => navigate("/posts")} className="secondary-btn">목록으로</button>
+           {isAuthor && (
+               <div style={{ display: 'flex', gap: '10px' }}>
+                  <button onClick={() => navigate(`/posts/${id}/edit`)} className="secondary-btn">수정</button>
+                  <button onClick={handleDelete} className="secondary-btn" style={{ borderColor: '#ef4444', color: '#ef4444' }}>삭제</button>
+               </div>
+           )}
+        </div>
       </section>
     </Layout>
   );

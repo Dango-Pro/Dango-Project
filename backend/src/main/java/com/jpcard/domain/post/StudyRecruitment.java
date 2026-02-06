@@ -14,30 +14,26 @@ public class StudyRecruitment {
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	// Post와 1:1 관계로 연결 (StudyRecruitment가 외래키를 가짐)
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "post_id")
 	private Post post;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private RecruitmentStatus recruitmentStatus = RecruitmentStatus.OPEN;
+	private RecruitmentStatus recruitmentStatus = RecruitmentStatus.RECRUITING; // ★ OPEN -> RECRUITING
 	
 	@Enumerated(EnumType.STRING)
 	private StudyType studyType;
 	
 	private String contactLink;
 	
-	// 생성자
 	public StudyRecruitment(Post post, StudyType studyType, String contactLink) {
 		this.post = post;
 		this.studyType = studyType;
 		this.contactLink = contactLink;
-		this.recruitmentStatus = RecruitmentStatus.OPEN;
+		this.recruitmentStatus = RecruitmentStatus.RECRUITING; // ★ 초기값도 RECRUITING
 	}
 	
-	// ★ [추가] 이 메서드가 없어서 빨간 줄이 떴던 겁니다!
-	public void updateStatus(RecruitmentStatus status) {
-		this.recruitmentStatus = status;
-	}
+	// Lombok @Setter가 있으므로 setRecruitmentStatus() 메서드는 자동 생성됩니다.
+	// 따로 updateStatus 메서드를 만들지 않아도 됩니다.
 }

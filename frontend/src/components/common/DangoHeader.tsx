@@ -1,22 +1,40 @@
-// frontend/src/components/common/DangoHeader.tsx
 import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const DangoHeader: React.FC = () => {
+    const navigate = useNavigate();
+    const token = localStorage.getItem('token');
+
+    const handleLogout = () => {
+        if (window.confirm('로그아웃 하시겠습니까?')) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('refreshToken');
+            navigate('/login');
+            window.location.reload();
+        }
+    };
+
     return (
-        <header className="top-nav"> {/* 조장님의 CSS 클래스 적용 */}
-            <div className="brand">
+        <header className="top-nav">
+            <Link to="/" className="brand" style={{ textDecoration: 'none' }}>
                 <div className="brand-dot"></div>
                 <span>DANGO</span>
-            </div>
+            </Link>
 
             <nav className="nav-links">
-                <a href="/study" className="nav-link">학습하기</a>
-                <a href="/board" className="nav-link">게시판</a>
-                <a href="/mypage" className="nav-link">마이페이지</a>
+                <Link to="/study" className="nav-link">학습하기</Link>
+                {/* /board를 프로젝트 표준 경로인 /posts로 변경 */}
+                <Link to="/posts" className="nav-link">게시판</Link>
+                {/* /mypage를 UserPage가 사용하는 /user 경로로 변경 */}
+                <Link to="/user" className="nav-link">마이페이지</Link>
             </nav>
 
             <div className="nav-links">
-                <button className="primary-btn">로그인</button>
+                {token ? (
+                    <button className="primary-btn" onClick={handleLogout}>로그아웃</button>
+                ) : (
+                    <button className="primary-btn" onClick={() => navigate('/login')}>로그인</button>
+                )}
             </div>
         </header>
     );

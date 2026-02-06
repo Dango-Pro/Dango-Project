@@ -4,27 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66f71afd-aa52-4d07-984a-f031f6eef31c" name="변경" comment="미사용 자원 정리: CommentController 내 사용하지 않는 import 문 제거 및 코드 최적화&#10;&#10;타입 명시: ResponseEntity에 누락된 제네릭 타입(List&lt;CommentResponse&gt;, Void)을 추가하여 컴파일러 경고 해결 및 타입 안정성 확보&#10;&#10;코드 가독성 개선: 서비스 레이어와 컨트롤러 간의 파라미터 전달 방식 재검토 및 정돈&#10;&#10;기타: 인텔리제이 코드 분석(Static Analysis) 기반 권고사항 반영">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/domain/post/PostCategory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/domain/post/RecruitmentStatus.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/domain/post/StudyApplication.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/domain/post/StudyRecruitment.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/domain/post/StudyType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/repository/StudyApplicationRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/jpcard.main.iml" beforeDir="false" />
+    <list default="true" id="66f71afd-aa52-4d07-984a-f031f6eef31c" name="변경" comment="백엔드: 스터디 모집/신청 엔티티 및 API 구현&#10;데이터: 게시글 삭제 시 신청서 자동 삭제 처리 (Cascade 적용)&#10;프론트: 상세페이지 신청 폼, 신청자 명단 UI 추가 및 디자인 개선">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/DataInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/DataInitializer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/PostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/PostController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/PostRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/PostRequest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/PostResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/PostResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/domain/post/Post.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/domain/post/Post.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/repository/PostRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/repository/PostRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/service/PostService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/service/PostService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PostCreatePage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PostCreatePage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/main.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/main.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/HomePage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/HomePage.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/PostDetailPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PostDetailPage.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/PostsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PostsPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/services/postService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/services/postService.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/types/post.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/types/post.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -181,7 +171,15 @@
       <option name="project" value="LOCAL" />
       <updated>1770082782707</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="백엔드: 스터디 모집/신청 엔티티 및 API 구현&#10;데이터: 게시글 삭제 시 신청서 자동 삭제 처리 (Cascade 적용)&#10;프론트: 상세페이지 신청 폼, 신청자 명단 UI 추가 및 디자인 개선">
+      <option name="closed" value="true" />
+      <created>1770173492855</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1770173492855</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -189,6 +187,7 @@
     <MESSAGE value="권한 검증 강화: PostService에 checkOwner 로직을 도입하여 작성자 본인 및 관리자(ROLE_ADMIN, ROLE_MANAGER)만 수정/삭제가 가능하도록 변경&#10;&#10;입력값 유효성 검사: PostRequest DTO와 컨트롤러 파라미터에 @Valid, @NotBlank, @Size를 적용하여 데이터 정결성 확보&#10;&#10;파일 업로드 보안: 5MB 크기 제한 및 허용된 확장자 체크 로직을 추가하고, Path Traversal 방지를 위한 경로 검증 적용&#10;&#10;예외 처리 개선: 권한 부족 시 AccessDeniedException을 발생시켜 보안 표준 준수" />
     <MESSAGE value="권한 검증 도입: CommentService에 checkCommentOwner 메서드를 추가하여 작성자 본인 또는 관리자(ROLE_ADMIN, ROLE_MANAGER)만 댓글을 삭제할 수 있도록 보안 강화&#10;&#10;입력값 유효성 검사: CommentRequest DTO에 @NotBlank를 적용하고 컨트롤러에서 @Valid를 통해 빈 댓글 작성을 방지&#10;&#10;타입 불일치 해결: CommentController에서 User 객체를 추출하여 서비스 레이어로 전달함으로써 컴파일 에러 해결 및 객체 기반 검증 구현&#10;&#10;예외 처리 표준화: 권한 부족 시 org.springframework.security.access.AccessDeniedException을 던지도록 수정하여 보안 예외 흐름 통일" />
     <MESSAGE value="미사용 자원 정리: CommentController 내 사용하지 않는 import 문 제거 및 코드 최적화&#10;&#10;타입 명시: ResponseEntity에 누락된 제네릭 타입(List&lt;CommentResponse&gt;, Void)을 추가하여 컴파일러 경고 해결 및 타입 안정성 확보&#10;&#10;코드 가독성 개선: 서비스 레이어와 컨트롤러 간의 파라미터 전달 방식 재검토 및 정돈&#10;&#10;기타: 인텔리제이 코드 분석(Static Analysis) 기반 권고사항 반영" />
-    <option name="LAST_COMMIT_MESSAGE" value="미사용 자원 정리: CommentController 내 사용하지 않는 import 문 제거 및 코드 최적화&#10;&#10;타입 명시: ResponseEntity에 누락된 제네릭 타입(List&lt;CommentResponse&gt;, Void)을 추가하여 컴파일러 경고 해결 및 타입 안정성 확보&#10;&#10;코드 가독성 개선: 서비스 레이어와 컨트롤러 간의 파라미터 전달 방식 재검토 및 정돈&#10;&#10;기타: 인텔리제이 코드 분석(Static Analysis) 기반 권고사항 반영" />
+    <MESSAGE value="백엔드: 스터디 모집/신청 엔티티 및 API 구현&#10;데이터: 게시글 삭제 시 신청서 자동 삭제 처리 (Cascade 적용)&#10;프론트: 상세페이지 신청 폼, 신청자 명단 UI 추가 및 디자인 개선" />
+    <option name="LAST_COMMIT_MESSAGE" value="백엔드: 스터디 모집/신청 엔티티 및 API 구현&#10;데이터: 게시글 삭제 시 신청서 자동 삭제 처리 (Cascade 적용)&#10;프론트: 상세페이지 신청 폼, 신청자 명단 UI 추가 및 디자인 개선" />
   </component>
 </project>
