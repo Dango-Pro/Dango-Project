@@ -4,13 +4,18 @@ import com.jpcard.util.BadWordUtil;
 
 import com.jpcard.domain.user.Role;
 import com.jpcard.domain.user.User;
+import com.jpcard.domain.user.UserStatus;
 import com.jpcard.repository.UserRepository;
+import com.jpcard.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +23,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+	private final JwtUtil jwtUtil;
 
     @Transactional
     public User signup(String username, String rawPassword, String nickname, 
@@ -86,4 +92,45 @@ public class UserService {
 
         return user;
     }
+	
+	public Page<User> findAll(Pageable pageable) {
+		return userRepository.findAll(pageable);
+	}
+	
+	@Transactional
+	public User adminCreateUser(String nickname, String password, UserStatus status, Set<Role> roles) {
+		// 이메일(username)은 닉네임 기반 임시 생성 (혹은 파라미터로 받아야 함. 여기선 임시 처리)
+		String tempUsername = nickname + "_" + System.currentTimeMillis() + "@admin-created.com";
+		
+		User user = new User();
+		user.setUsername(tempUsername);
+		user.setNickname(nickname);
+		user.setPassword(passwordEncoder.encode(password));
+		user.setStatus(status);
+		user.setRoles(roles); // Role 설정
+		
+		return userRepository.save(user);
+	}
+	
+	@Transactional
+	public User adminUpdateUser(Long userId, String nickname, String password, UserStatus status, Set<Role> roles) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new RuntimeException("User not found"));
+		
+		user.setNickname(nickname);
+		user.setStatus(status);
+		user.setRoles(roles);
+		
+		// 비밀번호가 입력되었을 때만 변경
+		if (password != null && !password.isBlank()) {
+			user.setPassword(passwordEncoder.encode(password));
+		}
+		
+		return user; // Dirty Checking으로 자동 저장됨
+	}
+	
+	@Transactional
+	public void adminDeleteUser(Long userId) {
+		userRepository.deleteById(userId);
+	}
 }
