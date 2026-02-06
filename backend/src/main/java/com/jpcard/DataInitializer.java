@@ -51,6 +51,7 @@ public class DataInitializer implements CommandLineRunner {
             manager = new User();
             manager.setUsername("manager");
             manager.setPassword(passwordEncoder.encode("password"));
+			manager.setNickname("Manager");
             manager.addRole(Role.ROLE_USER);
             manager.addRole(Role.ROLE_MANAGER);
             manager = userRepository.save(manager);
@@ -60,6 +61,7 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         User admin = getOrCreateAdmin();
+		
         createSampleData(manager);
         createDefaultNoticeIfNotExists(admin);
     }
@@ -70,6 +72,7 @@ public class DataInitializer implements CommandLineRunner {
             admin = new User();
             admin.setUsername("admin");
             admin.setPassword(passwordEncoder.encode("admin"));
+			admin.setNickname("Admin");
             admin.addRole(Role.ROLE_USER);
             admin.addRole(Role.ROLE_MANAGER);
             admin.addRole(Role.ROLE_ADMIN);

@@ -18,7 +18,7 @@ import HomePage from "../pages/HomePage";
 import DashboardPage from "../pages/DashboardPage";
 import ChatPage from "../pages/ChatPage";
 import ErrorPage from "../components/ErrorPage";
-import AdminLayout from "../components/layouts/AdminLayout";
+import AdminLayout from "../components/layout/AdminLayout";
 import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
 import AdminUserPage from "../pages/admin/AdminUserPage";
 import AdminDeckPage from "../pages/admin/AdminDeckPage";
