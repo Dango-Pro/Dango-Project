@@ -1,7 +1,15 @@
 package com.jpcard.controller.dto;
 
+import java.time.LocalDate;
+
 public record UserUpdateRequest(
-		String newNickname,
-		String currentPassword, // 보안 확인용
-		String newPassword		// 변경할 비밀번호
+    Integer dailyLimit,
+    Integer reviewLimit,
+    String timezone,
+    String nickname,
+    String name,
+    String email,
+    String phone,
+    LocalDate birthdate,
+    String gender
 ) {}

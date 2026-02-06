@@ -7,6 +7,10 @@ spring:
 jwt:
   secret: ${JWT_SECRET_KEY} # 아까 설정한 환경변수 사용
 
+google:
+  ai:
+    api-key: AIzaSyCsGNAGEUEr_849t7qNCjiqs06GOglvMJs
+
 ---
 # [모드 1] 개발용 (dev) - H2 메모리 DB
 spring:

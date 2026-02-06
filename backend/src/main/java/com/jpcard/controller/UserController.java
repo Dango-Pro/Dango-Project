@@ -1,7 +1,7 @@
 package com.jpcard.controller;
 
 import com.jpcard.controller.dto.UserInfoResponse;
-import com.jpcard.controller.dto.UserSettingsRequest;
+import com.jpcard.controller.dto.UserUpdateRequest;
 import com.jpcard.domain.user.User;
 import com.jpcard.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -36,42 +36,39 @@ public class UserController {
                 : Collections.emptySet();
 
         return ResponseEntity.ok(
-                new UserInfoResponse(user.getId(), user.getUsername(), roles, user.getReviewLimit(),
-                        user.getTimezone()));
+                new UserInfoResponse(
+                    user.getId(), user.getUsername(), user.getNickname(),
+                    user.getName(), user.getEmail(), user.getPhone(),
+                    user.getBirthdate(), user.getGender(),
+                    roles, user.getDailyLimit(), user.getReviewLimit(), user.getTimezone()
+                )
+        );
     }
 
     @PatchMapping("/me")
-    public ResponseEntity<?> updateMe(@RequestBody UserSettingsRequest request, Authentication auth) {
+    public ResponseEntity<?> updateMe(@RequestBody UserUpdateRequest request, Authentication auth) {
         User principal = getUser(auth);
-        if (principal == null)
-            return ResponseEntity.status(401).build();
+        if (principal == null) return ResponseEntity.status(401).build();
 
-        // Fix potential uninitialized reviewLimit if older client doesn't send it?
-        // Assuming request body validation or default handling.
-        // For int, it defaults to 0 if missing in JSON?
-        // If 0, we might want to keep existing or default. But primitives in record are
-        // tricky.
-        // Let's trust the request or adding @JsonIgnoreProperties(ignoreUnknown = true)
-        // if needed.
-        // Or if reviewLimit is 0, set to default 200?
-        // For now, straightforward mapping.
+        int reviewLimit = request.reviewLimit() != null && request.reviewLimit() > 0 ? request.reviewLimit() : 200;
+        int dailyLimit = request.dailyLimit() != null ? request.dailyLimit() : 20;
 
-        int reviewLimit = request.reviewLimit() > 0 ? request.reviewLimit() : 200;
-
-        User updated = userService.updateSettings(principal.getId(), reviewLimit, request.timezone());
+        userService.updateSettings(
+            principal.getId(), request.nickname(), dailyLimit, reviewLimit, request.timezone(),
+            request.name(), request.email(), request.phone(), request.birthdate(), request.gender()
+        );
 
         return ResponseEntity.ok().build();
     }
 
     private User getUser(Authentication authentication) {
-        if (authentication == null)
-            return null;
+        if (authentication == null) return null;
         Object principal = authentication.getPrincipal();
         if (principal instanceof User) {
             return (User) principal;
         }
         if (principal instanceof String && !"anonymousUser".equals(principal)) {
-            return userService.findByUsername((String) principal).orElse(null);
+             return userService.findByUsername((String) principal).orElse(null);
         }
         return null;
     }

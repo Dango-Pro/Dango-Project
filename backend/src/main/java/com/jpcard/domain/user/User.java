@@ -9,12 +9,10 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
-@Getter
-@Setter
+@Getter @Setter
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -37,12 +35,29 @@ public class User {
     private String refreshToken;
 
     @Column(nullable = false)
+    private int dailyLimit = 20; // Default 20 for NEW cards
+
+    @Column(nullable = false)
     private int reviewLimit = 200; // Default 200 for REVIEWS
 
     @Column(nullable = false)
     private String timezone = "UTC"; // Default UTC
 
-    public void addRole(Role role) {
-        roles.add(role);
-    }
+    // New Fields
+    private String name;
+    
+    // Explicit email field (distinct from username/ID if needed, or sync them? Plan said distinct)
+    private String email; 
+    
+    private String phone;
+    
+    private java.time.LocalDate birthdate;
+    
+    private String gender; // M/F or Custom
+    
+    private boolean agreedToTerms;
+    
+    private boolean agreedToPrivacy;
+
+    public void addRole(Role role) { roles.add(role); }
 }

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface StudyLogRepository extends JpaRepository<StudyLog, Long> {
@@ -23,4 +24,6 @@ public interface StudyLogRepository extends JpaRepository<StudyLog, Long> {
 
     @Query("SELECT COUNT(s) FROM StudyLog s WHERE s.user.id = :userId AND s.studiedAt BETWEEN :start AND :end AND s.card.deck.id = :deckId")
     long countReviewsToday(@Param("userId") Long userId, @Param("deckId") Long deckId, @Param("start") java.time.LocalDateTime start, @Param("end") java.time.LocalDateTime end);
+	
+	long countByUserIdAndStudiedAtAfter(Long userId, LocalDateTime date);
 }
