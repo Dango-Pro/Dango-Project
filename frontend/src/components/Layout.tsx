@@ -200,6 +200,7 @@ export default function Layout({ children }: LayoutProps) {
             }}>
               Version 1.03
             </span>
+
             <span style={{ color: '#000' }}>
               <span style={{ color: 'crimson', fontWeight: 'bold' }}>최신 업데이트 일자 :&nbsp;&nbsp;</span> 2026.02.04. 18:17
             </span>
