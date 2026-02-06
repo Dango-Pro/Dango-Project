@@ -43,5 +43,21 @@ public class User {
     @Column(nullable = false)
     private String timezone = "UTC"; // Default UTC
 
+    // New Fields
+    private String name;
+    
+    // Explicit email field (distinct from username/ID if needed, or sync them? Plan said distinct)
+    private String email; 
+    
+    private String phone;
+    
+    private java.time.LocalDate birthdate;
+    
+    private String gender; // M/F or Custom
+    
+    private boolean agreedToTerms;
+    
+    private boolean agreedToPrivacy;
+
     public void addRole(Role role) { roles.add(role); }
 }
