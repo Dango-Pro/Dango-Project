@@ -2,77 +2,73 @@ package com.jpcard.controller;
 
 import com.jpcard.controller.dto.UserInfoResponse;
 import com.jpcard.controller.dto.UserSettingsRequest;
-import com.jpcard.controller.dto.UserUpdateRequest;
 import com.jpcard.domain.user.User;
 import com.jpcard.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
-	
-	private final UserService userService;
-	
-	@GetMapping("/me")
-	public ResponseEntity<?> me(Authentication auth) {
-		
-		if (auth == null) {
-			return ResponseEntity.status(401).body("Invalid authentication principal");
-		}
-		
-		// 1. 현재 로그인한 유저 정보 가져오기 (이메일 기준)
-		User user = userService.findByEmail(auth.getName())
-				.orElseThrow(() -> new IllegalArgumentException("User not found"));
-		
-		// 2. 권한 처리 (단일 String -> Set으로 변환)
-		Set<String> roles = Collections.singleton(user.getRole());
-		
-		// 3. 응답 반환
-		// getUsername() 대신 getNickname() (화면 표시용 이름)
-		return ResponseEntity.ok(
-				new UserInfoResponse(
-						user.getId(),
-						user.getNickname(),
-						roles,
-						user.getDailyLimit()
-				)
-		);
-	}
-	
-	@PatchMapping("/me")
-	public ResponseEntity<?> updateMe(@RequestBody UserSettingsRequest request, Authentication auth) {
-		if (auth == null) return ResponseEntity.status(401).build();
-		
-		// 현재 유저 찾기
-		User user = userService.findByEmail(auth.getName())
-				.orElseThrow(() -> new IllegalArgumentException("User not found"));
-		
-		userService.updateStudySettings(user.getId(), request.dailyLimit());
-		
-		return ResponseEntity.ok().build();
-	}
-	
-	@PostMapping("/withdraw")
-	public ResponseEntity<String> withdraw(@AuthenticationPrincipal User user) {
-		userService.withdraw(user.getEmail());
-		return ResponseEntity.ok("회원탈퇴가 완료되었습니다.");
-	}
-	
-	@PatchMapping("/profile")
-	public ResponseEntity<String> updateProfile(
-			@AuthenticationPrincipal User user,	// 현재 로그인한 사람
-			@RequestBody UserUpdateRequest request
-			) {
-		userService.updateProfile(user.getId(), request);
-		return ResponseEntity.ok("회원 정보가 수정되었습니다.");
-	}
+
+    private final UserService userService;
+
+    @GetMapping("/me")
+    public ResponseEntity<?> me(Authentication auth) {
+
+        if (auth == null) {
+            return ResponseEntity.status(401).body("Invalid authentication principal");
+        }
+
+        // Fetch fresh from DB to be sure about settings
+        User principal = (User) auth.getPrincipal();
+        User user = userService.findById(principal.getId()).orElseThrow();
+
+        Set<String> roles = (user.getRoles() != null)
+                ? user.getRoles().stream().map(Enum::name).collect(Collectors.toSet())
+                : Collections.emptySet();
+
+        return ResponseEntity.ok(
+                new UserInfoResponse(user.getId(), user.getUsername(), roles, user.getDailyLimit(), user.getReviewLimit(), user.getTimezone())
+        );
+    }
+
+    @PatchMapping("/me")
+    public ResponseEntity<?> updateMe(@RequestBody UserSettingsRequest request, Authentication auth) {
+        User principal = getUser(auth);
+        if (principal == null) return ResponseEntity.status(401).build();
+
+        // Fix potential uninitialized reviewLimit if older client doesn't send it?
+        // Assuming request body validation or default handling.
+        // For int, it defaults to 0 if missing in JSON?
+        // If 0, we might want to keep existing or default. But primitives in record are tricky.
+        // Let's trust the request or adding @JsonIgnoreProperties(ignoreUnknown = true) if needed.
+        // Or if reviewLimit is 0, set to default 200?
+        // For now, straightforward mapping.
+
+        int reviewLimit = request.reviewLimit() > 0 ? request.reviewLimit() : 200;
+
+        User updated = userService.updateSettings(principal.getId(), request.dailyLimit(), reviewLimit, request.timezone());
+
+        return ResponseEntity.ok().build();
+    }
+
+    private User getUser(Authentication authentication) {
+        if (authentication == null) return null;
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof User) {
+            return (User) principal;
+        }
+        if (principal instanceof String && !"anonymousUser".equals(principal)) {
+             return userService.findByUsername((String) principal).orElse(null);
+        }
+        return null;
+    }
 }

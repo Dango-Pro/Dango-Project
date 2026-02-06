@@ -3,11 +3,9 @@ package com.jpcard;
 import com.jpcard.domain.user.Role;
 import com.jpcard.domain.user.User;
 import com.jpcard.domain.deck.Deck;
-import com.jpcard.repository.PostRepository;
 import com.jpcard.repository.UserRepository;
 import com.jpcard.service.CardService;
 import com.jpcard.service.DeckService;
-import com.jpcard.service.PostService;
 import com.jpcard.util.SampleDataFactory;
 import com.jpcard.util.SampleDataFactory.CardData;
 import lombok.RequiredArgsConstructor;
@@ -23,25 +21,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
-    private static final String DEFAULT_NOTICE_TITLE = "통합 공지사항 입니다.";
-    private static final String DEFAULT_NOTICE_CONTENT = """
-            # JPCard 스튜디오에 오신 것을 환영합니다.
-
-            본 플랫폼은 **반복 간격 알고리즘(Spaced Repetition)**을 활용한 일본어 지식 카드 관리 및 학습 서비스입니다.
-
-            ## 이용 안내
-            - **덱/카드**: 나만의 일본어 단어·문장 덱을 만들고 관리할 수 있습니다.
-            - **학습**: 카드를 플래시카드 형태로 학습하며, 복습 시점이 자동으로 관리됩니다.
-            - **커뮤니티**: 게시글과 댓글로 다른 학습자와 소통할 수 있습니다.
-
-            문의나 건의사항이 있으시면 커뮤니티 게시판을 활용해 주세요.
-            """;
-
     private final UserRepository userRepository;
     private final DeckService deckService;
     private final CardService cardService;
-    private final PostService postService;
-    private final PostRepository postRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -51,52 +33,15 @@ public class DataInitializer implements CommandLineRunner {
             manager = new User();
             manager.setUsername("manager");
             manager.setPassword(passwordEncoder.encode("password"));
-			manager.setNickname("Manager");
             manager.addRole(Role.ROLE_USER);
             manager.addRole(Role.ROLE_MANAGER);
-            manager.setNickname("Manager");
             manager = userRepository.save(manager);
             System.out.println("Manager account created: manager / password");
         } else {
             manager = userRepository.findByUsername("manager").get();
         }
 
-        User admin = getOrCreateAdmin();
-		
         createSampleData(manager);
-        createDefaultNoticeIfNotExists(admin);
-    }
-
-    private User getOrCreateAdmin() {
-        if (userRepository.findByUsername("admin").isEmpty()) {
-            User admin = new User();
-            admin.setUsername("admin");
-            admin.setPassword(passwordEncoder.encode("admin"));
-			admin.setNickname("Admin");
-            admin.addRole(Role.ROLE_USER);
-            admin.addRole(Role.ROLE_MANAGER);
-            admin.setNickname("Admin");
-            admin = userRepository.save(admin);
-            System.out.println("Admin account created: admin / admin");
-            return admin;
-        }
-        return userRepository.findByUsername("admin").get();
-    }
-
-    private void createDefaultNoticeIfNotExists(User admin) {
-        boolean exists = postRepository.findByIsNoticeTrueOrderByIdDesc().stream()
-                .anyMatch(p -> DEFAULT_NOTICE_TITLE.equals(p.getTitle()));
-        if (!exists) {
-            postService.create(
-                    DEFAULT_NOTICE_TITLE,
-                    DEFAULT_NOTICE_CONTENT,
-                    true,
-                    "admin",
-                    null,
-                    null,
-                    admin);
-            System.out.println("Default notice created: " + DEFAULT_NOTICE_TITLE);
-        }
     }
 
     private void createSampleData(User user) {
@@ -109,17 +54,17 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void createDeckIfNotExists(User user, String name, String description, List<CardData> data) {
-        boolean exists = deckService.findMyDecks(user.getId()).stream()
-                .anyMatch(d -> d.getName().equals(name));
+         boolean exists = deckService.findMyDecks(user.getId()).stream()
+             .anyMatch(d -> d.getName().equals(name));
 
-        if (!exists) {
-            Deck deck = deckService.create(name, description, null, true, "1,10", null, null, user);
-            for (CardData item : data) {
-                Map<String, String> content = new HashMap<>();
-                content.put("pronunciation", item.reading());
-                cardService.create(item.term(), item.meaning(), deck.getId(), content, user);
-            }
-            System.out.println("Created sample deck: " + name);
-        }
+         if (!exists) {
+             Deck deck = deckService.create(name, description, null, true, "1,10", user);
+             for (CardData item : data) {
+                 Map<String, String> content = new HashMap<>();
+                 content.put("pronunciation", item.reading());
+                 cardService.create(item.term(), item.meaning(), deck.getId(), content, user);
+             }
+             System.out.println("Created sample deck: " + name);
+         }
     }
 }

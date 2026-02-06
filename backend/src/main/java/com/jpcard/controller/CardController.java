@@ -5,12 +5,13 @@ import com.jpcard.controller.dto.CardResponse;
 import com.jpcard.domain.card.Card;
 import com.jpcard.domain.user.User;
 import com.jpcard.service.CardService;
+import com.jpcard.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.core.type.TypeReference;
 
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,20 @@ import java.util.stream.Collectors;
 public class CardController {
 
     private final CardService cardService;
+    private final UserService userService;
     private final ObjectMapper objectMapper;
+
+    private User getUser(Authentication authentication) {
+        if (authentication == null) return null;
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof User) {
+            return (User) principal;
+        }
+        if (principal instanceof String && !"anonymousUser".equals(principal)) {
+             return userService.findByUsername((String) principal).orElse(null);
+        }
+        return null;
+    }
 
     @GetMapping
     public ResponseEntity<List<CardResponse>> list(
@@ -46,7 +60,7 @@ public class CardController {
 
     @PostMapping
     public ResponseEntity<List<CardResponse>> create(@RequestBody CardRequest request, Authentication auth) {
-        User user = (auth != null) ? (User) auth.getPrincipal() : null;
+        User user = getUser(auth);
         if (user == null) return ResponseEntity.status(401).build();
 
         List<Card> cards;
@@ -62,7 +76,7 @@ public class CardController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CardResponse> update(@PathVariable Long id, @RequestBody CardRequest request, Authentication auth) {
-        User user = (auth != null) ? (User) auth.getPrincipal() : null;
+        User user = getUser(auth);
         if (user == null) return ResponseEntity.status(401).build();
 
         var card = cardService.update(id, request.term(), request.meaning(), request.deckId(), request.content(), user);
@@ -71,7 +85,7 @@ public class CardController {
 
     @PatchMapping("/{id}/memorized")
     public ResponseEntity<CardResponse> updateMemorizedStatus(@PathVariable Long id, @RequestBody boolean isMemorized, Authentication auth) {
-        User user = (auth != null) ? (User) auth.getPrincipal() : null;
+        User user = getUser(auth);
         // Memorized status update might be allowed for study session logic?
         // But changeMemorizedStatus in CardService updates the Card entity directly.
         // So it requires owner permission.
@@ -83,7 +97,7 @@ public class CardController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id, Authentication auth) {
-        User user = (auth != null) ? (User) auth.getPrincipal() : null;
+        User user = getUser(auth);
         if (user == null) return ResponseEntity.status(401).build();
 
         cardService.delete(id, user);

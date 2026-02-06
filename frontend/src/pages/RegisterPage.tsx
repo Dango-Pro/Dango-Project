@@ -3,8 +3,10 @@ import { api } from "../libs/api";
 import Layout from "../components/Layout";
 import { useNavigate } from "react-router-dom";
 import SuccessModal from "../components/SuccessModal";
+import { useTranslation } from "react-i18next";
 
 export default function RegisterPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [id, setId] = useState("");
   const [pw, setPw] = useState("");
@@ -21,39 +23,49 @@ export default function RegisterPage() {
       setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
       console.error(err);
+      setMessage(t("auth.register_fail"));
     }
   };
 
   return (
+    <Layout pageTitle={t("auth.register_title")}>
       <SuccessModal
         isOpen={showSuccess}
+        message={t("auth.register_success")}
         onClose={() => navigate("/login")}
       />
       <section className="glass-card">
         <div className="card-header">
+          <h2 className="card-title">{t("auth.create_account_title")}</h2>
         </div>
 
         <div className="form-grid">
           <div className="input-field">
+            <label htmlFor="signup-id">{t("auth.id_label")}</label>
             <input
               id="signup-id"
               className="text-input"
+              placeholder={t("auth.username_placeholder")}
               value={id}
               onChange={(e) => setId(e.target.value)}
             />
           </div>
           <div className="input-field">
+            <label htmlFor="signup-pw">{t("auth.pw_label")}</label>
             <input
               id="signup-pw"
               className="text-input"
               type="password"
+              placeholder={t("auth.pw_placeholder")}
               value={pw}
               onChange={(e) => setPw(e.target.value)}
             />
           </div>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             <button className="primary-btn" onClick={onRegister}>
+              {t("auth.complete_register")}
             </button>
+            <button className="secondary-btn" onClick={() => setId("")}>{t("common.reset")}</button>
           </div>
           {message && <p className="muted">{message}</p>}
         </div>
