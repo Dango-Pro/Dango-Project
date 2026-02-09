@@ -1,3 +1,8 @@
+html {
+    /* 스크롤바가 생겨도 레이아웃이 밀리지 않도록 공간을 미리 확보합니다. */
+    scrollbar-gutter: stable;
+}
+
 .app-shell {
     position: relative;
     min-height: 100vh;
@@ -106,6 +111,8 @@ body, button, input, select, textarea {
     display: grid;
     grid-template-columns: 1fr;
     gap: 20px;
+    /* 헤더(약 80px)와 패딩, 푸터를 제외한 화면 전체 높이를 최소한으로 가져갑니다. */
+    min-height: calc(100vh - 250px);
 }
 
 /* GLASS CARD (Main Container) */
