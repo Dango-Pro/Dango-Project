@@ -51,7 +51,8 @@
     "register_fail": "Registration failed. Please try again.",
     "complete_register": "Complete Registration",
     "email_label": "Email",
-    "email_placeholder": "user@example.com"
+    "email_placeholder": "user@example.com",
+    "logout_success": "Logged out successfully."
   },
   "dashboard": {
     "progress_title": "Progress Overview",
@@ -178,7 +179,21 @@
     "template_name_placeholder": "My Custom Template",
     "fields_label": "Fields",
     "field_n": "Field {{n}}",
-    "add_field": "+ Add Field"
+    "add_field": "+ Add Field",
+    "algorithm_label": "Learning Algorithm",
+    "algorithm_helper": "Choose the spaced repetition algorithm for this deck",
+    "algo_sm2": "SM-2 - Classic spaced repetition (balanced)",
+    "algo_fsrs": "FSRS - Modern ML-based algorithm (optimized)",
+    "algo_hlr": "Half-Life Regression - Duolingo-style learning",
+    "algo_leitner": "Leitner System - Traditional box method",
+    "algo_sprint": "Sprint - Intensive short-term learning",
+    "algo_desc_sm2": "The classic, battle-tested spaced repetition algorithm. Provides a balanced schedule.",
+    "algo_desc_fsrs": "Uses modern machine learning to predict your forgetting curve. Highest efficiency.",
+    "algo_desc_hlr": "Used by Duolingo. Estimates the 'half-life' of a memory to schedule reviews.",
+    "algo_desc_leitner": "Traditional box system. Correct cards move up, incorrect ones reset to the start.",
+    "algo_desc_sprint": "Cramming mode. Designed for high exposure in a short period.",
+    "daily_new_cards_limit": "Daily New Cards Limit",
+    "daily_new_cards_limit_desc": "Maximum number of new cards to study per day."
   },
   "cards": {
     "title": "All Cards",

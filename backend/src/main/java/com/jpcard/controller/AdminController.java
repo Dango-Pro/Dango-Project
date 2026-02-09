@@ -1,19 +1,185 @@
 package com.jpcard.controller;
 
+import com.jpcard.controller.dto.AdminStatsResponse;
+import com.jpcard.controller.dto.AdminUserRequest;
+import com.jpcard.controller.dto.AdminUserResponse;
+import com.jpcard.controller.dto.AdminDeckResponse;
+import com.jpcard.controller.dto.PostResponse;
+import com.jpcard.domain.deck.Deck;
+import com.jpcard.domain.post.Post;
+import com.jpcard.domain.user.Role;
+import com.jpcard.domain.user.User;
+import com.jpcard.domain.user.UserStatus;
+import com.jpcard.repository.CardRepository;
+import com.jpcard.repository.DeckRepository;
+import com.jpcard.repository.PostRepository;
+import com.jpcard.repository.StudyLogRepository;
+import com.jpcard.repository.UserRepository;
+import com.jpcard.service.DeckService;
+import com.jpcard.service.PostService;
+import com.jpcard.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Admin", description = "관리자 전용 API (권한 테스트용)")
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Tag(name = "Admin", description = "Admin API")
 @RestController
 @RequestMapping("/api/admin")
+@RequiredArgsConstructor
 public class AdminController {
-	@Operation(summary = "관리자 권한 테스트", description = "ROLE_ADMIN 권한을 가진 사람만 호출가능")
-	@GetMapping("/test")
-	public ResponseEntity<String> adminTest() {
-		return ResponseEntity.ok("당신은 관리자가 맞습니다 (접근성공)");
+	
+	private final UserRepository userRepository;
+	private final DeckRepository deckRepository;
+	private final CardRepository cardRepository;
+	private final PostRepository postRepository;
+	private final StudyLogRepository studyLogRepository;
+	private final UserService userService;
+	private final DeckService deckService;
+	private final PostService postService;
+	
+	// ==================== Dashboard Stats ====================
+	@GetMapping("/stats")
+	public ResponseEntity<AdminStatsResponse> getStats() {
+		long totalUsers = userRepository.count();
+		long totalDecks = deckRepository.count();
+		long totalCards = cardRepository.count();
+		long totalPosts = postRepository.count();
+		long totalStudyLogs = studyLogRepository.count();
+		long publicDecks = deckRepository.findPublicDecks().size();
+		long notices = postRepository.findByIsNoticeTrueOrderByIdDesc().size();
+		
+		return ResponseEntity.ok(new AdminStatsResponse(
+				totalUsers, totalDecks, totalCards, totalPosts,
+				totalStudyLogs, publicDecks, notices));
+	}
+	
+	// ==================== User Management ====================
+	@GetMapping("/users")
+	public ResponseEntity<Page<AdminUserResponse>> getUsers(@PageableDefault(size = 20) Pageable pageable) {
+		Page<User> users = userService.findAll(pageable);
+		Page<AdminUserResponse> response = users.map(AdminUserResponse::from);
+		return ResponseEntity.ok(response);
+	}
+	
+	@GetMapping("/users/{id}")
+	public ResponseEntity<AdminUserResponse> getUser(@PathVariable Long id) {
+		User user = userService.findById(id)
+				.orElseThrow(() -> new IllegalArgumentException("User not found"));
+		return ResponseEntity.ok(AdminUserResponse.from(user));
+	}
+	
+	@PostMapping("/users")
+	public ResponseEntity<AdminUserResponse> createUser(@RequestBody AdminUserRequest request) {
+		Set<Role> roles = parseRoles(request.roles());
+		UserStatus status = request.status() != null ? UserStatus.valueOf(request.status()) : UserStatus.ACTIVE;
+		
+		User user = userService.adminCreateUser(request.username(), request.password(), status, roles);
+		return ResponseEntity.ok(AdminUserResponse.from(user));
+	}
+	
+	@PutMapping("/users/{id}")
+	public ResponseEntity<AdminUserResponse> updateUser(@PathVariable Long id, @RequestBody AdminUserRequest request) {
+		Set<Role> roles = request.roles() != null ? parseRoles(request.roles()) : null;
+		UserStatus status = request.status() != null ? UserStatus.valueOf(request.status()) : null;
+		
+		User user = userService.adminUpdateUser(id, request.username(), request.password(), status, roles);
+		return ResponseEntity.ok(AdminUserResponse.from(user));
+	}
+	
+	@DeleteMapping("/users/{id}")
+	public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+		userService.adminDeleteUser(id);
+		return ResponseEntity.noContent().build();
+	}
+	
+	// ==================== Deck Management ====================
+	@GetMapping("/decks")
+	public ResponseEntity<Page<AdminDeckResponse>> getDecks(@PageableDefault(size = 20) Pageable pageable) {
+		Page<Deck> decks = deckService.findAllDecks(pageable);
+		Page<AdminDeckResponse> response = decks.map(AdminDeckResponse::from);
+		return ResponseEntity.ok(response);
+	}
+	
+	@GetMapping("/decks/public")
+	public ResponseEntity<List<AdminDeckResponse>> getPublicDecks() {
+		List<Deck> decks = deckRepository.findPublicDecks();
+		List<AdminDeckResponse> response = decks.stream().map(AdminDeckResponse::from).collect(Collectors.toList());
+		return ResponseEntity.ok(response);
+	}
+	
+	@DeleteMapping("/decks/{id}")
+	public ResponseEntity<Void> deleteDeck(@PathVariable Long id, Authentication auth) {
+		Deck deck = deckService.findById(id);
+		deckService.delete(id, deck.getOwner());
+		return ResponseEntity.noContent().build();
+	}
+	
+	// ==================== Post/Notice Management ====================
+	@GetMapping("/posts")
+	public ResponseEntity<List<PostResponse>> getAllPosts(@RequestParam(name = "q", required = false) String q) {
+		List<Post> posts = postService.search(q);
+		List<PostResponse> responses = posts.stream()
+				.map(this::mapToResponse)
+				.collect(Collectors.toList());
+		return ResponseEntity.ok(responses);
+	}
+	
+	@PatchMapping("/posts/{id}/notice")
+	public ResponseEntity<PostResponse> toggleNotice(@PathVariable("id") Long id,
+													 @RequestParam(name = "isNotice") boolean isNotice,
+													 Authentication auth) {
+		Post post = postService.findById(id);
+		post.setNotice(isNotice);
+		postRepository.save(post);
+		return ResponseEntity.ok(mapToResponse(post));
+	}
+	
+	@DeleteMapping("/posts/{id}")
+	public ResponseEntity<Void> deletePost(@PathVariable Long id, Authentication auth) {
+		User adminUser = (User) auth.getPrincipal();
+		postService.delete(id, adminUser);
+		return ResponseEntity.noContent().build();
+	}
+	
+	// ==================== Helper Methods ====================
+	private Set<Role> parseRoles(Set<String> roleStrings) {
+		if (roleStrings == null || roleStrings.isEmpty()) {
+			Set<Role> defaultRoles = new HashSet<>();
+			defaultRoles.add(Role.ROLE_USER);
+			return defaultRoles;
+		}
+		Set<Role> roles = new HashSet<>();
+		for (String r : roleStrings) {
+			try {
+				roles.add(Role.valueOf(r));
+			} catch (IllegalArgumentException e) {
+				// Skip invalid roles
+			}
+		}
+		if (roles.isEmpty()) {
+			roles.add(Role.ROLE_USER);
+		}
+		return roles;
+	}
+	
+	private PostResponse mapToResponse(Post post) {
+		List<String> attachmentUrls = post.getAttachments() == null ? java.util.Collections.emptyList()
+				: post.getAttachments().stream()
+				.map(a -> "/uploads/" + a.getStoreFilename())
+				.collect(Collectors.toList());
+		return new PostResponse(post.getId(), post.getTitle(), post.getContent(), post.getLikeCount(),
+				post.getAuthorName(), attachmentUrls, post.isNotice(),
+				post.getAuthor() != null ? post.getAuthor().getId() : null);
 	}
 }
