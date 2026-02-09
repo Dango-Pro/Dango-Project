@@ -1,0 +1,12 @@
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <line x1="45" y1="45" x2="85" y2="85" stroke="#D2B48C" stroke-width="6" stroke-linecap="round" />
+
+    <circle cx="65" cy="65" r="18" fill="#B2E2B2" stroke="#4A3728" stroke-width="1.5" />
+
+    <circle cx="45" cy="45" r="18" fill="#FFFFE0" stroke="#4A3728" stroke-width="1.5" />
+
+    <circle cx="25" cy="25" r="18" fill="#FFB7B2" stroke="#4A3728" stroke-width="1.5" />
+
+    {/* 은은한 광택 효과 (선택사항) */}
+    <circle cx="18" cy="18" r="5" fill="white" fill-opacity="0.4" />
+</svg>
