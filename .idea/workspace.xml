@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4eebc830-b713-4009-a673-66238d89241d" name="Changes" comment="일본어 폰트 수정 및 고정">
-      <change afterPath="$PROJECT_DIR$/frontend/public/dango.svg" afterDir="false" />
+    <list default="true" id="4eebc830-b713-4009-a673-66238d89241d" name="Changes" comment="feat: 좌측 상단 DANGO 로고 디자인 복구 및 홈 이동 기능 추가">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/Layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/Layout.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -142,7 +142,15 @@
       <option name="project" value="LOCAL" />
       <updated>1770171797565</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="feat: 좌측 상단 DANGO 로고 디자인 복구 및 홈 이동 기능 추가">
+      <option name="closed" value="true" />
+      <created>1770604846476</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1770604846476</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -161,6 +169,7 @@
     <MESSAGE value="improved version" />
     <MESSAGE value="일본어 표준 폰트 적용" />
     <MESSAGE value="일본어 폰트 수정 및 고정" />
-    <option name="LAST_COMMIT_MESSAGE" value="일본어 폰트 수정 및 고정" />
+    <MESSAGE value="feat: 좌측 상단 DANGO 로고 디자인 복구 및 홈 이동 기능 추가" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: 좌측 상단 DANGO 로고 디자인 복구 및 홈 이동 기능 추가" />
   </component>
 </project>

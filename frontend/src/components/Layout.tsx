@@ -41,92 +41,88 @@ export default function Layout({ children }: LayoutProps) {
 		{ to: '/user', label: t('nav.mypage') },
 	];
 
+	// 공통으로 사용할 메뉴 아이템 스타일 (언어 무관하게 고정)
+	const fixedMenuItemStyle = (to: string): React.CSSProperties => ({
+		display: 'inline-flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+		width: '110px', // 💡 min-width 대신 아예 width로 고정 (강력한 효과)
+		padding: '8px 0',
+		borderRadius: '12px',
+		textDecoration: 'none',
+		textAlign: 'center',
+		whiteSpace: 'nowrap',
+		transition: 'all 0.2s ease',
+		fontSize: '0.95rem',
+		fontWeight: pathname === to ? 'bold' : '500',
+		color: pathname === to ? '#d9534f' : '#222',
+		background: pathname === to ? 'rgba(255, 183, 178, 0.25)' : 'transparent',
+		borderColor: pathname === to ? 'rgba(255, 183, 178, 0.6)' : 'transparent',
+		borderStyle: 'solid',
+		borderWidth: '1px',
+	});
+
 	return (
 		<div className="app-shell">
 			<div className="app-frame">
-				<header className="top-nav">
-					{/* 🍡 [좌측 최상단] 조장님의 커스텀 당고 로고 영역 */}
-					<div
-						className="brand"
-						onClick={() => navigate('/')}
-						style={{
-							display: 'flex',
-							alignItems: 'center',
-							gap: '8px',
-							cursor: 'pointer',
-							userSelect: 'none'
-						}}
-					>
-						{/* public/dango.svg 불러오기 */}
-						<img
-							src="/dango.svg"
-							alt="Dango Logo"
-							style={{ height: '42px', width: 'auto' }}
-						/>
+				<header className="top-nav" style={{
+					display: 'flex',
+					alignItems: 'center',
+					padding: '16px 22px',
+					height: '80px' // 헤더 높이도 고정하여 위아래 흔들림 방지
+				}}>
 
-						{/* 조장님의 시그니처 폰트 디자인 */}
+					{/* [기둥 1] 로고 영역 (완전 고정) */}
+					<div className="brand" onClick={() => navigate('/')} style={{
+						display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer',
+						width: '180px', flexShrink: 0, userSelect: 'none'
+					}}>
+						<img src="/dango.svg" alt="Dango Logo" style={{ height: '42px', width: 'auto' }} />
 						<span style={{
 							fontFamily: '"Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif',
-							color: '#d9534f',
-							fontSize: '1.6rem',
-							fontWeight: 'bold',
-							fontStyle: 'italic',
-							marginLeft: '2px'
-						}}>
-              DANGO
-            </span>
+							color: '#d9534f', fontSize: '1.6rem', fontWeight: 'bold', fontStyle: 'italic'
+						}}>DANGO</span>
 					</div>
 
-					<div className="nav-links">
-						{/* 언어 선택 스위처 (KO EN JA) */}
-						<div className="lang-switcher" style={{ marginRight: '15px', display: 'flex', gap: '8px' }}>
-							{['ko', 'en', 'ja'].map((lng) => (
-								<button
-									key={lng}
-									onClick={() => i18n.changeLanguage(lng)}
-									style={{
-										background: 'none',
-										border: 'none',
-										color: i18n.language === lng ? '#333' : '#aaa',
-										fontWeight: i18n.language === lng ? 'bold' : 'normal',
-										cursor: 'pointer',
-										fontSize: '0.9rem'
-									}}
-								>
-									{lng.toUpperCase()}
-								</button>
-							))}
-						</div>
-
-						{/* 6개 메뉴 리스트 */}
-						{links.map((link) => (
-							<Link
-								key={link.to}
-								to={link.to}
-								className="nav-link"
+					{/* [기둥 2] 언어 스위처 (완전 고정) */}
+					<div className="lang-switcher" style={{
+						display: 'flex', gap: '4px', width: '120px', justifyContent: 'center', flexShrink: 0
+					}}>
+						{['ko', 'en', 'ja'].map((lng) => (
+							<button
+								key={lng}
+								onClick={() => i18n.changeLanguage(lng)}
 								style={{
-									borderColor: pathname === link.to ? 'rgba(255, 183, 178, 0.6)' : undefined,
-									background: pathname === link.to ? 'rgba(255, 183, 178, 0.25)' : undefined,
-									color: pathname === link.to ? '#d9534f' : undefined,
-									fontWeight: pathname === link.to ? 'bold' : undefined,
-									padding: '8px 12px',
-									borderRadius: '12px',
-									textDecoration: 'none'
+									background: 'none', border: 'none', cursor: 'pointer', width: '35px',
+									color: i18n.language === lng ? '#333' : '#aaa',
+									fontWeight: i18n.language === lng ? 'bold' : 'normal',
+									fontSize: '0.85rem'
 								}}
 							>
+								{lng.toUpperCase()}
+							</button>
+						))}
+					</div>
+
+					{/* [기둥 3] 메뉴 네비게이션 (나머지 공간 다 차지하되 오른쪽 정렬) */}
+					<nav style={{
+						display: 'flex', flexGrow: 1, justifyContent: 'flex-end', gap: '2px', alignItems: 'center'
+					}}>
+						{links.map((link) => (
+							<Link key={link.to} to={link.to} style={fixedMenuItemStyle(link.to)}>
 								{link.label}
 							</Link>
 						))}
 
-						{/* 로그인/로그아웃 버튼 */}
+						{/* 로그인/로그아웃도 동일한 110px 규격 적용 */}
 						{!token ? (
-							<Link to="/login" className="nav-link">{t('nav.login')}</Link>
+							<Link to="/login" style={fixedMenuItemStyle('/login')}>{t('nav.login')}</Link>
 						) : (
-							<button onClick={handleLogout} className="nav-link" style={{ background: 'transparent', cursor: 'pointer', border: 'none' }}>
+							<button onClick={handleLogout} style={{ ...fixedMenuItemStyle(''), border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
 								{t('nav.logout')}
 							</button>
 						)}
-					</div>
+					</nav>
 				</header>
 
 				<main className="content-area">{children}</main>
