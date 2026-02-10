@@ -40,6 +40,7 @@ public class SecurityConfig {
 						.requestMatchers(org.springframework.http.HttpMethod.GET, "/api/posts/**").permitAll()
 						.requestMatchers(org.springframework.http.HttpMethod.GET, "/api/posts/*/comments").permitAll()
 						.requestMatchers(org.springframework.http.HttpMethod.POST, "/api/posts/*/comments").permitAll()
+						.requestMatchers(org.springframework.http.HttpMethod.POST, "/api/posts/*/view").permitAll()
 						.requestMatchers(
 								"/api/auth/**",
 								"/h2-console/**",

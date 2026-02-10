@@ -1,63 +1,63 @@
 package com.jpcard.domain.user;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
-@Getter @Setter
+@Getter @Setter @NoArgsConstructor
 public class User {
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Column(nullable = false, unique = true)
+	private String email;
 
-    @Column(nullable = false, unique = true)
-    private String username; // 이메일 또는 아이디
+	@Column(nullable = false)
+	private String password;
 
-    @Column(nullable = false)
-    private String password;
+	@Column(nullable = false)
+	private String nickname;
 
-    @Column(nullable = false)
-    private String nickname;
+	@Column(nullable = false)
+	private String role;
 
-    @Enumerated(EnumType.STRING)
-    private UserStatus status = UserStatus.ACTIVE;
+	@Enumerated(EnumType.STRING)
+	private UserStatus status = UserStatus.ACTIVE;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Column(name = "role")
-    private Set<Role> roles = new HashSet<>();
+	private int dailyLimit = 20;
+	private int reviewLimit = 200;
+	@Column(nullable = false)
+	private String timezone = "UTC";
 
-    private String refreshToken;
+	public User(String email, String password, String nickname, String role) {
+		this.email = email;
+		this.password = password;
+		this.nickname = nickname;
+		this.role = role;
+	}
 
-    @Column(nullable = false)
-    private int dailyLimit = 20; // Default 20 for NEW cards
+	public void updateStatus(UserStatus status) { this.status = status; }
 
-    @Column(nullable = false)
-    private int reviewLimit = 200; // Default 200 for REVIEWS
+	/** API 호환: username 필드로 이메일 반환 */
+	public String getUsername() { return email; }
 
-    @Column(nullable = false)
-    private String timezone = "UTC"; // Default UTC
+	/** 초기화/테스트용: 로그인 ID 설정 (email과 동일) */
+	public void setUsername(String username) { this.email = username; if (this.nickname == null) this.nickname = username; }
 
-    // New Fields
-    private String name;
-    
-    // Explicit email field (distinct from username/ID if needed, or sync them? Plan said distinct)
-    private String email; 
-    
-    private String phone;
-    
-    private java.time.LocalDate birthdate;
-    
-    private String gender; // M/F or Custom
-    
-    private boolean agreedToTerms;
-    
-    private boolean agreedToPrivacy;
+	/** API 호환: 단일 role 설정 */
+	public void addRole(Role r) { this.role = r != null ? r.name() : this.role; }
 
-    public void addRole(Role role) { roles.add(role); }
+	/** API 호환: 단일 role 문자열을 Set<Role>로 반환 */
+	public Set<Role> getRoles() {
+		if (role == null || role.isBlank()) return Collections.emptySet();
+		try {
+			return Set.of(Role.valueOf(role));
+		} catch (IllegalArgumentException e) {
+			return Collections.emptySet();
+		}
+	}
 }

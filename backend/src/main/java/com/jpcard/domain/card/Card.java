@@ -21,23 +21,15 @@ public class Card {
     @Column(nullable = false)
     private String meaning;
 
-    /**
-     * @deprecated This field is legacy and does not reflect multi-user progress.
-     * Use UserCardProgress instead. Kept for backward compatibility.
-     */
     @Column(nullable = false)
-    @Deprecated
     private boolean isMemorized = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "deck_id")
     private Deck deck;
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
     private String contentJson;
 
-    // Groups siblings (e.g. Forward/Reverse cards)
-    @Column
+    /** 같은 노트(쌍) 묶음용 - 형제 카드 묻기 등 */
     private Long noteId;
 }

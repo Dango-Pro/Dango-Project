@@ -28,14 +28,13 @@ public class CardController {
     private final ObjectMapper objectMapper;
 
     private User getUser(Authentication authentication) {
-        if (authentication == null)
-            return null;
+        if (authentication == null) return null;
         Object principal = authentication.getPrincipal();
         if (principal instanceof User) {
             return (User) principal;
         }
         if (principal instanceof String && !"anonymousUser".equals(principal)) {
-            return userService.findByUsername((String) principal).orElse(null);
+             return userService.findByEmail((String) principal).orElse(null);
         }
         return null;
     }
@@ -62,16 +61,13 @@ public class CardController {
     @PostMapping
     public ResponseEntity<List<CardResponse>> create(@RequestBody CardRequest request, Authentication auth) {
         User user = getUser(auth);
-        if (user == null)
-            return ResponseEntity.status(401).build();
+        if (user == null) return ResponseEntity.status(401).build();
 
         List<Card> cards;
         if (Boolean.TRUE.equals(request.createReverse())) {
-            cards = cardService.createSiblings(request.term(), request.meaning(), request.deckId(), request.content(),
-                    user);
+            cards = cardService.createSiblings(request.term(), request.meaning(), request.deckId(), request.content(), user);
         } else {
-            cards = Collections.singletonList(
-                    cardService.create(request.term(), request.meaning(), request.deckId(), request.content(), user));
+            cards = Collections.singletonList(cardService.create(request.term(), request.meaning(), request.deckId(), request.content(), user));
         }
 
         List<CardResponse> responses = cards.stream().map(this::toResponse).collect(Collectors.toList());
@@ -79,25 +75,21 @@ public class CardController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CardResponse> update(@PathVariable Long id, @RequestBody CardRequest request,
-            Authentication auth) {
+    public ResponseEntity<CardResponse> update(@PathVariable Long id, @RequestBody CardRequest request, Authentication auth) {
         User user = getUser(auth);
-        if (user == null)
-            return ResponseEntity.status(401).build();
+        if (user == null) return ResponseEntity.status(401).build();
 
         var card = cardService.update(id, request.term(), request.meaning(), request.deckId(), request.content(), user);
         return ResponseEntity.ok(toResponse(card));
     }
 
     @PatchMapping("/{id}/memorized")
-    public ResponseEntity<CardResponse> updateMemorizedStatus(@PathVariable Long id, @RequestBody boolean isMemorized,
-            Authentication auth) {
+    public ResponseEntity<CardResponse> updateMemorizedStatus(@PathVariable Long id, @RequestBody boolean isMemorized, Authentication auth) {
         User user = getUser(auth);
         // Memorized status update might be allowed for study session logic?
         // But changeMemorizedStatus in CardService updates the Card entity directly.
         // So it requires owner permission.
-        if (user == null)
-            return ResponseEntity.status(401).build();
+        if (user == null) return ResponseEntity.status(401).build();
 
         var card = cardService.changeMemorizedStatus(id, isMemorized, user);
         return ResponseEntity.ok(toResponse(card));
@@ -106,8 +98,7 @@ public class CardController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id, Authentication auth) {
         User user = getUser(auth);
-        if (user == null)
-            return ResponseEntity.status(401).build();
+        if (user == null) return ResponseEntity.status(401).build();
 
         cardService.delete(id, user);
         return ResponseEntity.noContent().build();
@@ -115,20 +106,13 @@ public class CardController {
 
     private CardResponse toResponse(Card card) {
         Map<String, String> content = parseContent(card.getContentJson());
-        List<String> fieldNames = null;
-        if (card.getDeck() != null && card.getDeck().getCardTemplate() != null) {
-            fieldNames = card.getDeck().getCardTemplate().getFieldNames();
-        }
-        return new CardResponse(card.getId(), card.getTerm(), card.getMeaning(), card.isMemorized(),
-                card.getDeck() != null ? card.getDeck().getId() : null, content, fieldNames);
+        return new CardResponse(card.getId(), card.getTerm(), card.getMeaning(), card.isMemorized(), card.getDeck() != null ? card.getDeck().getId() : null, content);
     }
 
     private Map<String, String> parseContent(String json) {
-        if (json == null || json.isEmpty())
-            return Collections.emptyMap();
+        if (json == null || json.isEmpty()) return Collections.emptyMap();
         try {
-            return objectMapper.readValue(json, new TypeReference<Map<String, String>>() {
-            });
+            return objectMapper.readValue(json, new TypeReference<Map<String, String>>() {});
         } catch (Exception e) {
             return Collections.emptyMap();
         }

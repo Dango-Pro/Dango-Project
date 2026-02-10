@@ -3,14 +3,10 @@ package com.jpcard.controller.dto;
 public record SignupRequest(
         String username,
         String password,
-        String nickname,
-        String name,
-        String email,
-        String phone,
-        java.time.LocalDate birthdate,
-        String gender,
-        boolean agreedToTerms,
-        boolean agreedToPrivacy
+        String nickname
 ) {
-
+    public String nicknameOrEmailPrefix() {
+        if (nickname != null && !nickname.isBlank()) return nickname;
+        return username != null && username.contains("@") ? username.split("@")[0] : (username != null ? username : "");
+    }
 }

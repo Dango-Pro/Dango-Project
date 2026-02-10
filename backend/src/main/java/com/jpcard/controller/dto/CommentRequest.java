@@ -1,4 +1,3 @@
 package com.jpcard.controller.dto;
 
-public record CommentRequest(String content) {
-}
+public record CommentRequest(String content) {}

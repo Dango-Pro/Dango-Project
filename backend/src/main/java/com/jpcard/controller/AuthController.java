@@ -5,7 +5,6 @@ import com.jpcard.controller.dto.LoginRequest;
 import com.jpcard.controller.dto.SignupRequest;
 import com.jpcard.domain.user.User;
 import com.jpcard.service.AuthService;
-import com.jpcard.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -20,24 +19,18 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserService userService;
     private final AuthService authService;
 	private final EmailService emailService;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupRequest req) {
-        userService.signup(
-            req.username(), req.password(), req.nickname(),
-            req.name(), req.email(), req.phone(),
-            req.birthdate(), req.gender(),
-            req.agreedToTerms(), req.agreedToPrivacy()
-        );
+        authService.signup(req.username(), req.password(), req.nicknameOrEmailPrefix());
         return ResponseEntity.ok("ok");
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest req) {
-        var tokens = authService.login(req.username(), req.password());
+        var tokens = authService.login(req.email(), req.password());
         return ResponseEntity.ok(
                 new AuthResponse(tokens.get("accessToken"), tokens.get("refreshToken"))
         );
@@ -45,14 +38,14 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(@RequestParam String refreshToken) {
-        String newAccess = authService.refresh(refreshToken);
+        String newAccess = authService.reissueAccessToken(refreshToken);
         return ResponseEntity.ok(Map.of("accessToken", newAccess));
     }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(Authentication auth) {
         User user = (User) auth.getPrincipal();
-        authService.logout(user.getId());
+        authService.logout(user.getEmail());
         SecurityContextHolder.clearContext();
         return ResponseEntity.ok("logout");
     }

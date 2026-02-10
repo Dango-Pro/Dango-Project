@@ -1,4 +1,4 @@
 package com.jpcard.controller.dto;
 
-public record UserSettingsRequest(int reviewLimit, String timezone) {
+public record UserSettingsRequest(int dailyLimit, int reviewLimit, String timezone) {
 }

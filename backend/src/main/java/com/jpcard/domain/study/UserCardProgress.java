@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user_card_progress", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "user_id", "card_id" })
+    @UniqueConstraint(columnNames = {"user_id", "card_id"})
 })
 @Getter
 @Setter
@@ -59,21 +59,12 @@ public class UserCardProgress {
     @Column(nullable = false)
     private int lapses = 0;
 
-    // ===== Algorithm-Specific Fields =====
-
-    // For Leitner System: current box number (1-5)
-    @Column
-    private Integer leitnerBox;
-
-    // For FSRS: stability parameter (how long the memory lasts)
-    @Column
+    // FSRS / SM-2 style
     private Double stability;
-
-    // For FSRS: difficulty parameter (how hard the card is)
-    @Column
-    private Double difficulty;
-
-    // For Half-Life Regression: half-life in days
-    @Column
+    // Half-life regression
     private Double halfLife;
+    // Leitner system box (0 = learning)
+    private Integer leitnerBox;
+    // FSRS difficulty (1-10)
+    private Double difficulty;
 }
