@@ -4,12 +4,29 @@ spring:
   profiles:
     active: dev # 기본은 'dev'(H2) 모드로 실행
 
+  mail:
+   host: smtp.gmail.com
+   port: 587
+   username: inanasai1101@gmail.com
+   password: "ubdb vcuo dtom jyav"
+   properties:
+    mail:
+       smtp:
+         auth: true
+         starttls:
+          enable: true
+          required: true
+         connectiontimeout: 5000
+         timeout: 5000
+         writetimeout: 5000
+
 jwt:
-  secret: ${JWT_SECRET_KEY} # 아까 설정한 환경변수 사용
+  secret: ${JWT_SECRET_KEY}
 
 google:
   ai:
-    api-key: AIzaSyCsGNAGEUEr_849t7qNCjiqs06GOglvMJs
+    api-key: ${GOOGLE_AI_KEY}
+
 
 ---
 # [모드 1] 개발용 (dev) - H2 메모리 DB
