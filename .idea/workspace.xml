@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4eebc830-b713-4009-a673-66238d89241d" name="Changes" comment="improved version">
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,7 +82,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "merge",
+    "git-widget-placeholder": "feature/member-lsh",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "project.structure.last.edited": "모듈",
@@ -95,7 +95,8 @@
   <component name="RunManager">
     <configuration name="JpcardApplication" type="Application" factoryName="Application" nameIsGenerated="true">
       <envs>
-        <env name="JWT_SECRET_KEY" value="vml0YW1pbi1kYW5nby1zZWNyZXQta2V5LXByb2plY3QtamF2YS1zcHJpbmctYm9vdA==" />
+        <env name="GOOGLE_AI_KEY" value="AIzaSyDDkBB9xMkbayVJiB5aIcgXb4ryTyP6nZo" />
+        <env name="JWT_SECRET_KEY" value="v3rY-L0nG-S3cR3t-K3y-F0r-D4nG0-Pr0j3cT-!!!" />
       </envs>
       <option name="MAIN_CLASS_NAME" value="com.jpcard.JpcardApplication" />
       <module name="jpcard.main" />
