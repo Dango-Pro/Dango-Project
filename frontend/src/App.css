@@ -1,58 +1,101 @@
+html {
+    /* 스크롤바가 생겨도 레이아웃이 밀리지 않도록 공간을 미리 확보합니다. */
+    scrollbar-gutter: stable;
+}
+
 .app-shell {
-  position: relative;
-  min-height: 100vh;
-  padding: 28px;
+    position: relative;
+    min-height: 100vh;
+    padding: 28px;
 }
 
 /* Removed the dark overlay to show the pastel body gradient */
 .app-shell::before {
-  display: none;
+    display: none;
 }
 
 .app-frame {
-  position: relative;
-  max-width: 1200px;
-  margin: 0 auto;
-  z-index: 1;
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    z-index: 1;
+}
+
+/* 폰트 설정: 윈도우/맥 어디서든 단단하고 가독성 좋은 조합 */
+body, button, input, select, textarea {
+    font-family: "Pretendard Variable",
+    Pretendard,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Apple SD Gothic Neo",
+    "Noto Sans KR",
+    "Malgun Gothic",
+    "Noto Sans JP",
+    sans-serif;
+
+    /* 폰트 렌더링을 더 선명하고 뚜렷하게 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    /* 얇은 느낌을 없애기 위해 기본 두께(weight)를 500으로 상향 */
+    font-weight: 500;
+    color: #333333;
+    line-height: 1.6; /* 가독성을 위해 줄간격 확보 */
 }
 
 /* TOP NAVIGATION */
 .top-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 22px;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 10px 30px rgba(200, 200, 200, 0.15);
-  margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 22px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 10px 30px rgba(200, 200, 200, 0.15);
+    margin-bottom: 28px;
 }
 
 .brand {
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #333333;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #333333;
 }
 
 .brand-logo {
-  height: 32px;
-  width: auto;
-  object-fit: contain;
+    height: 32px;
+    width: auto;
+    object-fit: contain;
 }
 
 .nav-links {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+    /* 영상에서 본 흔들림을 잡는 핵심! */
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
 }
 
 .nav-link {
+    display: inline-flex;  /* 너비 적용을 위해 inline-flex로 변경 */
+    align-items: center;
+    justify-content: center;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    color: #222222;
+    font-weight: 500;
+
+    /* 💡 핵심: 언어 변경 시 흔들림 방지 */
+    min-width: 100px;
+    text-align: center;
+    white-space: nowrap;  /* 글자가 길어져도 줄바꿈 방지 */
   padding: 10px 14px;
   border-radius: 12px;
   border: 1px solid transparent;
@@ -72,24 +115,26 @@
 
 /* CONTENT AREA */
 .content-area {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    /* 헤더(약 80px)와 패딩, 푸터를 제외한 화면 전체 높이를 최소한으로 가져갑니다. */
+    min-height: calc(100vh - 250px);
 }
 
 /* GLASS CARD (Main Container) */
 .glass-card {
-  border-radius: 24px;
-  padding: 26px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  background: #ffffff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-  position: relative;
-  overflow: hidden;
+    border-radius: 24px;
+    padding: 26px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    background: #ffffff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    position: relative;
+    overflow: hidden;
 }
 
 .glass-card::after {
-  display: none;
+    display: none;
 }
 
 .card-header {
@@ -103,55 +148,53 @@
   /* Ensure header is above background effects */
 }
 
-.card-title {
-  font-size: 1.4rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  margin: 0;
-  color: #111111;
+/* 제목(Title) 등 강조가 필요한 부분은 더 뚜렷하게 */
+.card-title, .item-title, .subtitle, b, strong {
+    font-weight: 700 !important;
+    letter-spacing: -0.01em; /* 자간을 살짝 조여주면 폰트가 더 단단해 보입니다 */
 }
 
 .muted {
-  color: #222222;
+    color: #222222;
 }
 
 /* PILLS / TAGS */
 .pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border-radius: 999px;
-  padding: 8px 14px;
-  border: 1px solid rgba(255, 183, 178, 0.3);
-  background: rgba(255, 255, 255, 0.6);
-  color: #222222;
-  font-weight: 600;
-  font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 999px;
+    padding: 8px 14px;
+    border: 1px solid rgba(255, 183, 178, 0.3);
+    background: rgba(255, 255, 255, 0.6);
+    color: #222222;
+    font-weight: 600;
+    font-size: 0.9rem;
 }
 
 .pill-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 8px;
-  background: #e57373;
+    width: 8px;
+    height: 8px;
+    border-radius: 8px;
+    background: #e57373;
 }
 
 /* ACTION GRID */
 .action-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
-  margin-top: 12px;
-  position: relative;
-  z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 12px;
+    position: relative;
+    z-index: 2;
 }
 
 .action-card {
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 18px;
-  padding: 18px;
-  background: rgba(255, 255, 255, 0.5);
-  transition: all 0.2s ease;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 18px;
+    padding: 18px;
+    background: rgba(255, 255, 255, 0.5);
+    transition: all 0.2s ease;
 }
 
 .action-card:hover {
@@ -164,70 +207,70 @@
 
 /* FORMS */
 .form-grid {
-  display: grid;
-  gap: 16px;
+    display: grid;
+    gap: 16px;
 }
 
 .input-field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .input-field label {
-  font-size: 0.95rem;
-  color: #222222;
-  font-weight: 600;
+    font-size: 0.95rem;
+    color: #222222;
+    font-weight: 600;
 }
 
 .text-input,
 .text-area {
-  border: 1px solid #e0e0e0;
-  border-radius: 14px;
-  background: #ffffff;
-  color: #333333;
-  padding: 12px 14px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #e0e0e0;
+    border-radius: 14px;
+    background: #ffffff;
+    color: #333333;
+    padding: 12px 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 select.text-input option {
-  color: #333333;
-  background: #ffffff;
+    color: #333333;
+    background: #ffffff;
 }
 
 .text-input:focus,
 .text-area:focus {
-  outline: none;
-  border-color: #ffb7b2;
-  box-shadow: 0 0 0 4px rgba(255, 183, 178, 0.25);
+    outline: none;
+    border-color: #ffb7b2;
+    box-shadow: 0 0 0 4px rgba(255, 183, 178, 0.25);
 }
 
 .text-area {
-  min-height: 140px;
-  resize: vertical;
+    min-height: 140px;
+    resize: vertical;
 }
 
 /* BUTTONS */
 .primary-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 18px;
-  border-radius: 14px;
-  border: 1px solid transparent;
-  background: #d9534f;
-  color: #ffffff;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 12px rgba(217, 83, 79, 0.35);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 18px;
+    border-radius: 14px;
+    border: 1px solid transparent;
+    background: #d9534f;
+    color: #ffffff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 12px rgba(217, 83, 79, 0.35);
 }
 
 .primary-btn:hover {
-  transform: translateY(-1px);
-  background: #c9302c;
-  box-shadow: 0 6px 16px rgba(217, 83, 79, 0.45);
+    transform: translateY(-1px);
+    background: #c9302c;
+    box-shadow: 0 6px 16px rgba(217, 83, 79, 0.45);
 }
 
 .secondary-btn {
@@ -244,123 +287,123 @@ select.text-input option {
 }
 
 .secondary-btn:hover {
-  border-color: #80cbc4;
-  background: rgba(181, 234, 215, 0.15);
+    border-color: #80cbc4;
+    background: rgba(181, 234, 215, 0.15);
 }
 
 .badge-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 14px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
 }
 
 /* LIST ITEMS */
 .item-tile {
-  border-radius: 16px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  padding: 14px 16px;
-  background: rgba(255, 255, 255, 0.5);
-  min-height: 90px;
-  transition: background 0.2s ease;
+    border-radius: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.5);
+    min-height: 90px;
+    transition: background 0.2s ease;
 }
 
 .item-tile:hover {
-  background: #ffffff;
-  border-color: #ffb7b2;
-  box-shadow: 0 8px 16px rgba(255, 183, 178, 0.1);
+    background: #ffffff;
+    border-color: #ffb7b2;
+    box-shadow: 0 8px 16px rgba(255, 183, 178, 0.1);
 }
 
 .item-title {
-  font-weight: 700;
-  margin: 0 0 6px;
-  color: #333333;
+    font-weight: 700;
+    margin: 0 0 6px;
+    color: #333333;
 }
 
 .item-subtitle {
-  margin: 0;
-  color: #444444;
+    margin: 0;
+    color: #444444;
 }
 
 .status {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.95rem;
-  color: #333333;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    color: #333333;
 }
 
 .status-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 10px;
-  background: #26a69a;
-  box-shadow: 0 0 0 4px rgba(38, 166, 154, 0.25);
+    width: 10px;
+    height: 10px;
+    border-radius: 10px;
+    background: #26a69a;
+    box-shadow: 0 0 0 4px rgba(38, 166, 154, 0.25);
 }
 
 .two-column {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 16px;
 }
 
 .subtitle {
-  margin: 10px 0 4px;
-  color: #222222;
-  font-weight: 600;
+    margin: 10px 0 4px;
+    color: #222222;
+    font-weight: 600;
 }
 
 .footer {
-  margin-top: 24px;
-  color: #555555;
-  font-size: 0.95rem;
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
+    margin-top: 24px;
+    color: #555555;
+    font-size: 0.95rem;
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
 }
 
 @media (max-width: 720px) {
-  .top-nav {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
+    .top-nav {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
 
-  .content-area {
-    padding: 0;
-  }
+    .content-area {
+        padding: 0;
+    }
 }
 
 /* Quill Overrides for Light Mode */
 .quill-wrapper {
-  background: #ffffff;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid #e0e0e0;
+    background: #ffffff;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
 }
 
 .quill-wrapper .ql-toolbar {
-  border: none !important;
-  border-bottom: 1px solid #f0f0f0 !important;
-  background: #f9f9f9;
+    border: none !important;
+    border-bottom: 1px solid #f0f0f0 !important;
+    background: #f9f9f9;
 }
 
 .quill-wrapper .ql-container {
-  border: none !important;
-  font-family: inherit;
-  font-size: 1rem;
-  color: #333333;
-  min-height: 200px;
+    border: none !important;
+    font-family: inherit;
+    font-size: 1rem;
+    color: #333333;
+    min-height: 200px;
 }
 
 .quill-wrapper .ql-editor.ql-blank::before {
-  color: #bbbbbb;
-  font-style: normal;
+    color: #bbbbbb;
+    font-style: normal;
 }
 
 /* Quill Toolbar Icons - Dark for visibility */
@@ -390,15 +433,15 @@ select.text-input option {
 }
 
 .ql-snow .ql-stroke {
-  stroke: #333 !important;
+    stroke: #333 !important;
 }
 
 .ql-snow .ql-fill {
-  fill: #333 !important;
+    fill: #333 !important;
 }
 
 .ql-snow .ql-picker {
-  color: #333 !important;
+    color: #333 !important;
 }
 
 /* Hover state overrides for SVG icons in Quill */
@@ -416,49 +459,64 @@ select.text-input option {
 .post-content h1,
 .post-content h2,
 .post-content h3 {
-  margin-top: 1.5em;
-  margin-bottom: 0.5em;
-  line-height: 1.3;
-  color: #333;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    line-height: 1.3;
+    color: #333;
 }
 
 .post-content ul,
 .post-content ol {
-  padding-left: 1.5em;
-  margin-bottom: 1em;
-  color: #333;
+    padding-left: 1.5em;
+    margin-bottom: 1em;
+    color: #333;
 }
 
 .post-content ul {
-  list-style-type: disc;
+    list-style-type: disc;
 }
 
 .post-content ol {
-  list-style-type: decimal;
+    list-style-type: decimal;
 }
 
 .post-content p {
-  margin-bottom: 1em;
-  color: #333;
+    margin-bottom: 1em;
+    color: #333;
 }
 
 .post-content blockquote {
-  border-left: 4px solid #ffb7b2;
-  padding-left: 1em;
-  margin-left: 0;
-  color: #333;
-  font-style: italic;
-  background: rgba(255, 183, 178, 0.1);
-  padding: 12px;
-  border-radius: 0 8px 8px 0;
+    border-left: 4px solid #ffb7b2;
+    padding-left: 1em;
+    margin-left: 0;
+    color: #333;
+    font-style: italic;
+    background: rgba(255, 183, 178, 0.1);
+    padding: 12px;
+    border-radius: 0 8px 8px 0;
 }
 
 .post-content pre {
-  background: #f4f4f4;
-  padding: 1em;
-  border-radius: 8px;
-  overflow-x: auto;
-  font-family: monospace;
-  color: #333;
-  border: 1px solid #e0e0e0;
+    background: #f4f4f4;
+    padding: 1em;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: monospace;
+    color: #333;
+    border: 1px solid #e0e0e0;
+}
+
+/* 언어 버튼 개별 너비 고정 */
+.lang-switcher {
+    /* 언어 선택 영역이 늘었다 줄었다 하지 않게 고정 */
+    min-width: 110px;
+    display: flex;
+    justify-content: center;
+    margin-right: 20px;
+}
+
+/* --- 로고 영역이 찌그러지지 않게 고정 --- */
+.brand {
+    flex-shrink: 0;       /* 메뉴가 많아져도 로고 크기 유지 */
+    margin-right: 20px;
 }

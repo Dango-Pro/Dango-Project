@@ -1,145 +1,275 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AutoImportSettings">
-    <option name="autoReloadType" value="SELECTIVE" />
-  </component>
-  <component name="ChangeListManager">
-    <list default="true" id="4eebc830-b713-4009-a673-66238d89241d" name="Changes" comment="improved version">
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/service/UserService.java" afterDir="false" />
-    </list>
-    <option name="SHOW_DIALOG" value="false" />
-    <option name="HIGHLIGHT_CONFLICTS" value="true" />
-    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
-    <option name="LAST_RESOLUTION" value="IGNORE" />
-  </component>
-  <component name="ExternalProjectsData">
-    <projectState path="$PROJECT_DIR$/backend">
-      <ProjectState />
-    </projectState>
-  </component>
-  <component name="ExternalProjectsManager">
-    <system id="GRADLE">
-      <state>
-        <projects_view>
-          <tree_state>
-            <expand>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="jpcard" type="f1a62948:ProjectNode" />
-              </path>
-            </expand>
-            <select />
-          </tree_state>
-        </projects_view>
-      </state>
-    </system>
-  </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Class" />
-      </list>
-    </option>
-  </component>
-  <component name="Git.Merge.Settings">
-    <option name="BRANCH" value="origin/feature/cards-jmj" />
-  </component>
-  <component name="Git.Settings">
-    <option name="RECENT_BRANCH_BY_REPOSITORY">
-      <map>
-        <entry key="$PROJECT_DIR$" value="merge" />
-      </map>
-    </option>
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="GitHubPullRequestSearchHistory">{
-  &quot;lastFilter&quot;: {
-    &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;yss1902&quot;
-  }
-}</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Dango-Pro/Dango-Project.git&quot;,
-    &quot;accountId&quot;: &quot;3415b20f-252f-4185-aa33-4b266c90ec85&quot;
-  }
-}</component>
-  <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
-  </component>
-  <component name="ProjectColorInfo">{
-  &quot;customColor&quot;: &quot;&quot;,
-  &quot;associatedIndex&quot;: 0
-}</component>
-  <component name="ProjectId" id="38xCxA9wcjoarHFdPH0sYYziTLg" />
-  <component name="ProjectViewState">
-    <option name="showLibraryContents" value="true" />
-  </component>
-  <component name="PropertiesComponent"><![CDATA[{
+    <component name="AutoImportSettings">
+        <option name="autoReloadType" value="SELECTIVE"/>
+    </component>
+    <component name="ChangeListManager">
+        <list default="true" id="4eebc830-b713-4009-a673-66238d89241d" name="Changes"
+              comment="merge: backend updates and frontend layout fixes">
+            <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/service/UserService.java"
+                    beforeDir="false"
+                    afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/service/UserService.java"
+                    afterDir="false"/>
+
+            <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2026-01-30__12_12__Changes_.xml"
+                    beforeDir="false"/>
+            <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2026-01-30_오후_12_12_[Changes]/shelved.patch"
+                    beforeDir="false"/>
+            <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026-01-30__11_31__Changes_.xml"
+                    beforeDir="false"/>
+            <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026-01-30__12_02__Changes_.xml"
+                    beforeDir="false"/>
+            <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026-01-30_오전_11_31_[Changes]/shelved.patch"
+                    beforeDir="false"/>
+            <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026-01-30_오후_12_02_[Changes]/shelved.patch"
+                    beforeDir="false"/>
+            <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false"
+                    afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false"/>
+            <change beforePath="$PROJECT_DIR$/frontend/index.html" beforeDir="false"
+                    afterPath="$PROJECT_DIR$/frontend/index.html" afterDir="false"/>
+            <change beforePath="$PROJECT_DIR$/frontend/public/vite.svg" beforeDir="false"
+                    afterPath="$PROJECT_DIR$/frontend/public/vite.svg" afterDir="false"/>
+        </list>
+        <option name="SHOW_DIALOG" value="false"/>
+        <option name="HIGHLIGHT_CONFLICTS" value="true"/>
+        <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false"/>
+        <option name="LAST_RESOLUTION" value="IGNORE"/>
+    </component>
+    <component name="ExternalProjectsData">
+        <projectState path="$PROJECT_DIR$/backend">
+            <ProjectState/>
+        </projectState>
+    </component>
+    <component name="ExternalProjectsManager">
+        <system id="GRADLE">
+            <state>
+                <projects_view>
+                    <tree_state>
+                        <expand>
+                            <path>
+                                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode"/>
+                                <item name="jpcard" type="f1a62948:ProjectNode"/>
+                            </path>
+                        </expand>
+                        <select/>
+                    </tree_state>
+                </projects_view>
+            </state>
+        </system>
+    </component>
+    <component name="FileTemplateManagerImpl">
+        <option name="RECENT_TEMPLATES">
+            <list>
+                <option value="Class"/>
+            </list>
+        </option>
+    </component>
+    <component name="Git.Merge.Settings">
+        <option name="BRANCH" value="origin/feature/cards-jmj"/>
+    </component>
+    <component name="Git.Settings">
+        <excluded-from-favorite>
+            <branch-storage>
+                <map>
+                    <entry type="LOCAL">
+                        <value>
+                            <list>
+                                <branch-info repo="$PROJECT_DIR$" source="main"/>
+                            </list>
+                        </value>
+                    </entry>
+                    <entry type="REMOTE">
+                        <value>
+                            <list>
+                                <branch-info repo="$PROJECT_DIR$" source="origin/main"/>
+                            </list>
+                        </value>
+                    </entry>
+                </map>
+            </branch-storage>
+        </excluded-from-favorite>
+        <favorite-branches>
+            <branch-storage>
+                <map>
+                    <entry type="REMOTE">
+                        <value>
+                            <list>
+                                <branch-info repo="$PROJECT_DIR$" source="origin/feature/ui-zzz"/>
+                            </list>
+                        </value>
+                    </entry>
+                </map>
+            </branch-storage>
+        </favorite-branches>
+        <option name="RECENT_BRANCH_BY_REPOSITORY">
+            <map>
+                <entry key="$PROJECT_DIR$" value="merge"/>
+            </map>
+        </option>
+        <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$"/>
+        <option name="RESET_MODE" value="HARD"/>
+    </component>
+    <component name="GitHubPullRequestSearchHistory">{
+        &quot;lastFilter&quot;: {
+        &quot;state&quot;: &quot;OPEN&quot;,
+        &quot;assignee&quot;: &quot;yss1902&quot;
+        }
+        }
+    </component>
+    <component name="GithubPullRequestsUISettings">{
+        &quot;selectedUrlAndAccountId&quot;: {
+        &quot;url&quot;: &quot;https://Zzzeha-work@github.com/Dango-Pro/Dango-Project.git&quot;,
+        &quot;accountId&quot;: &quot;c00715c8-7051-40bb-8c91-a71a543b1b1f&quot;
+        }
+        }
+    </component>
+    <component name="ProblemsViewState">
+        <option name="selectedTabId" value="CurrentFile"/>
+    </component>
+    <component name="ProjectColorInfo">{
+        &quot;customColor&quot;: &quot;&quot;,
+        &quot;associatedIndex&quot;: 0
+        }
+    </component>
+    <component name="ProjectId" id="38xCxA9wcjoarHFdPH0sYYziTLg"/>
+    <component name="ProjectViewState">
+        <option name="showLibraryContents" value="true"/>
+    </component>
+    <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Gradle.backend [:com.jpcard.JpcardApplication.main()].executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "merge",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "project.structure.last.edited": "모듈",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
-    "애플리케이션.JpcardApplication.executor": "Run"
-  }
+    {
+  "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+  "git-widget-placeholder": "merge",
+  "ignore.virus.scanning.warn.message": "true",
+  "junie.onboarding.icon.badge.shown": "true",
+  "kotlin-language-version-configured": "true",
+  "node.js.detected.package.eslint": "true",
+  "node.js.selected.package.eslint": "(autodetect)",
+  "node.js.selected.package.tslint": "(autodetect)",
+  "nodejs_package_manager_path": "npm",
+  "project.structure.last.edited": "모듈",
+  "project.structure.proportion": "0.0",
+  "project.structure.side.proportion": "0.0",
+  "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable",
+  "to.speed.mode.migration.done": "true",
+  "ts.external.directory.path": "C:\\2025_busan_web\\spting_boot\\Dango-Project\\frontend\\node_modules\\typescript\\lib",
+  "vue.rearranger.settings.migration": "true",
+  "애플리케이션.JpcardApplication.executor": "Run"
+}
 }]]></component>
-  <component name="RunManager">
-    <configuration name="JpcardApplication" type="Application" factoryName="Application" nameIsGenerated="true">
-      <envs>
-        <env name="JWT_SECRET_KEY" value="vml0YW1pbi1kYW5nby1zZWNyZXQta2V5LXByb2plY3QtamF2YS1zcHJpbmctYm9vdA==" />
-      </envs>
-      <option name="MAIN_CLASS_NAME" value="com.jpcard.JpcardApplication" />
-      <module name="jpcard.main" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.jpcard.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-  </component>
-  <component name="TaskManager">
-    <task active="true" id="Default" summary="Default task">
-      <changelist id="4eebc830-b713-4009-a673-66238d89241d" name="Changes" comment="" />
-      <created>1769732079552</created>
-      <option name="number" value="Default" />
-      <option name="presentableId" value="Default" />
-      <updated>1769732079552</updated>
-    </task>
-    <task id="LOCAL-00001" summary="package change">
-      <option name="closed" value="true" />
-      <created>1769742846956</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1769742846956</updated>
-    </task>
-    <task id="LOCAL-00002" summary="improved version">
-      <option name="closed" value="true" />
-      <created>1770079764474</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1770079764474</updated>
-    </task>
-    <option name="localTasksCounter" value="3" />
-    <servers />
-  </component>
-  <component name="VcsManagerConfiguration">
-    <MESSAGE value="package change" />
-    <MESSAGE value="improved version" />
-    <option name="LAST_COMMIT_MESSAGE" value="improved version" />
-  </component>
+    <component name="RunManager" selected="애플리케이션.JpcardApplication">
+        <configuration name="JpcardApplication" type="Application" factoryName="Application" nameIsGenerated="true">
+            <envs>
+                <env name="JWT_SECRET_KEY"
+                     value="vml0YW1pbi1kYW5nby1zZWNyZXQta2V5LXByb2plY3QtamF2YS1zcHJpbmctYm9vdA=="/>
+            </envs>
+            <option name="MAIN_CLASS_NAME" value="com.jpcard.JpcardApplication"/>
+            <module name="jpcard.main"/>
+            <extension name="coverage">
+                <pattern>
+                    <option name="PATTERN" value="com.jpcard.*"/>
+                    <option name="ENABLED" value="true"/>
+                </pattern>
+            </extension>
+            <method v="2">
+                <option name="Make" enabled="true"/>
+            </method>
+        </configuration>
+        <configuration name="JpcardApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot"
+                       nameIsGenerated="true">
+            <module name="jpcard.main"/>
+            <option name="SPRING_BOOT_MAIN_CLASS" value="com.jpcard.JpcardApplication"/>
+            <method v="2">
+                <option name="Make" enabled="true"/>
+            </method>
+        </configuration>
+    </component>
+    <component name="SharedIndexes">
+        <attachedChunks>
+            <set>
+                <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.27397.103"/>
+                <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.27397.103"/>
+            </set>
+        </attachedChunks>
+    </component>
+    <component name="TaskManager">
+        <task active="true" id="Default" summary="Default task">
+            <changelist id="4eebc830-b713-4009-a673-66238d89241d" name="Changes" comment=""/>
+            <created>1769732079552</created>
+            <option name="number" value="Default"/>
+            <option name="presentableId" value="Default"/>
+            <updated>1769732079552</updated>
+            <workItem from="1770629436145" duration="1035000"/>
+            <workItem from="1770680866273" duration="1174000"/>
+        </task>
+        <task id="LOCAL-00001" summary="package change">
+            <option name="closed" value="true"/>
+            <created>1769742846956</created>
+            <option name="number" value="00001"/>
+            <option name="presentableId" value="LOCAL-00001"/>
+            <option name="project" value="LOCAL"/>
+            <updated>1769742846956</updated>
+        </task>
+        <task id="LOCAL-00002" summary="improved version">
+            <option name="closed" value="true"/>
+            <created>1770079764474</created>
+            <option name="number" value="00002"/>
+            <option name="presentableId" value="LOCAL-00002"/>
+            <option name="project" value="LOCAL"/>
+            <updated>1770079764474</updated>
+        </task>
+        <task id="LOCAL-00003" summary="일본어 표준 폰트 적용">
+            <option name="closed" value="true"/>
+            <created>1770171797565</created>
+            <option name="number" value="00003"/>
+            <option name="presentableId" value="LOCAL-00003"/>
+            <option name="project" value="LOCAL"/>
+            <updated>1770171797565</updated>
+        </task>
+        <task id="LOCAL-00004" summary="feat: 좌측 상단 DANGO 로고 디자인 복구 및 홈 이동 기능 추가">
+            <option name="closed" value="true"/>
+            <created>1770604846476</created>
+            <option name="number" value="00004"/>
+            <option name="presentableId" value="LOCAL-00004"/>
+            <option name="project" value="LOCAL"/>
+            <updated>1770604846476</updated>
+        </task>
+        <task id="LOCAL-00005" summary="style: 언어 변경 시 레이아웃 흔들림 방지를 위한 메뉴 너비 고정">
+            <option name="closed" value="true"/>
+            <created>1770606702706</created>
+            <option name="number" value="00005"/>
+            <option name="presentableId" value="LOCAL-00005"/>
+            <option name="project" value="LOCAL"/>
+            <updated>1770606702706</updated>
+        </task>
+        <server/>
+    </component>
+    <component name="TypeScriptGeneratedFilesManager">
+        <option name="version" value="3"/>
+    </component>
+    <component name="Vcs.Log.Tabs.Properties">
+        <option name="TAB_STATES">
+            <map>
+                <entry key="MAIN">
+                    <value>
+                        <State/>
+                    </value>
+                </entry>
+            </map>
+        </option>
+    </component>
+    <component name="VcsManagerConfiguration">
+        <MESSAGE value="package change"/>
+        <MESSAGE value="improved version"/>
+        <MESSAGE value="일본어 표준 폰트 적용"/>
+        <MESSAGE value="일본어 폰트 수정 및 고정"/>
+        <MESSAGE value="feat: 좌측 상단 DANGO 로고 디자인 복구 및 홈 이동 기능 추가"/>
+        <MESSAGE value="style: 언어 변경 시 레이아웃 흔들림 방지를 위한 메뉴 너비 고정"/>
+        <option name="LAST_COMMIT_MESSAGE" value="style: 언어 변경 시 레이아웃 흔들림 방지를 위한 메뉴 너비 고정"/>
+    </component>
 </project>
