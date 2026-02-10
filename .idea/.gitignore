@@ -1,3 +1,6 @@
-# 디폴트 무시된 파일
+# IDE 관련 설정 무시
+.idea/
+*.xml
+
+# 빌드 및 임시 파일
 /shelf/
-/workspace.xml
