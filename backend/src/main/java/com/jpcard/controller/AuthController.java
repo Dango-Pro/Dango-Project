@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import com.jpcard.service.EmailService;
 
 import java.util.Map;
 
@@ -21,6 +22,7 @@ public class AuthController {
 
     private final UserService userService;
     private final AuthService authService;
+	private final EmailService emailService;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupRequest req) {
@@ -54,5 +56,16 @@ public class AuthController {
         SecurityContextHolder.clearContext();
         return ResponseEntity.ok("logout");
     }
+	
+	@PostMapping("/email-code")
+	public ResponseEntity<?> sendVerificationCode(@RequestBody Map<String, String> request) {
+		String email = request.get("email");
+		if (email == null || email.isBlank()) {
+			return ResponseEntity.badRequest().body("이메일을 입력해주세요.");
+		}
+		
+		String code = emailService.sendEmail(email);
+		return ResponseEntity.ok("인증번호가 발송되었습니다: " + code);
+	}
 }
 
