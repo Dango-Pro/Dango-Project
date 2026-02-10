@@ -4,8 +4,71 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4eebc830-b713-4009-a673-66238d89241d" name="Changes" comment="improved version">
+    <list default="true" id="4eebc830-b713-4009-a673-66238d89241d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/jpcard.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/jpcard.main.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2026-01-30__12_12__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_2026-01-30_오후_12_12_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026-01-30__12_02__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026-01-30_오후_12_02_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/DataInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/DataInitializer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/config/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/config/JwtAuthenticationFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/AdminController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/AdminController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/AuthController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/AuthController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/CardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/CardController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/CommentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/CommentController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/DeckController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/DeckController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/PostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/PostController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/StudyController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/StudyController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/AdminDeckResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/AdminDeckResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/AdminUserResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/AdminUserResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/CardRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/CardRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/CardResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/CardResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/CommentRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/CommentRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/DeckRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/DeckRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/LoginRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/LoginRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/PostResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/PostResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/SignupRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/controller/dto/SignupRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/domain/card/Card.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/domain/card/Card.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/domain/deck/Deck.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/domain/deck/Deck.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/domain/post/Post.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/domain/post/Post.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/domain/study/StudyStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/domain/study/StudyStatus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/domain/study/UserCardProgress.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/domain/study/UserCardProgress.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/domain/user/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/domain/user/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/repository/CardRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/repository/CardRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/repository/DeckRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/repository/DeckRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/repository/PostRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/repository/PostRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/repository/UserCardProgressRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/repository/UserCardProgressRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/repository/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/service/CardService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/service/CardService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/service/CommentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/service/CommentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/service/DeckService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/service/DeckService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/service/PostService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/service/PostService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/service/StatsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/service/StatsService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/jpcard/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/common/DangoHeader.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/common/DangoHeader.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/main.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/main.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/HomePage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/HomePage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PostCreatePage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PostCreatePage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PostDetailPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PostDetailPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PostEditPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PostEditPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/PostsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/PostsPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/RegisterPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/RegisterPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/StudyPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/StudyPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/router/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/router/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/services/postService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/services/postService.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/types/card.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/types/card.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/types/deck.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/types/deck.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/types/post.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/types/post.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,6 +100,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -47,6 +111,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
+        <entry key="$PROJECT_DIR$" value="feature/comment-lmh" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -54,6 +119,7 @@
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
     &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;mh151004&quot;
   }
 }</component>
   <component name="GithubPullRequestsUISettings">{
@@ -67,32 +133,35 @@
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 2
 }</component>
+  <component name="ProjectId" id="38xDmDQzH3PppMobGHaoP4camI8" />
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Gradle.backend [:com.jpcard.JpcardApplication.main()].executor": "Run",
+    "Gradle.backend 빌드.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "merge",
+    "git-widget-placeholder": "lmh101504",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "project.structure.last.edited": "모듈",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0",
     "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
+    "애플리케이션.JpcardApplication (1).executor": "Run",
     "애플리케이션.JpcardApplication.executor": "Run"
   }
 }]]></component>
   <component name="RunManager">
-      <envs>
-      </envs>
+    <configuration name="JpcardApplication (1)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.jpcard.JpcardApplication" />
-      <module name="jpcard.main" />
+      <module name="dango.main" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="com.jpcard.*" />
@@ -103,20 +172,35 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="애플리케이션.JpcardApplication (1)" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="TaskManager">
+    <task active="true" id="Default" summary="디폴트 작업">
+      <changelist id="66f71afd-aa52-4d07-984a-f031f6eef31c" name="변경" comment="" />
+      <created>1769732486434</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
+      <updated>1769732486434</updated>
     </task>
+    <task id="LOCAL-00001" summary="권한 검증 강화: PostService에 checkOwner 로직을 도입하여 작성자 본인 및 관리자(ROLE_ADMIN, ROLE_MANAGER)만 수정/삭제가 가능하도록 변경&#10;&#10;입력값 유효성 검사: PostRequest DTO와 컨트롤러 파라미터에 @Valid, @NotBlank, @Size를 적용하여 데이터 정결성 확보&#10;&#10;파일 업로드 보안: 5MB 크기 제한 및 허용된 확장자 체크 로직을 추가하고, Path Traversal 방지를 위한 경로 검증 적용&#10;&#10;예외 처리 개선: 권한 부족 시 AccessDeniedException을 발생시켜 보안 표준 준수">
       <option name="closed" value="true" />
+      <created>1769993140339</created>
       <option name="number" value="00001" />
       <option name="presentableId" value="LOCAL-00001" />
       <option name="project" value="LOCAL" />
+      <updated>1769993140339</updated>
     </task>
+    <task id="LOCAL-00002" summary="권한 검증 도입: CommentService에 checkCommentOwner 메서드를 추가하여 작성자 본인 또는 관리자(ROLE_ADMIN, ROLE_MANAGER)만 댓글을 삭제할 수 있도록 보안 강화&#10;&#10;입력값 유효성 검사: CommentRequest DTO에 @NotBlank를 적용하고 컨트롤러에서 @Valid를 통해 빈 댓글 작성을 방지&#10;&#10;타입 불일치 해결: CommentController에서 User 객체를 추출하여 서비스 레이어로 전달함으로써 컴파일 에러 해결 및 객체 기반 검증 구현&#10;&#10;예외 처리 표준화: 권한 부족 시 org.springframework.security.access.AccessDeniedException을 던지도록 수정하여 보안 예외 흐름 통일">
       <option name="closed" value="true" />
+      <created>1770078985424</created>
       <option name="number" value="00002" />
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
+      <updated>1770078985424</updated>
     </task>
     <option name="localTasksCounter" value="3" />
     <servers />

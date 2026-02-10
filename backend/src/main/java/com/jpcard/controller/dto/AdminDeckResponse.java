@@ -1,27 +1,12 @@
 package com.jpcard.controller.dto;
-
 import com.jpcard.domain.deck.Deck;
-import lombok.Builder;
-import lombok.Data;
 
-@Data
-@Builder
-public class AdminDeckResponse {
-	private Long id;
-	private String name;
-	private String description;
-	private String ownerName;
-	private boolean isPublic;
-	private int cardCount;
-	
+public record AdminDeckResponse(Long id, String name, String category, boolean isPublic, String ownerNickname, int cardCount) {
 	public static AdminDeckResponse from(Deck deck) {
-		return AdminDeckResponse.builder()
-				.id(deck.getId())
-				.name(deck.getName())
-				.description(deck.getDescription())
-				.ownerName(deck.getOwner().getNickname())
-				.isPublic(deck.isPublic())
-				.cardCount(0)
-				.build();
+		String category = deck.getCategory() != null ? deck.getCategory() : "";
+		int cardCount = deck.getCards() != null ? deck.getCards().size() : 0;
+		return new AdminDeckResponse(deck.getId(), deck.getName(), category, deck.isPublic(),
+				deck.getOwner() != null ? deck.getOwner().getNickname() : "Unknown",
+				cardCount);
 	}
 }

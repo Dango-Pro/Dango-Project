@@ -40,11 +40,24 @@ public class CommentController {
 
     @DeleteMapping("/comments/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        commentService.deleteComment(id);
+        String currentName = determineAuthorName(null);
+        commentService.deleteComment(id, currentName);
         return ResponseEntity.noContent().build();
     }
 
     private String determineAuthorName(HttpServletRequest request) {
+        if (request == null) {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.isAuthenticated()
+                    && !"anonymousUser".equals(authentication.getPrincipal())) {
+                Object principal = authentication.getPrincipal();
+                if (principal instanceof com.jpcard.domain.user.User) {
+                    return ((com.jpcard.domain.user.User) principal).getUsername();
+                }
+                return authentication.getName();
+            }
+            return null;
+        }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()
                 && !"anonymousUser".equals(authentication.getPrincipal())) {

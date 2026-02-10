@@ -59,9 +59,9 @@ public class StudyController {
                             card.getTerm(),
                             card.getMeaning(),
                             false,
-                            card.getDeck().getId(),
+                            card.getDeck() != null ? card.getDeck().getId() : null,
                             parseContent(card.getContentJson()),
-                            fieldNames);
+                            fieldNames != null ? fieldNames : List.of());
                 })
                 .collect(Collectors.toList());
 

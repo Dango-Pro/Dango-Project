@@ -72,9 +72,11 @@ const NoticeWidget = () => {
 
   useEffect(() => {
     api
-      .get<Post[]>('/posts?notice=true')
+      .get<{ content?: Post[] } | Post[]>('/posts?size=30')
       .then((res) => {
-        setPosts(res.data.slice(0, 5));
+        const data = res.data as any;
+        const list = Array.isArray(data) ? data : (data?.content ?? []);
+        setPosts(list.filter((p: Post) => p.isNotice).slice(0, 5));
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -134,11 +136,11 @@ const CommunityWidget = () => {
 
   useEffect(() => {
     api
-      .get<Post[]>('/posts')
+      .get<{ content?: Post[] } | Post[]>('/posts?size=30')
       .then((res) => {
-        // Filter out notices if the API returns them, and take top 5
-        const communityPosts = res.data.filter(p => !p.isNotice).slice(0, 5);
-        setPosts(communityPosts);
+        const data = res.data as any;
+        const list = Array.isArray(data) ? data : (data?.content ?? []);
+        setPosts(list.filter((p: Post) => !p.isNotice).slice(0, 5));
         setLoading(false);
       })
       .catch(() => setLoading(false));

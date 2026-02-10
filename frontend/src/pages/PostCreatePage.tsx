@@ -3,9 +3,9 @@ import { api } from "../libs/api";
 import { postService } from "../services/postService";
 import Layout from "../components/Layout";
 import { useNavigate } from "react-router-dom";
-import SuccessModal from "../components/SuccessModal";
 import ReactQuill from "react-quill-new";
 import { useTranslation } from "react-i18next";
+import type { PostCategory, StudyType } from "../types/post";
 import "react-quill-new/dist/quill.snow.css";
 
 export default function PostCreatePage() {
@@ -14,125 +14,104 @@ export default function PostCreatePage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [files, setFiles] = useState<FileList | null>(null);
-  const [status, setStatus] = useState<string | null>(null);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [isManager, setIsManager] = useState(false);
+  const [category, setCategory] = useState<PostCategory>("FREE");
+  const [studyType, setStudyType] = useState<StudyType>("ONLINE");
+  const [contactLink, setContactLink] = useState("");
   const [isNotice, setIsNotice] = useState(false);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isManager, setIsManager] = useState(false);
 
   useEffect(() => {
      api.get("/users/me").then(res => {
-         const roles = res.data.roles || [];
-         if (roles.includes("ROLE_MANAGER")) setIsManager(true);
+         if (res.data.roles?.includes("ROLE_MANAGER")) setIsManager(true);
      }).catch(() => {});
   }, []);
 
-  const validate = () => {
-      const newErrors: { [key: string]: string } = {};
-      if (!title.trim()) newErrors.title = t("post.validation.title");
-      if (!content.trim()) newErrors.content = t("post.validation.content");
-
-      if (files) {
-          for (let i = 0; i < files.length; i++) {
-              const f = files[i];
-              if (f.size > 5 * 1024 * 1024) {
-                  newErrors.files = t("post.validation.file_size");
-              }
-              const allowed = ["image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf", "text/plain"];
-              if (!allowed.includes(f.type)) {
-                  newErrors.files = t("post.validation.file_type");
-              }
-          }
-      }
-      setErrors(newErrors);
-      return Object.keys(newErrors).length === 0;
-  };
-
   const onCreate = async () => {
-    if (!validate()) return;
+    if (!title.trim() || !content.trim()) return alert("제목과 내용을 입력해주세요.");
     try {
       await postService.createPost({
-        title,
-        content,
-        isNotice,
-        files
+        title, content, isNotice, files, category,
+        studyType: category === "STUDY" ? studyType : undefined,
+        contactLink: category === "STUDY" ? contactLink : undefined,
       });
-      setShowSuccess(true);
-      setTimeout(() => navigate("/posts"), 1500);
-    } catch (err) {
-      console.error(err);
-      setStatus(t("post.fail"));
-    }
+      navigate("/posts");
+    } catch (err) { alert("작성 실패"); }
   };
 
   return (
-    <Layout pageTitle={t("post.create_title")}>
-      <SuccessModal
-        isOpen={showSuccess}
-        message={t("post.success")}
-        onClose={() => navigate("/posts")}
-      />
+    <Layout pageTitle="글쓰기">
       <section className="glass-card">
         <div className="card-header">
-          <h2 className="card-title">{t("post.new_post")}</h2>
-          <button className="secondary-btn" onClick={() => { setTitle(""); setContent(""); }}>
-            {t("post.clear")}
-          </button>
+          <h2 className="card-title">새 게시글 작성</h2>
         </div>
+
         <div className="form-grid">
+          {/* 카테고리 선택 */}
           <div className="input-field">
-            <label htmlFor="post-title">{t("post.title")}</label>
-            <input
-              id="post-title"
-              className="text-input"
-              placeholder={t("post.title_placeholder")}
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-            {errors.title && <span style={{color: '#ff6b6b', fontSize: '0.85rem', marginTop: '0.25rem'}}>{errors.title}</span>}
+            <label>카테고리</label>
+            <div style={{ display: 'flex', gap: 10 }}>
+                {['FREE', 'QNA', 'STUDY'].map((cat) => (
+                    <button
+                        key={cat}
+                        className={category === cat ? "primary-btn" : "secondary-btn"}
+                        onClick={() => setCategory(cat as PostCategory)}
+                        style={{ flex: 1, padding: '10px' }}
+                    >
+                        {cat === 'FREE' ? '자유' : (cat === 'QNA' ? '질문' : '⚡ 스터디 모집')}
+                    </button>
+                ))}
+            </div>
           </div>
 
-          {isManager && (
-              <div className="input-field">
-                  <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={isNotice}
-                        onChange={e => setIsNotice(e.target.checked)}
-                        style={{ width: 18, height: 18, accentColor: '#ff6b6b' }}
-                      />
-                      <span style={{ color: '#ff6b6b', fontWeight: 600 }}>{t("post.notice")}</span>
-                  </label>
+          {/* 스터디 전용 옵션 */}
+          {category === "STUDY" && (
+            <div style={{ padding: 20, backgroundColor: '#f0f9ff', borderRadius: 16, border: '1px solid #bae6fd', display: 'grid', gap: 16 }}>
+              <h4 style={{ margin: 0, color: '#0369a1' }}>📢 스터디 모집 정보</h4>
+              <div className="two-column">
+                  <div className="input-field">
+                    <label>진행 방식</label>
+                    <select className="text-input" value={studyType} onChange={e => setStudyType(e.target.value as StudyType)}>
+                      <option value="ONLINE">온라인 (Zoom/Discord)</option>
+                      <option value="OFFLINE">오프라인 (대면)</option>
+                      <option value="HYBRID">온/오프라인 혼합</option>
+                    </select>
+                  </div>
+                  <div className="input-field">
+                    <label>오픈채팅/연락처 링크</label>
+                    <input className="text-input" placeholder="https://open.kakao.com/..." value={contactLink} onChange={e => setContactLink(e.target.value)} />
+                  </div>
               </div>
+            </div>
           )}
 
           <div className="input-field">
-            <label htmlFor="post-content">{t("post.content")}</label>
-            <div className="quill-wrapper">
-                <ReactQuill
-                    theme="snow"
-                    value={content}
-                    onChange={setContent}
-                    placeholder={t("post.content_placeholder")}
-                />
-            </div>
-            {errors.content && <span style={{color: '#ff6b6b', fontSize: '0.85rem', marginTop: '0.25rem'}}>{errors.content}</span>}
+            <label>제목</label>
+            <input className="text-input" value={title} onChange={e => setTitle(e.target.value)} placeholder="제목을 입력하세요" />
           </div>
+
           <div className="input-field">
-            <label htmlFor="post-files">{t("post.files")}</label>
-            <input
-              id="post-files"
-              type="file"
-              multiple
-              className="text-input"
-              onChange={(e) => setFiles(e.target.files)}
-            />
-             {errors.files && <span style={{color: '#ff6b6b', fontSize: '0.85rem', marginTop: '0.25rem'}}>{errors.files}</span>}
+            <label>내용</label>
+            <div className="quill-wrapper">
+                <ReactQuill theme="snow" value={content} onChange={setContent} style={{ height: 300 }} />
+            </div>
           </div>
-          <button className="primary-btn" onClick={onCreate}>
-            {t("post.publish")}
-          </button>
-          {status && <p className="muted">{status}</p>}
+
+          <div className="input-field">
+            <label>파일 첨부</label>
+            <input type="file" multiple className="text-input" onChange={e => setFiles(e.target.files)} />
+          </div>
+
+          {isManager && (
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                  <input type="checkbox" checked={isNotice} onChange={e => setIsNotice(e.target.checked)} />
+                  <span style={{ color: '#ef4444', fontWeight: 'bold' }}>공지사항으로 등록</span>
+              </label>
+          )}
+
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 20 }}>
+            <button className="secondary-btn" onClick={() => navigate("/posts")}>취소</button>
+            <button className="primary-btn" onClick={onCreate}>등록하기</button>
+          </div>
         </div>
       </section>
     </Layout>

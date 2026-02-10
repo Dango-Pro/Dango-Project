@@ -71,6 +71,12 @@ public class CommentService {
     }
 
     @Transactional
-        commentRepository.deleteById(commentId);
+    public void deleteComment(Long commentId, String currentUsername) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found with id: " + commentId));
+        if (currentUsername == null || !currentUsername.equals(comment.getAuthorName())) {
+            throw new org.springframework.security.access.AccessDeniedException("본인이 작성한 댓글만 삭제할 수 있습니다.");
+        }
+        commentRepository.delete(comment);
     }
 }

@@ -4,7 +4,6 @@ import com.jpcard.domain.user.Role;
 import com.jpcard.domain.user.User;
 import com.jpcard.repository.UserRepository;
 import com.jpcard.util.JwtUtil;
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,36 +36,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		
 		String token = resolveToken(request);
 		
-		if (token != null) {
+		if (token != null && jwtUtil.validateToken(token)) {
 			try {
-				// (유효하지 않은 토큰이면 여기서 에러 발생 -> catch로 이동)
-				Claims claims = jwtUtil.validateToken(token);
-				
-				// 이메일 대신 'ID(Long)'로 찾기 (맨 처음 코드 방식)
-				Long userId = Long.valueOf(claims.getSubject());
-				
-				// findByEmail 대신 findById 사용
-				User user = userRepository.findById(userId).orElse(null);
-				
+				String email = jwtUtil.getEmailFromToken(token);
+				User user = userRepository.findByEmail(email).orElse(null);
+
 				if (user != null) {
 					List<GrantedAuthority> authorities = new ArrayList<>();
-					
-					// getRole() 대신 getRoles() (여러 권한 루프) 사용
-					// Enum이 이미 'ROLE_'을 가지고 있으므로 .name()만 사용
-					if (user.getRoles() != null) {
-						for (Role role : user.getRoles()) {
-							authorities.add(new SimpleGrantedAuthority(role.name()));
-						}
+					if (user.getRole() != null && !user.getRole().isBlank()) {
+						authorities.add(new SimpleGrantedAuthority(user.getRole()));
 					}
-					
+
 					Authentication auth =
 							new UsernamePasswordAuthenticationToken(user, null, authorities);
-					
 					SecurityContextHolder.getContext().setAuthentication(auth);
 				}
-				
 			} catch (Exception e) {
-				// 토큰 검증 실패 시 로그 출력 (Slf4j 어노테이션 덕분에 가능)
 				log.error("Invalid JWT token: {}", e.getMessage());
 			}
 		}

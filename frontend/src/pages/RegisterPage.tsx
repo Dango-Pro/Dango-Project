@@ -263,7 +263,6 @@ export default function RegisterPage() {
             </button>
 
           </div>
-          {message && <p className="muted">{message}</p>}
         </div>
 
       </div>

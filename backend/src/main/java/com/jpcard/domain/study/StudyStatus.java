@@ -4,4 +4,5 @@ public enum StudyStatus {
     NEW,
     LEARNING,
     REVIEW,
+    SUSPENDED,
 }

@@ -80,7 +80,7 @@ public class DeckController {
         User user = getUser(auth);
         if (user == null) return ResponseEntity.status(401).build();
 
-        var d = deckService.create(request.name(), request.description(), request.templateId(), request.isPublic(), request.learningSteps(), user);
+        var d = deckService.create(request, user);
         return ResponseEntity.ok(mapToResponse(d));
     }
 
@@ -89,9 +89,7 @@ public class DeckController {
         User user = getUser(auth);
         if (user == null) return ResponseEntity.status(401).build();
 
-        boolean isPublic = request.isPublic() != null ? request.isPublic() : false;
-
-        var d = deckService.update(id, request.name(), request.description(), isPublic, request.learningSteps(), user);
+        var d = deckService.update(id, request, user);
         return ResponseEntity.ok(mapToResponse(d));
     }
 

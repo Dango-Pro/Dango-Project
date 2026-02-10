@@ -38,8 +38,8 @@ public class UserController {
         return ResponseEntity.ok(
                 new UserInfoResponse(
                     user.getId(), user.getUsername(), user.getNickname(),
-                    user.getName(), user.getEmail(), user.getPhone(),
-                    user.getBirthdate(), user.getGender(),
+                    user.getNickname(), user.getEmail(), null,
+                    null, null,
                     roles, user.getDailyLimit(), user.getReviewLimit(), user.getTimezone()
                 )
         );
@@ -51,12 +51,10 @@ public class UserController {
         if (principal == null) return ResponseEntity.status(401).build();
 
         int reviewLimit = request.reviewLimit() != null && request.reviewLimit() > 0 ? request.reviewLimit() : 200;
-        int dailyLimit = request.dailyLimit() != null ? request.dailyLimit() : 20;
+        int dailyLimit = request.dailyLimit() != null && request.dailyLimit() > 0 ? request.dailyLimit() : 20;
+        String timezone = request.timezone() != null && !request.timezone().isBlank() ? request.timezone() : "UTC";
 
-        userService.updateSettings(
-            principal.getId(), request.nickname(), dailyLimit, reviewLimit, request.timezone(),
-            request.name(), request.email(), request.phone(), request.birthdate(), request.gender()
-        );
+        userService.updateSettings(principal.getId(), dailyLimit, reviewLimit, timezone);
 
         return ResponseEntity.ok().build();
     }
@@ -68,7 +66,7 @@ public class UserController {
             return (User) principal;
         }
         if (principal instanceof String && !"anonymousUser".equals(principal)) {
-             return userService.findByUsername((String) principal).orElse(null);
+             return userService.findByEmail((String) principal).orElse(null);
         }
         return null;
     }

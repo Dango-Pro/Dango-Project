@@ -58,4 +58,13 @@ public class UserCardProgress {
     // Count of times the card was failed (FAIL rating)
     @Column(nullable = false)
     private int lapses = 0;
+
+    // FSRS / SM-2 style
+    private Double stability;
+    // Half-life regression
+    private Double halfLife;
+    // Leitner system box (0 = learning)
+    private Integer leitnerBox;
+    // FSRS difficulty (1-10)
+    private Double difficulty;
 }

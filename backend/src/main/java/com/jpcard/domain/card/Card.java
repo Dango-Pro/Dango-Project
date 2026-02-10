@@ -29,4 +29,7 @@ public class Card {
     private Deck deck;
 
     private String contentJson;
+
+    /** 같은 노트(쌍) 묶음용 - 형제 카드 묻기 등 */
+    private Long noteId;
 }

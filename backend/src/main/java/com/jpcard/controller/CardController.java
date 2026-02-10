@@ -10,8 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import tools.jackson.databind.ObjectMapper;
-import tools.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.List;
 import java.util.Map;
@@ -34,7 +34,7 @@ public class CardController {
             return (User) principal;
         }
         if (principal instanceof String && !"anonymousUser".equals(principal)) {
-             return userService.findByUsername((String) principal).orElse(null);
+             return userService.findByEmail((String) principal).orElse(null);
         }
         return null;
     }
