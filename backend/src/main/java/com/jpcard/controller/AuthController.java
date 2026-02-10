@@ -24,7 +24,12 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupRequest req) {
-        userService.signup(req.username(), req.password());
+        userService.signup(
+            req.username(), req.password(), req.nickname(),
+            req.name(), req.email(), req.phone(),
+            req.birthdate(), req.gender(),
+            req.agreedToTerms(), req.agreedToPrivacy()
+        );
         return ResponseEntity.ok("ok");
     }
 
