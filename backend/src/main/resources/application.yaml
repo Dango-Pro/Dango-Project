@@ -4,6 +4,11 @@ spring:
   profiles:
     active: dev # 기본은 'dev'(H2) 모드로 실행
 
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+
   mail:
    host: smtp.gmail.com
    port: 587
@@ -26,7 +31,8 @@ jwt:
 
 google:
   ai:
-    api-key: ${GOOGLE_AI_KEY}
+    # 환경변수 없으면 빈 문자열 → 앱 기동 가능, 채팅 시 안내 메시지
+    api-key: ${GOOGLE_AI_KEY:}
 
 
 ---

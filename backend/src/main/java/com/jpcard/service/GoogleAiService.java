@@ -17,7 +17,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class GoogleAiService implements AiService {
 	
-	@Value("${google.ai.api-key:YOUR_API_KEY}")
+	@Value("${google.ai.api-key:}")
 	private String apiKey;
 	
 	private final RestClient restClient = RestClient.create();
@@ -25,6 +25,9 @@ public class GoogleAiService implements AiService {
 	
 	@Override
 	public String getResponse(String prompt, String context, String model) {
+		if (apiKey == null || apiKey.isBlank()) {
+			return "API 키가 설정되지 않았습니다. 환경변수 GOOGLE_AI_KEY를 설정한 뒤 다시 시도해 주세요.";
+		}
 		// model 파라미터는 추후 확장성을 위해 두되, 현재는 gemini-1.5-flash 고정 사용
 		String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
 		

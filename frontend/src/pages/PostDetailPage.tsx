@@ -1,5 +1,6 @@
 // (이 파일은 로직이 복잡하므로 디자인에 집중하여 기존 코드에 스타일을 입힌 버전입니다)
 import { useEffect, useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import DOMPurify from "dompurify";
 import { api } from "../libs/api";
 import Layout from "../components/Layout";
@@ -8,9 +9,11 @@ import { useAuth } from "../context/AuthContext";
 import type { Post } from "../types/post";
 import type { Comment } from "../types/comment";
 
-const STUDY_TYPE_LABEL: Record<string, string> = { ONLINE: "온라인", OFFLINE: "오프라인", HYBRID: "온/오프라인 혼합" };
-
 export default function PostDetailPage() {
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language === "ja" ? "ja-JP" : i18n.language === "en" ? "en-US" : "ko-KR";
+  const STUDY_TYPE_KEY: Record<string, string> = { ONLINE: "post_detail.study_type_online", OFFLINE: "post_detail.study_type_offline", HYBRID: "post_detail.study_type_hybrid" };
+
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -57,26 +60,26 @@ export default function PostDetailPage() {
     api.post(`/posts/${id}/apply`, { message: applyMsg, contactInfo: contact }).then(() => {
       setIsApplied(true);
       fetchStudyData();
-    }).catch((e: any) => alert(e.response?.data?.message || "신청에 실패했습니다."));
+    }).catch((e: any) => alert(e.response?.data?.message || t("post_detail.apply_fail")));
   };
 
   const handleCancelApply = () => {
-    if (!window.confirm("신청을 취소하시겠습니까?")) return;
+    if (!window.confirm(t("post_detail.cancel_apply_confirm"))) return;
     api.delete(`/posts/${id}/apply`).then(() => {
       setIsApplied(false);
       fetchStudyData();
-    }).catch((e: any) => alert(e.response?.data?.message || "취소에 실패했습니다."));
+    }).catch((e: any) => alert(e.response?.data?.message || t("post_detail.cancel_apply_fail")));
   };
 
   const handleToggleRecruitment = () => {
     if (!post) return;
     const next = post.recruitmentStatus === "RECRUITING" ? "CLOSED" : "RECRUITING";
-    api.patch(`/posts/${id}/recruitment`, { recruitmentStatus: next }).then(res => setPost(res.data)).catch((e: any) => alert(e.response?.data?.message || "상태 변경에 실패했습니다."));
+    api.patch(`/posts/${id}/recruitment`, { recruitmentStatus: next }).then(res => setPost(res.data)).catch((e: any) => alert(e.response?.data?.message || t("post_detail.status_change_fail")));
   };
 
   const handleDelete = () => {
-    if (!window.confirm("이 게시글을 삭제하시겠습니까?")) return;
-    api.delete(`/posts/${id}`).then(() => navigate('/posts')).catch((e: any) => alert(e.response?.data?.message || "삭제에 실패했습니다."));
+    if (!window.confirm(t("post_detail.delete_post_confirm_short"))) return;
+    api.delete(`/posts/${id}`).then(() => navigate('/posts')).catch((e: any) => alert(e.response?.data?.message || t("post_detail.delete_fail")));
   };
 
   const handleLike = () => {
@@ -98,27 +101,27 @@ export default function PostDetailPage() {
   const isMyComment = (c: Comment) => !!user && (user.email === c.authorName || (user as any).username === c.authorName);
 
   const handleDeleteComment = (commentId: number) => {
-    if (!window.confirm("이 댓글을 삭제하시겠습니까?")) return;
-    api.delete(`/comments/${commentId}`).then(() => fetchComments()).catch((e: any) => alert(e.response?.data?.message || "삭제에 실패했습니다."));
+    if (!window.confirm(t("post_detail.delete_comment_confirm"))) return;
+    api.delete(`/comments/${commentId}`).then(() => fetchComments()).catch((e: any) => alert(e.response?.data?.message || t("post_detail.delete_fail")));
   };
 
   const renderComments = (list: Comment[], depth = 0) => (
     list.map(c => (
       <div key={c.id} style={{ marginLeft: depth * 20, marginTop: 10 }}>
         <div style={{ background: "rgba(0,0,0,0.03)", padding: 12, borderRadius: 8, border: "1px solid #eee" }}>
-          <div style={{ fontSize: "0.8rem", color: "#666", marginBottom: 4 }}>{c.authorName || "알 수 없음"}</div>
+          <div style={{ fontSize: "0.8rem", color: "#666", marginBottom: 4 }}>{c.authorName || t("post_detail.unknown_author")}</div>
           <div style={{ whiteSpace: "pre-wrap" }}>{c.content}</div>
           <div style={{ marginTop: 6, display: "flex", gap: 8, alignItems: "center" }}>
-            <button type="button" className="muted" style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.8rem", textDecoration: "underline" }} onClick={() => { setReplyTo(replyTo === c.id ? null : c.id); setReplyContent(""); }}>답글</button>
+            <button type="button" className="muted" style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.8rem", textDecoration: "underline" }} onClick={() => { setReplyTo(replyTo === c.id ? null : c.id); setReplyContent(""); }}>{t("post_detail.reply")}</button>
             {isMyComment(c) && (
-              <button type="button" className="muted" style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.8rem", textDecoration: "underline", color: "#c00" }} onClick={() => handleDeleteComment(c.id)}>삭제</button>
+              <button type="button" className="muted" style={{ background: "none", border: "none", cursor: "pointer", fontSize: "0.8rem", textDecoration: "underline", color: "#c00" }} onClick={() => handleDeleteComment(c.id)}>{t("post_detail.delete_btn")}</button>
             )}
           </div>
         </div>
         {replyTo === c.id && (
           <form onSubmit={(e) => handleReply(e, c.id)} style={{ marginTop: 8, display: "flex", gap: 8, marginLeft: 10 }}>
-            <input className="text-input" style={{ flex: 1 }} placeholder="답글 입력..." value={replyContent} onChange={e => setReplyContent(e.target.value)} autoFocus />
-            <button type="submit" className="secondary-btn">등록</button>
+            <input className="text-input" style={{ flex: 1 }} placeholder={t("post_detail.reply_placeholder")} value={replyContent} onChange={e => setReplyContent(e.target.value)} autoFocus />
+            <button type="submit" className="secondary-btn">{t("post_detail.post_btn")}</button>
           </form>
         )}
         {c.replies && c.replies.length > 0 && renderComments(c.replies, depth + 1)}
@@ -126,7 +129,7 @@ export default function PostDetailPage() {
     ))
   );
 
-  if (!post) return <Layout>Loading...</Layout>;
+  if (!post) return <Layout>{t("post_detail.loading")}</Layout>;
 
   const isAuthor = user?.id === post.authorId;
 
@@ -136,13 +139,13 @@ export default function PostDetailPage() {
         {/* 헤더 영역 */}
         <div style={{ borderBottom: '1px solid #eee', paddingBottom: 20, marginBottom: 30 }}>
             <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
-                <span className="pill">{post.category === 'STUDY' ? '⚡ 스터디' : (post.category === 'QNA' ? '❓ 질문' : '자유')}</span>
-                {post.isNotice && <span className="pill" style={{ color: 'red', borderColor: 'red' }}>공지</span>}
+                <span className="pill">{post.category === 'STUDY' ? `⚡ ${t("post_detail.badge_study")}` : (post.category === 'QNA' ? `❓ ${t("post_detail.badge_qna")}` : t("post_detail.badge_free"))}</span>
+                {post.isNotice && <span className="pill" style={{ color: 'red', borderColor: 'red' }}>{t("post_detail.notice_tag")}</span>}
             </div>
             <h1 style={{ fontSize: '2rem', fontWeight: 700, margin: '10px 0' }}>{post.title}</h1>
             <div style={{ display: 'flex', justifyContent: 'space-between', color: '#666' }}>
-                <span>{post.authorName} · {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : ""}</span>
-                <button type="button" onClick={handleLike} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ec4899', fontWeight: 600 }}>♥ {post.likeCount}</button>
+                <span>{post.authorName} · {post.createdAt ? new Date(post.createdAt).toLocaleDateString(dateLocale) : ""}</span>
+                <button type="button" onClick={handleLike} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ec4899', fontWeight: 600 }}>{t("post_detail.like_btn", { count: post.likeCount })}</button>
             </div>
         </div>
 
@@ -153,24 +156,23 @@ export default function PostDetailPage() {
         {post.category === 'STUDY' && (
             <div style={{ backgroundColor: '#f8fafc', padding: 24, borderRadius: 16, border: '1px solid #e2e8f0', marginBottom: 40 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                    <h3 style={{ margin: 0, fontSize: '1.2rem' }}>📢 스터디 모집 현황</h3>
+                    <h3 style={{ margin: 0, fontSize: '1.2rem' }}>📢 {t("post_detail.study_section_title")}</h3>
                     <span className="pill" style={{ backgroundColor: post.recruitmentStatus === 'RECRUITING' ? '#dcfce7' : '#f3f4f6', color: post.recruitmentStatus === 'RECRUITING' ? '#166534' : '#4b5563' }}>
-                        {post.recruitmentStatus === 'RECRUITING' ? '🟢 모집중' : '⚫ 모집완료'}
+                        {post.recruitmentStatus === 'RECRUITING' ? `🟢 ${t("post_detail.recruiting")}` : `⚫ ${t("post_detail.closed")}`}
                     </span>
                 </div>
 
                 <div style={{ display: 'grid', gap: 10, color: '#475569', marginBottom: 20 }}>
-                    <div><strong>진행 방식:</strong> {post.studyType ? (STUDY_TYPE_LABEL[post.studyType] || post.studyType) : "-"}</div>
-                    {post.contactLink && <div><strong>연락처:</strong> <a href={post.contactLink} target="_blank" rel="noreferrer" style={{ color: '#2563eb' }}>오픈채팅 바로가기</a></div>}
+                    <div><strong>{t("post_detail.method_label")}</strong> {post.studyType ? t(STUDY_TYPE_KEY[post.studyType] || "post_detail.study_type_online") : "-"}</div>
+                    {post.contactLink && <div><strong>{t("post_detail.contact_label")}</strong> <a href={post.contactLink} target="_blank" rel="noreferrer" style={{ color: '#2563eb' }}>{t("post_detail.open_chat_link")}</a></div>}
                 </div>
 
                 {isAuthor ? (
-                    // 작성자 뷰
                     <div style={{ borderTop: '1px solid #cbd5e1', paddingTop: 20 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
-                            <strong>신청자 목록 ({applicants.length}명)</strong>
+                            <strong>{t("post_detail.applicants_list", { count: applicants.length })}</strong>
                             <button className="secondary-btn" onClick={handleToggleRecruitment}>
-                                {post.recruitmentStatus === 'RECRUITING' ? '🚫 모집 마감하기' : '✅ 모집 재개하기'}
+                                {post.recruitmentStatus === 'RECRUITING' ? `🚫 ${t("post_detail.close_recruitment")}` : `✅ ${t("post_detail.resume_recruitment")}`}
                             </button>
                         </div>
                         <ul style={{ listStyle: 'none', padding: 0 }}>
@@ -179,26 +181,25 @@ export default function PostDetailPage() {
                                     <strong>{app.applicantName}</strong>: {app.message} <span className="muted">({app.contactInfo})</span>
                                 </li>
                             ))}
-                            {applicants.length === 0 && <p className="muted">아직 신청자가 없습니다.</p>}
+                            {applicants.length === 0 && <p className="muted">{t("post_detail.no_applicants")}</p>}
                         </ul>
                     </div>
                 ) : (
-                    // 참여자 뷰
                     <div style={{ borderTop: '1px solid #cbd5e1', paddingTop: 20 }}>
                         {post.recruitmentStatus === 'CLOSED' ? (
-                            <p style={{ textAlign: 'center', color: '#94a3b8' }}>모집이 마감되었습니다.</p>
+                            <p style={{ textAlign: 'center', color: '#94a3b8' }}>{t("post_detail.recruitment_closed_msg")}</p>
                         ) : isApplied ? (
                             <div style={{ textAlign: 'center' }}>
-                                <p style={{ color: '#166534', fontWeight: 'bold' }}>✅ 신청이 완료되었습니다.</p>
-                                <button className="secondary-btn" style={{ color: '#ef4444', borderColor: '#ef4444' }} onClick={handleCancelApply}>신청 취소</button>
+                                <p style={{ color: '#166534', fontWeight: 'bold' }}>✅ {t("post_detail.apply_done")}</p>
+                                <button className="secondary-btn" style={{ color: '#ef4444', borderColor: '#ef4444' }} onClick={handleCancelApply}>{t("post_detail.cancel_apply_btn")}</button>
                             </div>
                         ) : (
                             <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end' }}>
                                 <div style={{ flex: 1 }}>
-                                    <input className="text-input" placeholder="한마디 (예: 열심히 하겠습니다!)" style={{ marginBottom: 8, width: '100%' }} value={applyMsg} onChange={e=>setApplyMsg(e.target.value)} />
-                                    <input className="text-input" placeholder="연락처 (카톡ID 등)" style={{ width: '100%' }} value={contact} onChange={e=>setContact(e.target.value)} />
+                                    <input className="text-input" placeholder={t("post_detail.apply_msg_placeholder")} style={{ marginBottom: 8, width: '100%' }} value={applyMsg} onChange={e=>setApplyMsg(e.target.value)} />
+                                    <input className="text-input" placeholder={t("post_detail.contact_placeholder")} style={{ width: '100%' }} value={contact} onChange={e=>setContact(e.target.value)} />
                                 </div>
-                                <button className="primary-btn" style={{ height: 'fit-content', padding: '12px 24px' }} onClick={handleApply}>신청하기</button>
+                                <button className="primary-btn" style={{ height: 'fit-content', padding: '12px 24px' }} onClick={handleApply}>{t("post_detail.apply_btn")}</button>
                             </div>
                         )}
                     </div>
@@ -206,24 +207,22 @@ export default function PostDetailPage() {
             </div>
         )}
 
-        {/* 댓글 */}
         <div style={{ borderTop: '1px solid #eee', paddingTop: 24, marginBottom: 24 }}>
-            <h3 style={{ margin: '0 0 16px', fontSize: '1.1rem' }}>댓글 ({comments.length})</h3>
+            <h3 style={{ margin: '0 0 16px', fontSize: '1.1rem' }}>{t("post_detail.comments_count", { count: comments.length })}</h3>
             <div style={{ marginBottom: 16 }}>{renderComments(comments)}</div>
-            {comments.length === 0 && <p className="muted" style={{ marginBottom: 16 }}>아직 댓글이 없습니다.</p>}
+            {comments.length === 0 && <p className="muted" style={{ marginBottom: 16 }}>{t("post_detail.no_comments")}</p>}
             <form onSubmit={handleAddComment} style={{ display: 'flex', gap: 10 }}>
-                <input className="text-input" style={{ flex: 1 }} placeholder="댓글을 입력하세요..." value={newComment} onChange={e => setNewComment(e.target.value)} />
-                <button type="submit" className="primary-btn">등록</button>
+                <input className="text-input" style={{ flex: 1 }} placeholder={t("post_detail.add_comment_placeholder")} value={newComment} onChange={e => setNewComment(e.target.value)} />
+                <button type="submit" className="primary-btn">{t("post_detail.post_btn")}</button>
             </form>
         </div>
 
-        {/* 목록/수정/삭제 버튼 */}
         <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #eee', paddingTop: 20 }}>
-            <button className="secondary-btn" onClick={() => navigate('/posts')}>목록으로</button>
+            <button className="secondary-btn" onClick={() => navigate('/posts')}>{t("post_detail.back_to_list")}</button>
             {isAuthor && (
                 <div style={{ display: 'flex', gap: 10 }}>
-                    <button className="secondary-btn" onClick={() => navigate(`/posts/${id}/edit`)}>수정</button>
-                    <button className="secondary-btn" style={{ color: '#ef4444', borderColor: '#ef4444' }} onClick={handleDelete}>삭제</button>
+                    <button className="secondary-btn" onClick={() => navigate(`/posts/${id}/edit`)}>{t("post_detail.edit_btn")}</button>
+                    <button className="secondary-btn" style={{ color: '#ef4444', borderColor: '#ef4444' }} onClick={handleDelete}>{t("post_detail.delete_btn")}</button>
                 </div>
             )}
         </div>
