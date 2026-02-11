@@ -71,8 +71,8 @@ export const AdminApi = {
     deleteDeck: (id: number) => api.delete(`/admin/decks/${id}`),
 
     // Post Management
-    getPosts: (query?: string) =>
-        api.get<AdminPost[]>(`/admin/posts${query ? `?q=${encodeURIComponent(query)}` : ""}`),
+    getPosts: (page = 0, size = 20, query?: string) =>
+        api.get<PageResponse<AdminPost>>(`/admin/posts?page=${page}&size=${size}${query ? `&q=${encodeURIComponent(query)}` : ""}`),
     toggleNotice: (id: number, isNotice: boolean) =>
         api.patch<AdminPost>(`/admin/posts/${id}/notice?isNotice=${isNotice}`),
     deletePost: (id: number) => api.delete(`/admin/posts/${id}`),

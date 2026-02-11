@@ -101,6 +101,7 @@ const AdminUserPage: React.FC = () => {
 
   const getRoleBadge = (roles: string[]) => {
     if (roles?.includes('ROLE_ADMIN')) return { label: '관리자', class: 'role-admin' };
+    if (roles?.includes('ROLE_MANAGER')) return { label: '매니저', class: 'role-manager' };
     return { label: '일반', class: 'role-user' };
   };
 
@@ -244,6 +245,7 @@ const AdminUserPage: React.FC = () => {
                   onChange={e => setFormData({...formData, roles: e.target.value})}
                 >
                   <option value="ROLE_USER">일반 사용자</option>
+                  <option value="ROLE_MANAGER">매니저</option>
                   <option value="ROLE_ADMIN">관리자</option>
                 </select>
               </div>
@@ -435,6 +437,11 @@ const AdminUserPage: React.FC = () => {
         .role-admin {
           background: rgba(239, 68, 68, 0.15);
           color: #f87171;
+        }
+
+        .role-manager {
+          background: rgba(254, 202, 87, 0.15);
+          color: #feca57;
         }
 
         .role-user {

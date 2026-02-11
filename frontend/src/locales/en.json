@@ -34,9 +34,9 @@
   "auth": {
     "login_title": "Login",
     "quick_fill": "Quick Fill",
-    "id_label": "Username",
+    "id_label": "Email",
     "pw_label": "Password",
-    "username_placeholder": "username",
+    "username_placeholder": "email",
     "password_placeholder": "password",
     "pw_placeholder": "••••••••",
     "login_btn": "Login",
@@ -52,6 +52,7 @@
     "complete_register": "Complete Registration",
     "email_label": "Email",
     "email_placeholder": "user@example.com",
+    "logout_confirm": "Are you sure you want to log out?",
     "logout_success": "Logged out successfully."
   },
   "dashboard": {

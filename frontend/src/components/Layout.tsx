@@ -1,14 +1,8 @@
-import {type ReactNode, useEffect, useState} from 'react'; // 1. useEffect 임포트 확인
+import {useState, type ReactNode} from 'react';
 import {Link, useLocation, useNavigate} from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
 import {useAuth} from '../context/AuthContext';
-import {api} from '../libs/api'; // 2. api 임포트 확인
 import Toast from './Toast';
-
-// 역할(Role) 타입 정의 (any 제거를 위해 추가)
-interface UserRole {
-	name?: string;
-}
 
 interface LayoutProps {
 	children: ReactNode;
@@ -21,29 +15,13 @@ export default function Layout({children}: LayoutProps) {
 	const {pathname} = useLocation();
 	const navigate = useNavigate();
 
-	// 3. useAuth() 호출하여 user와 logout 가져오기 (에러 해결 핵심)
-	const {user, logout: authLogout} = useAuth();
-	const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+	// 3. useAuth() 호출하여 logout, token 가져오기
+	const {logout: authLogout, token} = useAuth();
 
 	const [showToast, setShowToast] = useState(false);
 	const [toastMessage, setToastMessage] = useState('');
 
-	// 4. 관리자 여부 확인 (any 대신 타입 안전성 확보)
-	const isAdmin = user?.roles?.some((r: string | UserRole) => {
-		if (typeof r === 'string') return r === 'ROLE_ADMIN';
-		return r.name === 'ROLE_ADMIN' || r.toString() === 'ROLE_ADMIN';
-	});
 
-	// 5. 사용자 인증 유효성 검사
-	useEffect(() => {
-		if (token) {
-			api.get('/users/me')
-				.catch(() => {
-					localStorage.removeItem('token');
-					setToken(null);
-				});
-		}
-	}, [token]);
 
 	// 6. 언어 변경 함수 정의 (changeLanguage 에러 해결)
 	const changeLanguage = (lng: string) => {
@@ -51,13 +29,11 @@ export default function Layout({children}: LayoutProps) {
 	};
 
 	const handleLogout = () => {
-		if (window.confirm(t('common.confirm') + '?')) {
+		if (window.confirm(t('auth.logout_confirm'))) {
 			setToastMessage(t('auth.logout_success'));
 			setShowToast(true);
 
 			setTimeout(() => {
-				localStorage.removeItem('token');
-				setToken(null);
 				if (authLogout) authLogout();
 				navigate('/');
 			}, 1000);
@@ -161,19 +137,6 @@ export default function Layout({children}: LayoutProps) {
 							}}>
 								{t('nav.logout')}
 							</button>
-						)}
-
-						{isAdmin && (
-							<Link
-								to = "/admin"
-								style = {{
-									...fixedMenuItemStyle('/admin'),
-									color: pathname.startsWith('/admin') ? '#667eea' : '#6c757d',
-									fontSize: '12px',
-									marginLeft: '10px'
-								}}>
-								⚙️ Admin
-							</Link>
 						)}
 					</nav>
 				</header>

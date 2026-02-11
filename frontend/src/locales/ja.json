@@ -34,9 +34,9 @@
   "auth": {
     "login_title": "ログイン",
     "quick_fill": "自動入力",
-    "id_label": "ユーザー名",
+    "id_label": "メールアドレス",
     "pw_label": "パスワード",
-    "username_placeholder": "ユーザー名を入力",
+    "username_placeholder": "メールアドレスを入力",
     "password_placeholder": "パスワードを入力",
     "pw_placeholder": "••••••••",
     "login_btn": "ログイン",
@@ -51,7 +51,9 @@
     "register_fail": "登録に失敗しました。もう一度お試しください。",
     "complete_register": "登録完了",
     "email_label": "メールアドレス",
-    "email_placeholder": "メールアドレスを入力"
+    "email_placeholder": "メールアドレスを入力",
+    "logout_confirm": "ログアウトしますか？",
+    "logout_success": "ログアウトしました。"
   },
   "dashboard": {
     "progress_title": "学習状況",

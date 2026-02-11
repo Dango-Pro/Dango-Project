@@ -2,7 +2,7 @@ import { useState } from "react";
 import { api } from "../libs/api";
 import Layout from "../components/Layout";
 import { useNavigate } from "react-router-dom";
-import SuccessModal from "../components/SuccessModal";
+import Toast from "../components/Toast";
 import { useTranslation } from "react-i18next";
 
 export default function RegisterPage() {
@@ -87,6 +87,7 @@ export default function RegisterPage() {
         gender: formData.gender || null,
         agreedToTerms: agreements.terms,
         agreedToPrivacy: agreements.privacy,
+        verificationCode: formData.authCode,
       });
       setShowSuccess(true);
       setTimeout(() => navigate("/login"), 1500);
@@ -98,10 +99,10 @@ export default function RegisterPage() {
 
   return (
     <Layout pageTitle={t("auth.register_title")}>
-      <SuccessModal
+      <Toast
         isOpen={showSuccess}
         message={t("auth.register_success")}
-        onClose={() => navigate("/login")}
+        onClose={() => setShowSuccess(false)}
       />
 
       <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'flex', gap: '40px', flexWrap: 'wrap' }}>

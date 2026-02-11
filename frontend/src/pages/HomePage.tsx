@@ -545,11 +545,22 @@ const LoginWidget = () => {
 
 export default function HomePage() {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const shortcuts = [
     { label: t('nav.my_decks'), to: '/decks' },
     { label: t('nav.study'), to: '/study' },
     { label: t('nav.community'), to: '/posts' },
   ];
+
+  // 관리자/매니저 권한이 있는 경우 관리자 버튼 추가
+  const isAdmin = user?.roles?.some((r: any) => {
+    const roleName = typeof r === 'string' ? r : r.name || r.toString();
+    return roleName === 'ROLE_ADMIN' || roleName === 'ROLE_MANAGER';
+  });
+
+  if (isAdmin) {
+    shortcuts.push({ label: '⚙️ Admin', to: '/admin' });
+  }
 
   return (
     <Layout>

@@ -6,9 +6,10 @@ const AdminLayout: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  // 관리자 권한 체크
+  // 관리자/매니저 권한 체크
   React.useEffect(() => {
-    if (user && !user.roles?.includes('ROLE_ADMIN')) {
+    const hasAccess = user?.roles?.includes('ROLE_ADMIN') || user?.roles?.includes('ROLE_MANAGER');
+    if (user && !hasAccess) {
       navigate('/');
     }
   }, [user, navigate]);

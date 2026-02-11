@@ -4,15 +4,21 @@ import type { AdminPost } from '../../libs/adminApi';
 
 const AdminPostPage: React.FC = () => {
   const [posts, setPosts] = useState<AdminPost[]>([]);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
 
-  const fetchPosts = async (query?: string) => {
+  const fetchPosts = async (pageNum: number = 0, query?: string) => {
     setLoading(true);
     try {
-      const res = await AdminApi.getPosts(query);
-      setPosts(res.data);
+      const res = await AdminApi.getPosts(pageNum, 20, query);
+      setPosts(res.data.content || []);
+      setTotalPages(res.data.totalPages || 0);
+      setPage(pageNum);
+      setIsSearching(!!query);
     } catch (err: any) {
       setError(err.response?.data?.message || '게시글 목록을 불러오는 데 실패했습니다.');
     } finally {
@@ -21,18 +27,18 @@ const AdminPostPage: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchPosts();
+    fetchPosts(0);
   }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    fetchPosts(searchQuery);
+    fetchPosts(0, searchQuery);
   };
 
   const handleToggleNotice = async (post: AdminPost) => {
     try {
       await AdminApi.toggleNotice(post.id, !post.isNotice);
-      fetchPosts(searchQuery);
+      fetchPosts(page, searchQuery);
     } catch (err: any) {
       alert(err.response?.data?.message || '공지 설정에 실패했습니다.');
     }
@@ -42,7 +48,7 @@ const AdminPostPage: React.FC = () => {
     if (!confirm(`정말 "${post.title}" 게시글을 삭제하시겠습니까?`)) return;
     try {
       await AdminApi.deletePost(post.id);
-      fetchPosts(searchQuery);
+      fetchPosts(page, searchQuery);
     } catch (err: any) {
       alert(err.response?.data?.message || '삭제에 실패했습니다.');
     }
@@ -134,6 +140,27 @@ const AdminPostPage: React.FC = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && !isSearching && (
+        <div className="pagination">
+          <button 
+            disabled={page === 0} 
+            onClick={() => fetchPosts(page - 1, searchQuery)}
+            className="page-btn"
+          >
+            이전
+          </button>
+          <span className="page-info">{page + 1} / {totalPages}</span>
+          <button 
+            disabled={page >= totalPages - 1} 
+            onClick={() => fetchPosts(page + 1, searchQuery)}
+            className="page-btn"
+          >
+            다음
+          </button>
+        </div>
+      )}
 
       <style>{`
         .admin-posts {
@@ -372,6 +399,39 @@ const AdminPostPage: React.FC = () => {
 
         .btn-delete:hover {
           background: rgba(239, 68, 68, 0.3);
+        }
+
+        .pagination {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 16px;
+          margin-top: 24px;
+        }
+
+        .page-btn {
+          padding: 8px 16px;
+          background: rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          border-radius: 8px;
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 13px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .page-btn:hover:not(:disabled) {
+          background: rgba(255, 255, 255, 0.15);
+        }
+
+        .page-btn:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+
+        .page-info {
+          color: rgba(255, 255, 255, 0.5);
+          font-size: 14px;
         }
       `}</style>
     </div>

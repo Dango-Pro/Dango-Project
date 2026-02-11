@@ -52,7 +52,7 @@ public class SecurityConfig {
 						).permitAll()
 
 						// 관리자 전용 구역 (반드시 anyRequest보다 위에 있어야 함!)
-						.requestMatchers("/api/admin/**").hasRole("ADMIN")
+						.requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "MANAGER")
 						// (2) 그 외 모든 요청은 인증 필요 (★ 무조건 맨 마지막에!)
 						.anyRequest().authenticated())
 

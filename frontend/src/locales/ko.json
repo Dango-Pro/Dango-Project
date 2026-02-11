@@ -36,9 +36,9 @@
     "quick_fill": "빠른 입력",
     "nickname_label": "닉네임",
     "nickname_placeholder": "닉네임 입력 (비속어 금지)",
-    "id_label": "아이디",
+    "id_label": "이메일",
     "pw_label": "비밀번호",
-    "username_placeholder": "아이디 입력",
+    "username_placeholder": "이메일 입력",
     "password_placeholder": "비밀번호 입력",
     "pw_placeholder": "••••••••",
     "login_btn": "로그인",
@@ -53,7 +53,9 @@
     "register_fail": "가입에 실패했습니다. 다시 시도해주세요.",
     "complete_register": "회원가입 완료",
     "email_label": "이메일",
-    "email_placeholder": "이메일 주소 입력"
+    "email_placeholder": "이메일 주소 입력",
+    "logout_confirm": "로그아웃 하시겠습니까?",
+    "logout_success": "로그아웃 되었습니다."
   },
   "dashboard": {
     "progress_title": "학습 현황",

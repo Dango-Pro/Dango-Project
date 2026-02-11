@@ -20,11 +20,11 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
-	private final EmailService emailService;
+    private final EmailService emailService;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupRequest req) {
-        authService.signup(req.username(), req.password(), req.nicknameOrEmailPrefix());
+        authService.signup(req.email(), req.password(), req.nicknameOrEmailPrefix(), req.verificationCode());
         return ResponseEntity.ok("ok");
     }
 
@@ -32,8 +32,7 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest req) {
         var tokens = authService.login(req.email(), req.password());
         return ResponseEntity.ok(
-                new AuthResponse(tokens.get("accessToken"), tokens.get("refreshToken"))
-        );
+                new AuthResponse(tokens.get("accessToken"), tokens.get("refreshToken")));
     }
 
     @PostMapping("/refresh")
@@ -49,16 +48,15 @@ public class AuthController {
         SecurityContextHolder.clearContext();
         return ResponseEntity.ok("logout");
     }
-	
-	@PostMapping("/email-code")
-	public ResponseEntity<?> sendVerificationCode(@RequestBody Map<String, String> request) {
-		String email = request.get("email");
-		if (email == null || email.isBlank()) {
-			return ResponseEntity.badRequest().body("이메일을 입력해주세요.");
-		}
-		
-		String code = emailService.sendEmail(email);
-		return ResponseEntity.ok("인증번호가 발송되었습니다: " + code);
-	}
-}
 
+    @PostMapping("/email-code")
+    public ResponseEntity<?> sendVerificationCode(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        if (email == null || email.isBlank()) {
+            return ResponseEntity.badRequest().body("이메일을 입력해주세요.");
+        }
+
+        emailService.sendEmail(email);
+        return ResponseEntity.ok("인증번호가 발송되었습니다.");
+    }
+}

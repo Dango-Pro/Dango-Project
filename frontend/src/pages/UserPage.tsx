@@ -14,7 +14,6 @@ export default function UserPage() {
   // Settings Mode
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
-      dailyLimit: 20,
       reviewLimit: 200,
       timezone: 'UTC',
       nickname: '',
@@ -37,7 +36,6 @@ export default function UserPage() {
       .then((res) => {
         setUser(res.data);
         setEditForm({
-            dailyLimit: res.data.dailyLimit,
             reviewLimit: res.data.reviewLimit,
             timezone: res.data.timezone || 'UTC',
             nickname: res.data.nickname || '',
@@ -65,7 +63,6 @@ export default function UserPage() {
     try {
       await api.patch('/users/me', { 
           ...editForm,
-          dailyLimit: Number(editForm.dailyLimit),
           reviewLimit: Number(editForm.reviewLimit)
       });
       setIsEditing(false);
@@ -167,14 +164,6 @@ export default function UserPage() {
             <div className="action-card">
               <h3 className="item-title" style={{ marginBottom: '15px' }}>학습 설정</h3>
               <div className="two-column">
-                  <div>
-                    <p className="muted">{t('user.daily_new_cards_limit')}</p>
-                    {isEditing ? (
-                        <input type="number" name="dailyLimit" className="text-input" value={editForm.dailyLimit} onChange={handleChange} />
-                    ) : (
-                        <p className="item-title">{user.dailyLimit}</p>
-                    )}
-                  </div>
                   <div>
                     <p className="muted">{t('user.timezone')}</p>
                     {isEditing ? (
