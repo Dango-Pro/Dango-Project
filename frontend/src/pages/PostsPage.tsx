@@ -132,7 +132,7 @@ export default function PostsPage() {
                         <span style={{ marginLeft: 6 }}>{p.title}</span>
                       </Link>
                     </td>
-                    <td style={{ padding: '12px 10px', textAlign: 'center', color: '#555' }}>{p.authorName ?? '-'}</td>
+                    <td style={{ padding: '12px 10px', textAlign: 'center', color: '#555', maxWidth: 90, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={p.authorName ?? ''}>{p.authorName ?? '-'}</td>
                     <td style={{ padding: '12px 10px', textAlign: 'center', color: '#666', fontSize: '0.9rem' }}>
                       {p.createdAt ? (() => { try { const d = new Date(p.createdAt); return isNaN(d.getTime()) ? "-" : d.toLocaleDateString(dateLocale, { year: "numeric", month: "2-digit", day: "2-digit" }).replace(/\. /g, "."); } catch { return "-"; } })() : "-"}
                     </td>

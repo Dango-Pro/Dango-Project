@@ -172,6 +172,7 @@ public class PostService {
 				.map(a -> new StudyApplicationResponse(
 						a.getId(),
 						a.getApplicant() != null ? a.getApplicant().getId() : null,
+						a.getApplicant() != null ? a.getApplicant().getEmail() : null,
 						a.getApplicant() != null ? (a.getApplicant().getNickname() != null ? a.getApplicant().getNickname() : a.getApplicant().getEmail()) : "Unknown",
 						a.getMessage(),
 						a.getContactInfo(),
@@ -187,6 +188,7 @@ public class PostService {
 				.map(a -> new StudyApplicationResponse(
 						a.getId(),
 						a.getApplicant().getId(),
+						a.getApplicant().getEmail(),
 						a.getApplicant().getNickname() != null ? a.getApplicant().getNickname() : a.getApplicant().getEmail(),
 						a.getMessage(),
 						a.getContactInfo(),
