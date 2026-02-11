@@ -98,7 +98,7 @@ export default function PostDetailPage() {
     api.post(`/posts/${id}/comments?parentId=${parentId}`, { content: replyContent }).then(() => { setReplyContent(""); setReplyTo(null); fetchComments(); }).catch(() => {});
   };
 
-  const isMyComment = (c: Comment) => !!user && (user.email === c.authorName || (user as any).username === c.authorName);
+  const isMyComment = (c: Comment) => !!user && (user.email === c.authorName || (user as any).username === c.authorName || user.nickname === c.authorName);
 
   const handleDeleteComment = (commentId: number) => {
     if (!window.confirm(t("post_detail.delete_comment_confirm"))) return;

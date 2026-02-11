@@ -52,7 +52,8 @@ public class CommentController {
                     && !"anonymousUser".equals(authentication.getPrincipal())) {
                 Object principal = authentication.getPrincipal();
                 if (principal instanceof com.jpcard.domain.user.User) {
-                    return ((com.jpcard.domain.user.User) principal).getUsername();
+                    com.jpcard.domain.user.User user = (com.jpcard.domain.user.User) principal;
+                    return user.getNickname() != null ? user.getNickname() : user.getEmail();
                 }
                 return authentication.getName();
             }
@@ -63,7 +64,8 @@ public class CommentController {
                 && !"anonymousUser".equals(authentication.getPrincipal())) {
             Object principal = authentication.getPrincipal();
             if (principal instanceof com.jpcard.domain.user.User) {
-                return ((com.jpcard.domain.user.User) principal).getUsername();
+                com.jpcard.domain.user.User user = (com.jpcard.domain.user.User) principal;
+                return user.getNickname() != null ? user.getNickname() : user.getEmail();
             }
             if (principal instanceof String) {
                 return (String) principal;

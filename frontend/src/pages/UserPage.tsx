@@ -111,7 +111,7 @@ export default function UserPage() {
               <div className="two-column">
                   <div>
                     <p className="muted">아이디 (ID)</p>
-                    <p className="item-subtitle">{user.username}</p>
+                    <p className="item-subtitle">{user.nickname || user.username}</p>
                   </div>
                   <div>
                     <p className="muted">이름 (Name)</p>

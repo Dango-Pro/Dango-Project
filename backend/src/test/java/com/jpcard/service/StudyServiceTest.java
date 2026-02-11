@@ -25,16 +25,22 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class StudyServiceTest {
 
-    @Mock private UserCardProgressRepository progressRepository;
-    @Mock private CardRepository cardRepository;
-    @Mock private UserRepository userRepository;
+    @Mock
+    private UserCardProgressRepository progressRepository;
+    @Mock
+    private CardRepository cardRepository;
+    @Mock
+    private UserRepository userRepository;
 
-    @InjectMocks private StudyService studyService;
+    @InjectMocks
+    private StudyService studyService;
 
     @Test
     void processReview_NewFail() {
-        User user = new User(); user.setId(1L);
-        Card card = new Card(); card.setId(1L);
+        User user = new User();
+        user.setId(1L);
+        Card card = new Card();
+        card.setId(1L);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(cardRepository.findById(1L)).thenReturn(Optional.of(card));
@@ -42,20 +48,16 @@ class StudyServiceTest {
 
         studyService.processReview(1L, 1L, "FAIL");
 
-        verify(progressRepository).save(argThat(p ->
-            p.getStatus() == StudyStatus.LEARNING &&
-            p.getIntervalMinutes() == 1 &&
-            p.getRepetitions() == 0 &&
-            p.getFirstStudiedAt() != null
-        ));
+        verify(progressRepository).save(argThat(p -> p.getStatus() == StudyStatus.LEARNING &&
+                p.getIntervalMinutes() == 1 &&
+                p.getRepetitions() == 0 &&
+                p.getFirstStudiedAt() != null));
     }
 
     @Test
-        User user = new User();
-        user.setId(1L);
-        user.setDailyLimit(20);
+    User user = new User();user.setId(1L);user.setDailyLimit(20);
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+    when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(progressRepository.countNewCardsStudiedToday(anyLong(), anyLong(), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(20L);
 
         StudySessionResult result = studyService.getDueCards(1L, 1L, false);

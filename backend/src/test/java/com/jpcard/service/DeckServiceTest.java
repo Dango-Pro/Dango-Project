@@ -23,39 +23,39 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DeckServiceTest {
-	
+
 	@Mock
 	private DeckRepository deckRepository;
-	
+
 	@Mock
 	private CardTemplateRepository cardTemplateRepository;
-	
+
 	// ▼▼▼ [추가] DeckService가 의존하는 나머지 부품들도 Mock 처리해야 안전합니다.
 	@Mock
 	private CardRepository cardRepository;
-	
+
 	@Mock
 	private UserCardProgressRepository progressRepository;
-	
+
 	@InjectMocks
 	private DeckService deckService;
-	
+
 	@Test
 	void create_ShouldSaveDeck() {
 		// Given
 		Deck deck = new Deck();
 		deck.setId(1L);
 		deck.setName("Test Deck");
-		
+
 		// 테스트를 위한 가짜 유저 생성
 		User user = new User("test@test.com", "pw", "tester", "ROLE_USER");
-		
+
 		when(deckRepository.save(any(Deck.class))).thenReturn(deck);
-		
+
 		// When
-		//  파라미터 4개로 맞춤
+		// 파라미터 4개로 맞춤
 		Deck created = deckService.create("Test Deck", "Description", null, user);
-		
+
 		// Then
 		assertNotNull(created);
 		assertEquals("Test Deck", created.getName());

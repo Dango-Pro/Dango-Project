@@ -29,8 +29,8 @@ class CardRepositoryTest {
     @Test
     void findNewCards_ShouldReturnCards_WhenNoProgressExists() {
         // Given
-		User user = new User("testuser@test.com", "password", "testNick", "USER");
-		userRepository.save(user);
+        User user = new User("testuser@test.com", "password", "testNick", "USER");
+        userRepository.save(user);
 
         Deck deck = new Deck();
         deck.setName("Test Deck");
