@@ -38,9 +38,11 @@ public class UserController {
         return ResponseEntity.ok(
                 new UserInfoResponse(
                     user.getId(), user.getUsername(), user.getNickname(),
-                    user.getNickname(), user.getEmail(), null,
-                    null, null,
-                    roles, user.getDailyLimit(), user.getReviewLimit(), user.getTimezone()
+                    user.getName(), user.getEmail(), user.getPhone(),
+                    user.getBirthdate() != null ? java.time.LocalDate.parse(user.getBirthdate()) : null, 
+                    user.getGender(),
+                    roles, user.getDailyLimit(), user.getReviewLimit(), user.getTimezone(),
+                    user.getProfileImageUrl()
                 )
         );
     }
@@ -50,13 +52,43 @@ public class UserController {
         User principal = getUser(auth);
         if (principal == null) return ResponseEntity.status(401).build();
 
-        int reviewLimit = request.reviewLimit() != null && request.reviewLimit() > 0 ? request.reviewLimit() : 200;
-        int dailyLimit = request.dailyLimit() != null && request.dailyLimit() > 0 ? request.dailyLimit() : 20;
-        String timezone = request.timezone() != null && !request.timezone().isBlank() ? request.timezone() : "UTC";
+        userService.updateSettings(principal.getId(), request);
 
-        userService.updateSettings(principal.getId(), dailyLimit, reviewLimit, timezone);
+        if (request.profileImageUrl() != null) {
+            userService.updateProfileImage(principal.getId(), request.profileImageUrl());
+        }
 
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/me/profile-image")
+    public ResponseEntity<?> uploadProfileImage(@RequestParam("file") org.springframework.web.multipart.MultipartFile file, Authentication auth) {
+        User principal = getUser(auth);
+        if (principal == null) return ResponseEntity.status(401).build();
+
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("File is empty");
+        }
+
+        try {
+            String uploadDir = "uploads/";
+            java.io.File directory = new java.io.File(uploadDir);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+
+            String fileName = java.util.UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+            java.nio.file.Path filePath = java.nio.file.Paths.get(uploadDir + fileName);
+            java.nio.file.Files.copy(file.getInputStream(), filePath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+
+            String fileUrl = "/uploads/" + fileName;
+            userService.updateProfileImage(principal.getId(), fileUrl);
+
+            return ResponseEntity.ok(java.util.Map.of("profileImageUrl", fileUrl));
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("Failed to upload file");
+        }
     }
 
     private User getUser(Authentication authentication) {
