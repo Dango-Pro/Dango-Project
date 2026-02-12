@@ -11,5 +11,6 @@ public record UserUpdateRequest(
     String email,
     String phone,
     LocalDate birthdate,
-    String gender
+    String gender,
+    String profileImageUrl
 ) {}

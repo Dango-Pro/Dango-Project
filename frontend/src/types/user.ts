@@ -5,10 +5,11 @@ export interface User {
   dailyLimit: number;
   reviewLimit: number;
   timezone: string;
-  nickname?: string;
+  nickname: string;
   name?: string;
-  email?: string;
+  email: string;
   phone?: string;
   birthdate?: string;
   gender?: string;
+  profileImageUrl?: string;
 }

@@ -36,6 +36,14 @@ public class User {
 	@Column(nullable = false)
 	private String timezone = "UTC";
 
+	@Column(length = 512)
+	private String profileImageUrl;
+
+	private String name;
+	private String phone;
+	private String birthdate; // Storing as String for simplicity based on current request context, or LocalDate if preferred. UserPage uses string input.
+	private String gender;
+
 	public User(String email, String password, String nickname, String role) {
 		this.email = email;
 		this.password = password;
