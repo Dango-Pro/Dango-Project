@@ -9,6 +9,7 @@ import com.jpcard.service.CardService;
 import com.jpcard.service.DeckService;
 import com.jpcard.util.SampleDataFactory;
 import com.jpcard.util.SampleDataFactory.CardData;
+import com.jpcard.util.TestDataSeeder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +27,7 @@ public class DataInitializer implements CommandLineRunner {
     private final DeckService deckService;
     private final CardService cardService;
     private final PasswordEncoder passwordEncoder;
+    private final TestDataSeeder testDataSeeder;
 
     @Override
     public void run(String... args) throws Exception {
@@ -50,6 +52,19 @@ public class DataInitializer implements CommandLineRunner {
             admin.addRole(Role.ROLE_ADMIN);
             userRepository.save(admin);
             System.out.println("Admin account created: admin / admin123");
+        }
+
+        // Test account with extensive data for dashboard statistics
+        if (userRepository.findByUsername("test").isEmpty()) {
+            User testUser = new User();
+            testUser.setUsername("test");
+            testUser.setPassword(passwordEncoder.encode("test"));
+            testUser.setNickname("테스트유저");
+            testUser.addRole(Role.ROLE_USER);
+            testUser.setTimezone("Asia/Seoul");
+            testUser = userRepository.save(testUser);
+            testDataSeeder.seedTestData(testUser);
+            System.out.println("Test account created: test / test (with extensive seed data)");
         }
 
         createSampleData(manager);

@@ -68,7 +68,17 @@
     "view_community": "View Community",
     "community_likes": "Community Likes",
     "load_error": "Could not load statistics.",
-    "study_activity": "Study Activity"
+    "study_activity": "Study Activity",
+    "today_summary": "Today's Summary",
+    "reviews_today": "Reviews Today",
+    "accuracy": "Accuracy",
+    "streak": "Streak",
+    "deck_progress": "Deck Progress",
+    "weekly_trend": "Weekly Trend",
+    "status_review": "Mastered",
+    "status_learning": "Learning",
+    "status_new": "New",
+    "status_suspended": "Suspended"
   },
   "study": {
     "title": "Study Mode",
