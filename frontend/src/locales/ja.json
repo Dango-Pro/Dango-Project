@@ -68,7 +68,17 @@
     "view_community": "コミュニティへ",
     "community_likes": "もらったいいね",
     "load_error": "統計を読み込めませんでした。",
-    "study_activity": "学習活動"
+    "study_activity": "学習活動",
+    "today_summary": "今日の学習まとめ",
+    "reviews_today": "今日の復習",
+    "accuracy": "正解率",
+    "streak": "連続学習",
+    "deck_progress": "デッキ別進捗",
+    "weekly_trend": "直近7日間の学習推移",
+    "status_review": "暗記完了",
+    "status_learning": "学習中",
+    "status_new": "新規",
+    "status_suspended": "一時停止"
   },
   "study": {
     "title": "学習モード",

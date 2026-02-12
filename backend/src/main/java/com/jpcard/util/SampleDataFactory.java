@@ -5,7 +5,8 @@ import java.util.List;
 
 public class SampleDataFactory {
 
-    public record CardData(String term, String reading, String meaning) {}
+    public record CardData(String term, String reading, String meaning) {
+    }
 
     public static List<CardData> getN5Basics() {
         List<CardData> list = new ArrayList<>();
@@ -163,6 +164,189 @@ public class SampleDataFactory {
         list.add(new CardData("いくら", "いくら", "얼마"));
         list.add(new CardData("どこ", "どこ", "어디"));
         list.add(new CardData("いつ", "いつ", "언제"));
+        return list;
+    }
+
+    // ===== TEST ACCOUNT DATA =====
+
+    public static List<CardData> getN5Kanji() {
+        List<CardData> list = new ArrayList<>();
+        list.add(new CardData("山", "やま", "산"));
+        list.add(new CardData("川", "かわ", "강"));
+        list.add(new CardData("田", "た", "논/밭"));
+        list.add(new CardData("日", "ひ / にち", "해/날"));
+        list.add(new CardData("月", "つき / げつ", "달"));
+        list.add(new CardData("火", "ひ / か", "불/화요일"));
+        list.add(new CardData("水", "みず / すい", "물/수요일"));
+        list.add(new CardData("木", "き / もく", "나무/목요일"));
+        list.add(new CardData("金", "かね / きん", "돈/금요일"));
+        list.add(new CardData("土", "つち / ど", "흙/토요일"));
+        list.add(new CardData("大", "おお / だい", "크다"));
+        list.add(new CardData("小", "ちい / しょう", "작다"));
+        list.add(new CardData("中", "なか / ちゅう", "가운데"));
+        list.add(new CardData("上", "うえ / じょう", "위"));
+        list.add(new CardData("下", "した / か", "아래"));
+        list.add(new CardData("左", "ひだり / さ", "왼쪽"));
+        list.add(new CardData("右", "みぎ / う", "오른쪽"));
+        list.add(new CardData("口", "くち / こう", "입"));
+        list.add(new CardData("目", "め / もく", "눈"));
+        list.add(new CardData("耳", "みみ / じ", "귀"));
+        return list;
+    }
+
+    public static List<CardData> getN4Grammar() {
+        List<CardData> list = new ArrayList<>();
+        list.add(new CardData("〜てもいい", "〜てもいい", "~해도 된다"));
+        list.add(new CardData("〜てはいけない", "〜てはいけない", "~하면 안 된다"));
+        list.add(new CardData("〜なければならない", "〜なければならない", "~해야 한다"));
+        list.add(new CardData("〜たことがある", "〜たことがある", "~한 적이 있다"));
+        list.add(new CardData("〜たり〜たりする", "〜たり〜たりする", "~하거나 ~하다"));
+        list.add(new CardData("〜ようにする", "〜ようにする", "~하도록 하다"));
+        list.add(new CardData("〜ようになる", "〜ようになる", "~하게 되다"));
+        list.add(new CardData("〜ことにする", "〜ことにする", "~하기로 하다"));
+        list.add(new CardData("〜ことになる", "〜ことになる", "~하게 되다 (결정)"));
+        list.add(new CardData("〜そうだ(様態)", "〜そうだ", "~할 것 같다 (추측)"));
+        list.add(new CardData("〜そうだ(伝聞)", "〜そうだ", "~라고 한다 (전문)"));
+        list.add(new CardData("〜らしい", "〜らしい", "~인 것 같다"));
+        list.add(new CardData("〜はずだ", "〜はずだ", "~할 것이다/~일 터이다"));
+        list.add(new CardData("〜ために", "〜ために", "~하기 위해서"));
+        list.add(new CardData("〜のに", "〜のに", "~인데도 불구하고"));
+        list.add(new CardData("〜ば〜ほど", "〜ば〜ほど", "~하면 할수록"));
+        list.add(new CardData("〜てあげる", "〜てあげる", "~해 주다"));
+        list.add(new CardData("〜てもらう", "〜てもらう", "~해 받다"));
+        list.add(new CardData("〜てくれる", "〜てくれる", "~해 주다 (상대방이)"));
+        list.add(new CardData("〜させる", "〜させる", "~시키다 (사역)"));
+        return list;
+    }
+
+    public static List<CardData> getN3Reading() {
+        List<CardData> list = new ArrayList<>();
+        list.add(new CardData("経験", "けいけん", "경험"));
+        list.add(new CardData("環境", "かんきょう", "환경"));
+        list.add(new CardData("影響", "えいきょう", "영향"));
+        list.add(new CardData("関係", "かんけい", "관계"));
+        list.add(new CardData("意見", "いけん", "의견"));
+        list.add(new CardData("説明", "せつめい", "설명"));
+        list.add(new CardData("準備", "じゅんび", "준비"));
+        list.add(new CardData("連絡", "れんらく", "연락"));
+        list.add(new CardData("予定", "よてい", "예정"));
+        list.add(new CardData("相談", "そうだん", "상담"));
+        list.add(new CardData("紹介", "しょうかい", "소개"));
+        list.add(new CardData("参加", "さんか", "참가"));
+        list.add(new CardData("利用", "りよう", "이용"));
+        list.add(new CardData("確認", "かくにん", "확인"));
+        list.add(new CardData("注意", "ちゅうい", "주의"));
+        list.add(new CardData("比較", "ひかく", "비교"));
+        list.add(new CardData("増加", "ぞうか", "증가"));
+        list.add(new CardData("減少", "げんしょう", "감소"));
+        list.add(new CardData("発展", "はってん", "발전"));
+        list.add(new CardData("改善", "かいぜん", "개선"));
+        return list;
+    }
+
+    public static List<CardData> getAdjectives() {
+        List<CardData> list = new ArrayList<>();
+        list.add(new CardData("嬉しい", "うれしい", "기쁘다"));
+        list.add(new CardData("悲しい", "かなしい", "슬프다"));
+        list.add(new CardData("楽しい", "たのしい", "즐겁다"));
+        list.add(new CardData("難しい", "むずかしい", "어렵다"));
+        list.add(new CardData("優しい", "やさしい", "친절하다/상냥하다"));
+        list.add(new CardData("厳しい", "きびしい", "엄격하다"));
+        list.add(new CardData("忙しい", "いそがしい", "바쁘다"));
+        list.add(new CardData("涼しい", "すずしい", "시원하다"));
+        list.add(new CardData("暖かい", "あたたかい", "따뜻하다"));
+        list.add(new CardData("冷たい", "つめたい", "차갑다"));
+        list.add(new CardData("明るい", "あかるい", "밝다"));
+        list.add(new CardData("暗い", "くらい", "어둡다"));
+        list.add(new CardData("新しい", "あたらしい", "새롭다"));
+        list.add(new CardData("古い", "ふるい", "오래되다/낡다"));
+        list.add(new CardData("広い", "ひろい", "넓다"));
+        list.add(new CardData("狭い", "せまい", "좁다"));
+        list.add(new CardData("深い", "ふかい", "깊다"));
+        list.add(new CardData("浅い", "あさい", "얕다"));
+        return list;
+    }
+
+    public static List<CardData> getBusinessJapanese() {
+        List<CardData> list = new ArrayList<>();
+        list.add(new CardData("お世話になっております", "おせわになっております", "항상 신세를 지고 있습니다"));
+        list.add(new CardData("承知しました", "しょうちしました", "알겠습니다 (정중)"));
+        list.add(new CardData("申し訳ございません", "もうしわけございません", "대단히 죄송합니다"));
+        list.add(new CardData("ご確認ください", "ごかくにんください", "확인해 주세요"));
+        list.add(new CardData("ご検討ください", "ごけんとうください", "검토해 주세요"));
+        list.add(new CardData("お手数ですが", "おてすうですが", "번거로우시겠지만"));
+        list.add(new CardData("お忙しいところ", "おいそがしいところ", "바쁘신 중에"));
+        list.add(new CardData("ご連絡いたします", "ごれんらくいたします", "연락 드리겠습니다"));
+        list.add(new CardData("打ち合わせ", "うちあわせ", "미팅/회의"));
+        list.add(new CardData("議題", "ぎだい", "의제/안건"));
+        list.add(new CardData("資料", "しりょう", "자료"));
+        list.add(new CardData("提出", "ていしゅつ", "제출"));
+        list.add(new CardData("報告", "ほうこく", "보고"));
+        list.add(new CardData("締め切り", "しめきり", "마감/기한"));
+        list.add(new CardData("担当", "たんとう", "담당"));
+        return list;
+    }
+
+    public static List<CardData> getCulturalExpressions() {
+        List<CardData> list = new ArrayList<>();
+        list.add(new CardData("花見", "はなみ", "벚꽃놀이"));
+        list.add(new CardData("花火", "はなび", "불꽃놀이"));
+        list.add(new CardData("お正月", "おしょうがつ", "새해/설날"));
+        list.add(new CardData("七夕", "たなばた", "칠석"));
+        list.add(new CardData("お盆", "おぼん", "오봉(추석과 비슷)"));
+        list.add(new CardData("紅葉", "もみじ", "단풍"));
+        list.add(new CardData("温泉", "おんせん", "온천"));
+        list.add(new CardData("着物", "きもの", "기모노/전통의상"));
+        list.add(new CardData("浴衣", "ゆかた", "유카타"));
+        list.add(new CardData("神社", "じんじゃ", "신사"));
+        list.add(new CardData("お寺", "おてら", "절/사찰"));
+        list.add(new CardData("茶道", "さどう", "다도"));
+        list.add(new CardData("武道", "ぶどう", "무도"));
+        list.add(new CardData("空手", "からて", "가라데"));
+        list.add(new CardData("柔道", "じゅうどう", "유도"));
+        return list;
+    }
+
+    public static List<CardData> getKatakanaLoanwords() {
+        List<CardData> list = new ArrayList<>();
+        list.add(new CardData("コンピューター", "こんぴゅーたー", "컴퓨터"));
+        list.add(new CardData("インターネット", "いんたーねっと", "인터넷"));
+        list.add(new CardData("スマートフォン", "すまーとふぉん", "스마트폰"));
+        list.add(new CardData("アプリケーション", "あぷりけーしょん", "어플리케이션"));
+        list.add(new CardData("プログラム", "ぷろぐらむ", "프로그램"));
+        list.add(new CardData("デザイン", "でざいん", "디자인"));
+        list.add(new CardData("エネルギー", "えねるぎー", "에너지"));
+        list.add(new CardData("ボランティア", "ぼらんてぃあ", "자원봉사/볼런티어"));
+        list.add(new CardData("コミュニケーション", "こみゅにけーしょん", "커뮤니케이션"));
+        list.add(new CardData("レストラン", "れすとらん", "레스토랑"));
+        list.add(new CardData("アレルギー", "あれるぎー", "알레르기"));
+        list.add(new CardData("リサイクル", "りさいくる", "리사이클/재활용"));
+        list.add(new CardData("マネジメント", "まねじめんと", "매니지먼트/관리"));
+        list.add(new CardData("プレゼンテーション", "ぷれぜんてーしょん", "프레젠테이션/발표"));
+        list.add(new CardData("カレンダー", "かれんだー", "달력/캘린더"));
+        return list;
+    }
+
+    public static List<CardData> getDailyConversation() {
+        List<CardData> list = new ArrayList<>();
+        list.add(new CardData("ちょっと待ってください", "ちょっとまってください", "잠깐만 기다려 주세요"));
+        list.add(new CardData("もう一度お願いします", "もういちどおねがいします", "한 번 더 부탁드립니다"));
+        list.add(new CardData("分かりました", "わかりました", "알겠습니다"));
+        list.add(new CardData("分かりません", "わかりません", "모르겠습니다"));
+        list.add(new CardData("大丈夫です", "だいじょうぶです", "괜찮습니다"));
+        list.add(new CardData("気をつけて", "きをつけて", "조심하세요"));
+        list.add(new CardData("久しぶり", "ひさしぶり", "오랜만이야"));
+        list.add(new CardData("お疲れ様です", "おつかれさまです", "수고하셨습니다"));
+        list.add(new CardData("よろしくお願いします", "よろしくおねがいします", "잘 부탁드립니다"));
+        list.add(new CardData("失礼します", "しつれいします", "실례합니다"));
+        list.add(new CardData("何時ですか", "なんじですか", "몇 시입니까?"));
+        list.add(new CardData("今何をしていますか", "いまなにをしていますか", "지금 뭐 하고 있어요?"));
+        list.add(new CardData("どうしましたか", "どうしましたか", "무슨 일이에요?"));
+        list.add(new CardData("いくらですか", "いくらですか", "얼마에요?"));
+        list.add(new CardData("これをください", "これをください", "이것 주세요"));
+        list.add(new CardData("お会計お願いします", "おかいけいおねがいします", "계산 부탁드립니다"));
+        list.add(new CardData("すみません、道を教えてください", "すみません、みちをおしえてください", "실례합니다, 길 좀 알려주세요"));
+        list.add(new CardData("写真を撮ってもいいですか", "しゃしんをとってもいいですか", "사진 찍어도 될까요?"));
         return list;
     }
 }

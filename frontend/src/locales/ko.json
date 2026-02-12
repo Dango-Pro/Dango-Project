@@ -70,7 +70,17 @@
     "view_community": "커뮤니티 이동",
     "community_likes": "받은 좋아요",
     "load_error": "통계를 불러올 수 없습니다.",
-    "study_activity": "학습 활동"
+    "study_activity": "학습 활동",
+    "today_summary": "오늘의 학습 요약",
+    "reviews_today": "오늘 복습",
+    "accuracy": "정답률",
+    "streak": "연속 학습",
+    "deck_progress": "덱별 진행률",
+    "weekly_trend": "최근 7일 학습 추이",
+    "status_review": "암기 완료",
+    "status_learning": "학습 중",
+    "status_new": "신규",
+    "status_suspended": "일시정지"
   },
   "study": {
     "title": "학습 모드",
