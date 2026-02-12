@@ -15,5 +15,6 @@ public record UserInfoResponse(
     Set<String> roles,
     int dailyLimit,
     int reviewLimit,
-    String timezone
+    String timezone,
+    String profileImageUrl
 ) {}

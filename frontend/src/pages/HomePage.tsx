@@ -273,8 +273,18 @@ const LoginWidget = () => {
         
         {/* 프로필 헤더 */}
         <div className="profile-header">
-          <div className="profile-avatar" style={{ background: getAvatarGradient() }}>
-            {getInitials()}
+          <div 
+            className="profile-avatar" 
+            style={{ 
+              background: user?.profileImageUrl ? 'transparent' : getAvatarGradient(),
+              overflow: 'hidden' 
+            }}
+          >
+            {user?.profileImageUrl ? (
+                <img src={user.profileImageUrl} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+                getInitials()
+            )}
           </div>
           <div className="profile-info">
             <h3 className="profile-name">{user?.nickname || user?.username}</h3>
@@ -353,7 +363,7 @@ const LoginWidget = () => {
           .profile-avatar {
             width: 56px;
             height: 56px;
-            border-radius: 16px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;

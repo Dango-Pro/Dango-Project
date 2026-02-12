@@ -1,5 +1,6 @@
 package com.jpcard.service;
 
+import com.jpcard.repository.EmailVerificationRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,7 @@ public class EmailService {
 
 	private final JavaMailSender mailSender;
 
-	private final com.jpcard.repository.EmailVerificationRepository emailVerificationRepository;
+	private final EmailVerificationRepository emailVerificationRepository;
 
 	// 인증번호 생성 (6자리)
 	public String createCode() {

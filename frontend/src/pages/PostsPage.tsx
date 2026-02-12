@@ -21,7 +21,6 @@ export default function PostsPage() {
   const [myPosts, setMyPosts] = useState(false);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [totalElements, setTotalElements] = useState(0);
 
   const CATEGORY_OPTIONS: { value: PostCategory | ""; labelKey: string }[] = [
     { value: "", labelKey: "posts.category_all" },
@@ -44,10 +43,9 @@ export default function PostsPage() {
         const data = res.data as any;
         const list = Array.isArray(data) ? data : (data?.content ?? []);
         setPosts(list);
-        const total = data?.totalElements ?? list.length;
         const pages = data?.totalPages ?? (list.length > 0 ? 1 : 0);
         setTotalPages(pages);
-        setTotalElements(total);
+        // setTotalElements(total);
         setStatusKey(list.length ? "" : "no_posts");
       })
       .catch(() => setStatusKey("load_fail"));
@@ -137,7 +135,7 @@ export default function PostsPage() {
                     </td>
                     <td style={{ padding: '12px 10px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       <Link to={`/posts/${p.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={p.title}>
-                        {getCategoryBadge(p.category)}
+                        {getCategoryBadge(p.category || "")}
                         {p.category === 'STUDY' && p.recruitmentStatus && (
                           <span style={{ marginLeft: 6, fontSize: '0.75rem', fontWeight: 600, color: p.recruitmentStatus === 'RECRUITING' ? '#10b981' : '#6b7280' }}>
                             {p.recruitmentStatus === 'RECRUITING' ? t("posts.recruiting") : t("posts.closed")}
