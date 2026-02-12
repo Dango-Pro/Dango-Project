@@ -106,7 +106,7 @@ public class AdminController {
 	public ResponseEntity<Page<PostResponse>> getAllPosts(
 			@RequestParam(required = false) String q,
 			@PageableDefault(size = 20) Pageable pageable) {
-		Page<Post> posts = postService.search(q, null, pageable);
+		Page<Post> posts = postService.search(q, null, null, pageable);
 		return ResponseEntity.ok(posts.map(this::mapToPostResponse));
 	}
 	

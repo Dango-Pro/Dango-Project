@@ -44,17 +44,17 @@ export default function RegisterPage() {
   // ✅ [수정완료] 인증번호 요청 (로직 통합 & 오류 해결)
   const onRequestAuthCode = async () => {
     if (!formData.email) {
-      alert("이메일을 입력해주세요.");
+      alert(t("auth.enter_email_alert"));
       return;
     }
 
     try {
       await api.post("/auth/email-code", { email: formData.email });
-      alert("인증번호가 이메일로 전송되었습니다! (메일함을 확인해주세요)");
+      alert(t("auth.auth_sent_alert"));
       setIsSent(true);
     } catch (err) {
       console.error("이메일 발송 실패:", err);
-      alert("메일 전송에 실패했습니다. 이메일 주소를 다시 확인해주세요.");
+      alert(t("auth.auth_fail_alert"));
     }
   };
 
@@ -63,15 +63,15 @@ export default function RegisterPage() {
 
     // Validation
     if (!agreements.terms || !agreements.privacy) {
-      setMessage("모든 필수 약관에 동의해주세요.");
+      setMessage(t("auth.agree_all_required"));
       return;
     }
     if (formData.password !== formData.confirmPassword) {
-      setMessage("비밀번호가 일치하지 않습니다.");
+      setMessage(t("auth.password_mismatch"));
       return;
     }
     if (!formData.username || !formData.password || !formData.name || !formData.email || !formData.phone) {
-      setMessage("필수 정보를 모두 입력해주세요.");
+      setMessage(t("auth.fill_all_required"));
       return;
     }
 
@@ -109,11 +109,11 @@ export default function RegisterPage() {
 
         {/* Left Column: Agreements */}
         <div style={{ flex: 1, minWidth: '300px' }}>
-          <h3 style={{ marginBottom: '20px', borderBottom: '2px solid #ddd', paddingBottom: '10px' }}>약관 동의</h3>
+          <h3 style={{ marginBottom: '20px', borderBottom: '2px solid #ddd', paddingBottom: '10px' }}>{t("auth.terms_agree")}</h3>
 
           <div style={{ marginBottom: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <span style={{ fontWeight: 'bold' }}>이용약관 동의 (필수)</span>
+              <span style={{ fontWeight: 'bold' }}>{t("auth.terms_required")}</span>
               <label style={{ cursor: 'pointer' }}>
                 <input
                   type="checkbox"
@@ -122,7 +122,7 @@ export default function RegisterPage() {
                   onChange={handleAgreementChange}
                   style={{ marginRight: '8px' }}
                 />
-                동의합니다
+                {t("auth.agree")}
               </label>
             </div>
             <textarea
@@ -133,7 +133,7 @@ export default function RegisterPage() {
 
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <span style={{ fontWeight: 'bold' }}>개인정보처리방침 동의 (필수)</span>
+              <span style={{ fontWeight: 'bold' }}>{t("auth.privacy_required")}</span>
               <label style={{ cursor: 'pointer' }}>
                 <input
                   type="checkbox"
@@ -142,7 +142,7 @@ export default function RegisterPage() {
                   onChange={handleAgreementChange}
                   style={{ marginRight: '8px' }}
                 />
-                동의합니다
+                {t("auth.agree")}
               </label>
             </div>
             <textarea
@@ -155,14 +155,14 @@ export default function RegisterPage() {
 
         {/* Right Column: Form */}
         <div style={{ flex: 1, minWidth: '300px' }}>
-          <h3 style={{ marginBottom: '20px', borderBottom: '2px solid #ddd', paddingBottom: '10px' }}>회원정보 입력</h3>
+          <h3 style={{ marginBottom: '20px', borderBottom: '2px solid #ddd', paddingBottom: '10px' }}>{t("auth.member_info")}</h3>
 
           <div className="form-grid" style={{ gap: '15px' }}>
 
             <input
               name="username"
               className="text-input"
-              placeholder="아이디"
+              placeholder={t("auth.username_placeholder_short")}
               value={formData.username}
               onChange={handleChange}
             />
@@ -171,7 +171,7 @@ export default function RegisterPage() {
               name="password"
               className="text-input"
               type="password"
-              placeholder="비밀번호"
+              placeholder={t("auth.pw_label")}
               value={formData.password}
               onChange={handleChange}
             />
@@ -180,7 +180,7 @@ export default function RegisterPage() {
               name="confirmPassword"
               className="text-input"
               type="password"
-              placeholder="비밀번호 확인"
+              placeholder={t("auth.password_confirm")}
               value={formData.confirmPassword}
               onChange={handleChange}
             />
@@ -188,7 +188,7 @@ export default function RegisterPage() {
             <input
               name="name"
               className="text-input"
-              placeholder="이름"
+              placeholder={t("auth.name_placeholder")}
               value={formData.name}
               onChange={handleChange}
             />
@@ -197,7 +197,7 @@ export default function RegisterPage() {
               <input
                 name="email"
                 className="text-input"
-                placeholder="이메일"
+                placeholder={t("auth.email_label")}
                 style={{ flex: 1 }}
                 value={formData.email}
                 onChange={handleChange}
@@ -208,23 +208,23 @@ export default function RegisterPage() {
                 style={{ fontSize: '0.9rem', whiteSpace: 'nowrap' }}
                 onClick={onRequestAuthCode}
               >
-                인증번호 요청
+                {t("auth.request_auth")}
               </button>
             </div>
 
             <input
               name="authCode"
               className="text-input"
-              placeholder="인증번호를 입력하세요."
+              placeholder={t("auth.auth_code_placeholder")}
               value={formData.authCode}
               onChange={handleChange}
-              disabled={!isSent} // 메일 발송 전엔 입력 불가 (UX 향상)
+              disabled={!isSent}
             />
 
             <input
               name="phone"
               className="text-input"
-              placeholder="연락처"
+              placeholder={t("auth.contact_placeholder")}
               value={formData.phone}
               onChange={handleChange}
             />
@@ -245,9 +245,9 @@ export default function RegisterPage() {
               value={formData.gender}
               onChange={handleChange}
             >
-              <option value="">성별(선택입력)</option>
-              <option value="M">남성</option>
-              <option value="F">여성</option>
+              <option value="">{t("auth.gender_placeholder")}</option>
+              <option value="M">{t("auth.gender_m")}</option>
+              <option value="F">{t("auth.gender_f")}</option>
             </select>
 
             {message && <p className="muted" style={{color: '#d9534f'}}>{message}</p>}
@@ -257,7 +257,7 @@ export default function RegisterPage() {
               style={{ width: '100%', marginTop: '10px', backgroundColor: '#bcaaa4', borderColor: '#bcaaa4' }}
               onClick={onRegister}
             >
-              회원가입
+              {t("auth.register_submit")}
             </button>
 
           </div>
