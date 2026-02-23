@@ -63,7 +63,7 @@ public class StudyService {
     @Transactional(readOnly = true)
     public StudySessionResult getDueCards(Long userId, Long deckId, boolean studyMore) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("해당 유저를 찾을 수 없습니다."));
 
         // 1. Timezone Setup
         String userZone = user.getTimezone() != null ? user.getTimezone() : "UTC";
@@ -186,7 +186,7 @@ public class StudyService {
 
     private void processReviewLogic(Long userId, Long cardId, String rating) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("해당 유저를 찾을 수 없습니다."));
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new ResourceNotFoundException("Card not found"));
 

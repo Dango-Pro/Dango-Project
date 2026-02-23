@@ -37,7 +37,7 @@ public class ChatController {
 		
 		if (user != null) {
 			User loginUser = userRepository.findByUsername(user.getUsername())
-					.orElseThrow(() -> new RuntimeException("User not found"));
+					.orElseThrow(() -> new RuntimeException("해당 유저를 찾을 수 없습니다."));
 			
 			// 2. DB에서 학습 데이터 조회
 			// (1) 내 덱 개수

@@ -37,7 +37,7 @@ public class CardTemplateService {
     @Transactional
     public CardTemplate create(String name, List<String> fieldNames, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
         CardTemplate template = new CardTemplate();
         template.setName(name);
         template.setFieldNames(fieldNames);

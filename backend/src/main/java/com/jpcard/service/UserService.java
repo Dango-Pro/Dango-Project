@@ -46,7 +46,7 @@ public class UserService {
 
 	@Transactional
 	public User adminUpdateUser(Long id, String email, String password, UserStatus status, String role) {
-		User user = userRepository.findById(id).orElseThrow();
+		User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
 		if (email != null)
 			user.setEmail(email);
 		if (password != null && !password.isBlank())
@@ -65,7 +65,7 @@ public class UserService {
 
 	@Transactional
 	public User updateSettings(Long userId, UserUpdateRequest request) {
-		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
 		if (request.dailyLimit() != null && request.dailyLimit() > 0) user.setDailyLimit(request.dailyLimit());
 		if (request.reviewLimit() != null && request.reviewLimit() > 0) user.setReviewLimit(request.reviewLimit());
 		if (request.timezone() != null && !request.timezone().isBlank()) user.setTimezone(request.timezone());
@@ -80,7 +80,7 @@ public class UserService {
 
 	@Transactional
 	public void updateProfileImage(Long userId, String profileImageUrl) {
-		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
+		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
 		user.setProfileImageUrl(profileImageUrl);
 	}
 }

@@ -59,7 +59,7 @@ public class AdminController {
 	
 	@GetMapping("/users/{id}")
 	public ResponseEntity<AdminUserResponse> getUser(@PathVariable Long id) {
-		User user = userService.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
+		User user = userService.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
 		return ResponseEntity.ok(mapToUserResponse(user));
 	}
 	

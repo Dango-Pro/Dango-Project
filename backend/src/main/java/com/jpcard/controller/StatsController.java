@@ -53,6 +53,6 @@ public class StatsController {
 			return (User) principal;
 		}
 		return userService.findByEmail(authentication.getName())
-				.orElseThrow(() -> new java.util.NoSuchElementException("User not found"));
+				.orElseThrow(() -> new java.util.NoSuchElementException("해당 유저를 찾을 수 없습니다."));
 	}
 }
