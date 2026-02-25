@@ -1,0 +1,72 @@
+spring:
+  application:
+    name: jpcard
+  profiles:
+    active: dev # 기본은 'dev'(H2) 모드로 실행
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+
+  mail:
+   host: smtp.gmail.com
+   port: 587
+   username: inanasai1101@gmail.com
+   password: "ubdb vcuo dtom jyav"
+   properties:
+    mail:
+       smtp:
+         auth: true
+         starttls:
+          enable: true
+          required: true
+         connectiontimeout: 5000
+         timeout: 5000
+         writetimeout: 5000
+
+jwt:
+  secret: ${JWT_SECRET_KEY:this_is_a_temporary_development_secret_key_32chars_long}
+
+groq:
+  ai:
+    api-key: ${GROQ_API_KEY:}
+    url: https://api.groq.com/openai/v1/chat/completions
+    model: llama-3.3-70b-versatile
+
+
+---
+# [모드 1] 개발용 (dev) - H2 메모리 DB
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:h2:mem:jpcard;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+---
+# [모드 2] 배포용/MySQL (prod)
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:mysql://localhost:3306/jpcard?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root # 필요하면 이것도 환경변수(${DB_PASSWORD})로 변경 가능
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false

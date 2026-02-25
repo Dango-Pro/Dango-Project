@@ -1,0 +1,99 @@
+package com.jpcard.controller;
+
+import com.jpcard.controller.dto.CardResponse;
+import com.jpcard.controller.dto.ReviewRequest;
+import com.jpcard.controller.dto.StudySessionResponse;
+import com.jpcard.domain.user.User;
+import com.jpcard.service.StudyService;
+import com.jpcard.service.StudySessionResult;
+import com.jpcard.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping("/api/study")
+@RequiredArgsConstructor
+public class StudyController {
+
+    private final StudyService studyService;
+    private final UserService userService;
+    private final ObjectMapper objectMapper;
+
+    private User getUser(Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof User) {
+            return (User) principal;
+        }
+        return userService.findByUsername(authentication.getName())
+                .orElseThrow(() -> new java.util.NoSuchElementException("User not found"));
+    }
+
+    @GetMapping("/due")
+    public ResponseEntity<StudySessionResponse> getDueCards(@RequestParam Long deckId,
+            @RequestParam(defaultValue = "false") boolean studyMore,
+            Authentication authentication) {
+        if (authentication == null)
+            return ResponseEntity.status(401).build();
+        User user = getUser(authentication);
+
+        StudySessionResult result = studyService.getDueCards(user.getId(), deckId, studyMore);
+
+        List<CardResponse> cardResponses = result.cards().stream()
+                .map(card -> {
+                    // Get template field names from the deck's card template
+                    List<String> fieldNames = null;
+                    if (card.getDeck() != null && card.getDeck().getCardTemplate() != null) {
+                        fieldNames = card.getDeck().getCardTemplate().getFieldNames();
+                    }
+                    return new CardResponse(
+                            card.getId(),
+                            card.getTerm(),
+                            card.getMeaning(),
+                            false,
+                            card.getDeck() != null ? card.getDeck().getId() : null,
+                            parseContent(card.getContentJson()),
+                            fieldNames != null ? fieldNames : List.of());
+                })
+                .collect(Collectors.toList());
+
+        StudySessionResponse response = new StudySessionResponse(
+                cardResponses,
+                result.limitReached(),
+                result.newCardsInBatch(),
+                result.dueCardsInBatch(),
+                result.newCardsStudiedToday(),
+                result.dailyLimit());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/review")
+    public ResponseEntity<Void> reviewCard(@RequestBody ReviewRequest request, Authentication authentication) {
+        if (authentication == null)
+            return ResponseEntity.status(401).build();
+        User user = getUser(authentication);
+
+        studyService.processReview(user.getId(), request.cardId(), request.rating());
+        return ResponseEntity.ok().build();
+    }
+
+    private Map<String, String> parseContent(String json) {
+        if (json == null || json.isEmpty())
+            return Collections.emptyMap();
+        try {
+            return objectMapper.readValue(json, new TypeReference<Map<String, String>>() {
+            });
+        } catch (Exception e) {
+            return Collections.emptyMap();
+        }
+    }
+}
