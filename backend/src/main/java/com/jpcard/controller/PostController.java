@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.annotation.Validated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.ZoneId;
@@ -52,8 +53,9 @@ public class PostController {
 		return ResponseEntity.ok(posts.map(this::mapToResponse));
 	}
 
-	// 2. 상세 조회
+	// 2. 상세 조회 (첨부파일 lazy load를 위해 트랜잭션 유지)
 	@GetMapping("/{id}")
+	@Transactional(readOnly = true)
 	public ResponseEntity<PostResponse> get(@PathVariable Long id) {
 		return ResponseEntity.ok(mapToResponse(postService.findById(id)));
 	}

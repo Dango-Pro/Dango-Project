@@ -1,8 +1,10 @@
+# application-local.yaml 이 있으면 로컬 설정으로 덮어씁니다 (gitignore 대상)
 spring:
+  profiles:
+    include: local
+    active: dev # 기본은 'dev'(H2) 모드로 실행
   application:
     name: dango
-  profiles:
-    active: dev # 기본은 'dev'(H2) 모드로 실행
 
   servlet:
     multipart:
