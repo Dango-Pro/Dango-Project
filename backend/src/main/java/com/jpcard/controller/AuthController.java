@@ -24,7 +24,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupRequest req) {
-        authService.signup(req.email(), req.password(), req.nicknameOrEmailPrefix(), req.verificationCode());
+        authService.signup(req);
         return ResponseEntity.ok("ok");
     }
 

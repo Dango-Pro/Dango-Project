@@ -5,7 +5,11 @@ public record SignupRequest(
         String password,
         String nickname,
         String email,
-        String verificationCode) {
+        String verificationCode,
+        String name,
+        String phone,
+        String birthdate,
+        String gender) {
     public String nicknameOrEmailPrefix() {
         if (nickname != null && !nickname.isBlank())
             return nickname;

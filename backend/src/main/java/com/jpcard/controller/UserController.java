@@ -39,7 +39,7 @@ public class UserController {
                 new UserInfoResponse(
                     user.getId(), user.getUsername(), user.getNickname(),
                     user.getName(), user.getEmail(), user.getPhone(),
-                    user.getBirthdate() != null ? java.time.LocalDate.parse(user.getBirthdate()) : null, 
+                    (user.getBirthdate() != null && !user.getBirthdate().isBlank()) ? java.time.LocalDate.parse(user.getBirthdate()) : null, 
                     user.getGender(),
                     roles, user.getDailyLimit(), user.getReviewLimit(), user.getTimezone(),
                     user.getProfileImageUrl()
