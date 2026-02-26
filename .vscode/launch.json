@@ -1,0 +1,26 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "JpcardApplication (Dango)",
+      "request": "launch",
+      "mainClass": "com.jpcard.JpcardApplication",
+      "projectName": "dango-backend",
+      "env": {
+        "GOOGLE_AI_KEY": "AIzaSyDDkBB9xMkbayVJiB5aIcgXb4ryTyP6nZo"
+      }
+    },
+    {
+      "type": "java",
+      "name": "JpcardApplication (Jpcard)",
+      "request": "launch",
+      "mainClass": "com.jpcard.JpcardApplication",
+      "projectName": "jpcard-backend",
+      "env": {
+        "JWT_SECRET_KEY": "vml0YW1pbi1kYW5nby1zZWNyZXQta2V5LXByb2plY3QtamF2YS1zcHJpbmctYm9vdA==",
+        "GOOGLE_AI_KEY": "AIzaSyDDkBB9xMkbayVJiB5aIcgXb4ryTyP6nZo"
+      }
+    }
+  ]
+}
