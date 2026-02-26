@@ -166,7 +166,7 @@ export default function Layout({children}: LayoutProps) {
 							alignItems: 'center'
 						}}>🍡</span>
 						<strong style = {{fontSize: '15px', letterSpacing: '-0.3px'}}>
-							반복 간격 알고리즘 활용 일본어 지식 카드 관리 및 학습 플랫폼
+							{t('footer.project_desc')}
 						</strong>
 					</div>
 
@@ -177,9 +177,9 @@ export default function Layout({children}: LayoutProps) {
 						marginBottom: '12px',
 						fontSize: '13px'
 					}}>
-						<span style = {{margin: '0 10px'}}>👤 <b>조장</b> 박제하</span>
+						<span style = {{margin: '0 10px'}}>👤 <b>{t('footer.team_leader')}</b> {t('footer.leader_name')}</span>
 						<span style = {{color: '#dee2e6'}}>|</span>
-						<span style = {{margin: '0 10px'}}>👥 <b>조원</b> 이산하, 임문현, 전민종</span>
+						<span style = {{margin: '0 10px'}}>👥 <b>{t('footer.team_members')}</b> {t('footer.member_names')}</span>
 					</div>
 
 					<div style = {{fontSize: '12px', fontWeight: '500'}}>
@@ -189,10 +189,10 @@ export default function Layout({children}: LayoutProps) {
 	                  borderRadius: '4px',
 	                  marginRight: '12px'
                   }}>
-                    Version 1.03
+                    {t('footer.version')}
                   </span>
 						<span style = {{color: '#000'}}>
-                    <span style = {{color: 'crimson', fontWeight: 'bold'}}>최신 업데이트 일자 :&nbsp;&nbsp;</span> 2026.02.04. 18:17
+                    <span style = {{color: 'crimson', fontWeight: 'bold'}}>{t('footer.latest_update')} :&nbsp;&nbsp;</span> 2026.02.04. 18:17
                   </span>
 					</div>
 				</footer>

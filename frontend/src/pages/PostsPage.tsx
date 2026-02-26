@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { api } from "../libs/api";
 import Layout from "../components/Layout";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import type { Post, PostCategory } from "../types/post";
 
 const PAGE_SIZE = 10;
@@ -11,11 +12,13 @@ const dateLocaleMap: Record<string, string> = { ko: "ko-KR", en: "en-US", ja: "j
 
 export default function PostsPage() {
   const { t, i18n } = useTranslation();
+  const { token } = useAuth();
   const dateLocale = dateLocaleMap[i18n.language] ?? "ko-KR";
   const [posts, setPosts] = useState<Post[]>([]);
   const [statusKey, setStatusKey] = useState<"loading" | "no_posts" | "load_fail" | "">("loading");
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<PostCategory | "">("");
+  const [myPosts, setMyPosts] = useState(false);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
@@ -30,6 +33,7 @@ export default function PostsPage() {
     const params = new URLSearchParams();
     if (query) params.append("q", query);
     if (category) params.append("category", category);
+    if (myPosts) params.append("myPosts", "true");
     params.append("page", String(page));
     params.append("size", String(PAGE_SIZE));
 
@@ -45,7 +49,7 @@ export default function PostsPage() {
         setStatusKey(list.length ? "" : "no_posts");
       })
       .catch(() => setStatusKey("load_fail"));
-  }, [query, category, page]);
+  }, [query, category, myPosts, page]);
 
   // 카테고리별 배지 스타일
   const getCategoryBadge = (cat: string) => {
@@ -78,7 +82,7 @@ export default function PostsPage() {
            />
         </div>
 
-        <div style={{ marginBottom: 16, display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <div style={{ marginBottom: 16, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
           {CATEGORY_OPTIONS.map((opt) => (
             <button
               key={opt.value || "all"}
@@ -90,6 +94,16 @@ export default function PostsPage() {
               {t(opt.labelKey)}
             </button>
           ))}
+          {token && (
+            <button
+              type="button"
+              className={myPosts ? "primary-btn" : "secondary-btn"}
+              style={{ padding: "8px 14px", fontSize: "0.9rem", marginLeft: 8 }}
+              onClick={() => { setMyPosts(prev => !prev); setPage(0); }}
+            >
+              ✏️ {t("posts.my_posts")}
+            </button>
+          )}
         </div>
 
         {posts.length === 0 ? (
@@ -116,7 +130,7 @@ export default function PostsPage() {
                     </td>
                     <td style={{ padding: '12px 10px', verticalAlign: 'middle' }}>
                       {p.isNotice && (
-                        <span style={{ display: 'inline-block', padding: '4px 8px', borderRadius: 4, fontSize: '0.75rem', fontWeight: 600, background: '#f97316', color: '#fff' }}>{t("posts.notice_tag")}</span>
+                        <span style={{ display: 'inline-block', padding: '4px 8px', borderRadius: 4, fontSize: '0.75rem', fontWeight: 600, background: '#f97316', color: '#fff', whiteSpace: 'nowrap' }}>{t("posts.notice_tag")}</span>
                       )}
                     </td>
                     <td style={{ padding: '12px 10px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -130,7 +144,7 @@ export default function PostsPage() {
                         <span style={{ marginLeft: 6 }}>{p.title}</span>
                       </Link>
                     </td>
-                    <td style={{ padding: '12px 10px', textAlign: 'center', color: '#555' }}>{p.authorName ?? '-'}</td>
+                    <td style={{ padding: '12px 10px', textAlign: 'center', color: '#555', maxWidth: 90, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={p.authorName ?? ''}>{p.authorName ?? '-'}</td>
                     <td style={{ padding: '12px 10px', textAlign: 'center', color: '#666', fontSize: '0.9rem' }}>
                       {p.createdAt ? (() => { try { const d = new Date(p.createdAt); return isNaN(d.getTime()) ? "-" : d.toLocaleDateString(dateLocale, { year: "numeric", month: "2-digit", day: "2-digit" }).replace(/\. /g, "."); } catch { return "-"; } })() : "-"}
                     </td>

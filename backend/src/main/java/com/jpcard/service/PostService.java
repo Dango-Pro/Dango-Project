@@ -32,20 +32,12 @@ public class PostService {
 	private final StudyApplicationRepository studyApplicationRepository;
 	
 	@Transactional(readOnly = true)
-	public Page<Post> search(String keyword, PostCategory category, Pageable pageable) {
+	public Page<Post> search(String keyword, PostCategory category, Long authorId, Pageable pageable) {
+		// 공지 상단 고정: isNotice DESC, id DESC
 		Pageable sorted = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
-				Sort.by(Sort.Direction.DESC, "id"));
-		boolean hasKeyword = keyword != null && !keyword.isBlank();
-		if (category == null && !hasKeyword) {
-			return postRepository.findAll(sorted);
-		}
-		if (category == null) {
-			return postRepository.findByTitleContainingOrContentContaining(keyword, keyword, sorted);
-		}
-		if (!hasKeyword) {
-			return postRepository.findByCategory(category, sorted);
-		}
-		return postRepository.findByCategoryAndTitleContainingOrContentContaining(category, keyword, keyword, sorted);
+				Sort.by(Sort.Order.desc("isNotice"), Sort.Order.desc("id")));
+		String kw = (keyword != null && !keyword.isBlank()) ? keyword : null;
+		return postRepository.searchWithAuthor(kw, category, authorId, sorted);
 	}
 	
 	@Transactional(readOnly = true)
@@ -172,6 +164,7 @@ public class PostService {
 				.map(a -> new StudyApplicationResponse(
 						a.getId(),
 						a.getApplicant() != null ? a.getApplicant().getId() : null,
+						a.getApplicant() != null ? a.getApplicant().getEmail() : null,
 						a.getApplicant() != null ? (a.getApplicant().getNickname() != null ? a.getApplicant().getNickname() : a.getApplicant().getEmail()) : "Unknown",
 						a.getMessage(),
 						a.getContactInfo(),
@@ -187,6 +180,7 @@ public class PostService {
 				.map(a -> new StudyApplicationResponse(
 						a.getId(),
 						a.getApplicant().getId(),
+						a.getApplicant().getEmail(),
 						a.getApplicant().getNickname() != null ? a.getApplicant().getNickname() : a.getApplicant().getEmail(),
 						a.getMessage(),
 						a.getContactInfo(),

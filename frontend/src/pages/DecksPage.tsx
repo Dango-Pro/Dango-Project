@@ -66,10 +66,10 @@ export default function DecksPage() {
         <div className="card-grid" style={{ marginTop: 20 }}>
           {decks.map((deck) => (
             <article key={deck.id} className="item-tile">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                <div>
-                  <h3 className="item-title">{deck.name}</h3>
-                  <p className="item-subtitle">{deck.description}</p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <h3 className="item-title" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={deck.name}>{deck.name}</h3>
+                  <p className="item-subtitle" style={{ overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }} title={deck.description ?? ''}>{deck.description}</p>
                   {deck.isPublic && (
                     <span className="pill" style={{ fontSize: '0.7rem', marginTop: 5 }}>
                       {t('decks.public')}
@@ -77,7 +77,7 @@ export default function DecksPage() {
                   )}
                 </div>
                 {activeTab === 'my' && (
-                  <Link to={`/study?deckId=${deck.id}`} className="primary-btn" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>
+                  <Link to={`/study?deckId=${deck.id}`} className="primary-btn" style={{ padding: '8px 16px', fontSize: '0.9rem', flexShrink: 0, whiteSpace: 'nowrap' }}>
                     {t('decks.study_btn')}
                   </Link>
                 )}

@@ -26,13 +26,13 @@ spring:
          writetimeout: 5000
 
 jwt:
-  # 환경변수 없으면 dev용 기본값 사용 (배포 시 반드시 JWT_SECRET_KEY 설정)
-  secret: ${JWT_SECRET_KEY:your-256-bit-secret-key-for-dev-only-change-in-production-minimum-32-chars}
+  secret: ${JWT_SECRET_KEY:this_is_a_temporary_development_secret_key_32chars_long}
 
-google:
+groq:
   ai:
-    # 환경변수 없으면 빈 문자열 → 앱 기동 가능, 채팅 시 안내 메시지
-    api-key: ${GOOGLE_AI_KEY:}
+    api-key: ${GROQ_API_KEY:}
+    url: https://api.groq.com/openai/v1/chat/completions
+    model: llama-3.3-70b-versatile
 
 
 ---

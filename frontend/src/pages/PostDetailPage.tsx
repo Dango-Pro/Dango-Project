@@ -178,7 +178,7 @@ export default function PostDetailPage() {
                         <ul style={{ listStyle: 'none', padding: 0 }}>
                             {applicants.map((app: any) => (
                                 <li key={app.id} style={{ padding: '10px', background: 'white', borderRadius: 8, marginBottom: 8, border: '1px solid #e2e8f0' }}>
-                                    <strong>{app.applicantName}</strong>: {app.message} <span className="muted">({app.contactInfo})</span>
+                                    <strong>{app.applicantEmail ?? "-"} ({app.applicantName})</strong>: {app.message} <span className="muted">({app.contactInfo})</span>
                                 </li>
                             ))}
                             {applicants.length === 0 && <p className="muted">{t("post_detail.no_applicants")}</p>}

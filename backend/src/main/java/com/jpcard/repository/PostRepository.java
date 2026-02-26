@@ -22,4 +22,14 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 	Page<Post> search(@Param("keyword") String keyword, Pageable pageable);
 
 	List<Post> findByIsNoticeTrueOrderByIdDesc();
+
+	@Query("SELECT p FROM Post p WHERE " +
+			"(:keyword IS NULL OR :keyword = '' OR LOWER(p.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR p.content LIKE CONCAT('%', :keyword, '%')) " +
+			"AND (:category IS NULL OR p.category = :category) " +
+			"AND (:authorId IS NULL OR p.author.id = :authorId)")
+	Page<Post> searchWithAuthor(
+			@Param("keyword") String keyword,
+			@Param("category") PostCategory category,
+			@Param("authorId") Long authorId,
+			Pageable pageable);
 }

@@ -35,14 +35,20 @@ public class PostController {
 
 	private final PostService postService;
 
-	// 1. 목록 조회 (페이징 적용, 카테고리 필터)
+	// 1. 목록 조회 (페이징 적용, 카테고리 필터, 내가 쓴 글)
 	@GetMapping
 	public ResponseEntity<Page<PostResponse>> list(
 			@RequestParam(required = false) String q,
 			@RequestParam(required = false) PostCategory category,
+			@RequestParam(required = false, defaultValue = "false") boolean myPosts,
 			@PageableDefault(size = 10) Pageable pageable) {
 
-		Page<Post> posts = postService.search(q, category, pageable);
+		Long authorId = null;
+		if (myPosts) {
+			User user = getCurrentUser();
+			if (user != null) authorId = user.getId();
+		}
+		Page<Post> posts = postService.search(q, category, authorId, pageable);
 		return ResponseEntity.ok(posts.map(this::mapToResponse));
 	}
 
