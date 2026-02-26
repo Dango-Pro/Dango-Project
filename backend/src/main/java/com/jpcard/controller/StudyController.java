@@ -1,6 +1,7 @@
 package com.jpcard.controller;
 
 import com.jpcard.controller.dto.CardResponse;
+import com.jpcard.controller.dto.IntervalPreviewResponse;
 import com.jpcard.controller.dto.ReviewRequest;
 import com.jpcard.controller.dto.StudySessionResponse;
 import com.jpcard.domain.user.User;
@@ -84,6 +85,17 @@ public class StudyController {
 
         studyService.processReview(user.getId(), request.cardId(), request.rating());
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/preview")
+    public ResponseEntity<IntervalPreviewResponse> previewIntervals(
+            @RequestParam Long cardId,
+            Authentication authentication) {
+        if (authentication == null)
+            return ResponseEntity.status(401).build();
+        User user = getUser(authentication);
+        IntervalPreviewResponse preview = studyService.previewIntervals(user.getId(), cardId);
+        return ResponseEntity.ok(preview);
     }
 
     private Map<String, String> parseContent(String json) {

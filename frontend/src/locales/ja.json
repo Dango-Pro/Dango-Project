@@ -129,10 +129,10 @@
     "meaning_label": "意味",
     "click_flip": "クリックして裏返す",
     "tap_hint": "タップして答えを確認",
-    "rate_again": "もう一度 (<1分)",
-    "rate_hard": "難しい (12時間)",
-    "rate_good": "正解 (1日)",
-    "rate_easy": "簡単 (4日)"
+    "rate_again": "もう一度",
+    "rate_hard": "難しい",
+    "rate_good": "正解",
+    "rate_easy": "簡単"
   },
   "post": {
     "new_post": "新規投稿",

@@ -131,10 +131,10 @@
     "meaning_label": "의미",
     "click_flip": "클릭해서 뒤집기",
     "tap_hint": "카드를 눌러 정답 확인",
-    "rate_again": "다시 (<1분)",
-    "rate_hard": "어려움 (12시간)",
-    "rate_good": "알맞음 (1일)",
-    "rate_easy": "쉬움 (4일)"
+    "rate_again": "다시",
+    "rate_hard": "어려움",
+    "rate_good": "알맞음",
+    "rate_easy": "쉬움"
   },
   "post": {
     "new_post": "새 게시글",

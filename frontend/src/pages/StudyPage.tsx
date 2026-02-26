@@ -4,7 +4,7 @@ import Layout from "../components/Layout";
 import FlashCard from "../components/FlashCard";
 import type { Card } from "../types/card";
 import type { Deck } from "../types/deck";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import "../App.css";
 import { useTranslation } from "react-i18next";
 
@@ -17,8 +17,20 @@ interface StudySessionResponse {
   dailyLimit: number;
 }
 
+// 내 버전: 복습 주기 프리뷰 인터페이스
+interface IntervalPreview {
+  failMinutes: number;
+  hardMinutes: number;
+  goodMinutes: number;
+  easyMinutes: number;
+}
+
+// 내 버전: FAIL 카드 최대 재시도 횟수
+const MAX_FAIL_RETRIES = 3;
+
 export default function StudyPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate(); // 내 버전: SPA 라우팅 유지
   const [searchParams] = useSearchParams();
   const deckId = searchParams.get("deckId");
 
@@ -27,6 +39,10 @@ export default function StudyPage() {
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
+
+  // 내 버전: 프리뷰 및 실패 카운트 상태
+  const [intervalPreview, setIntervalPreview] = useState<IntervalPreview | null>(null);
+  const [failCounts, setFailCounts] = useState<Map<number, number>>(new Map());
 
   const [stats, setStats] = useState({
       limitReached: false,
@@ -43,6 +59,23 @@ export default function StudyPage() {
         fetchDecks();
     }
   }, [deckId]);
+
+  // 내 버전: 현재 카드가 바뀔 때마다 interval preview 가져오기
+  useEffect(() => {
+    if (cards.length > 0 && currentIndex < cards.length) {
+      const cardId = cards[currentIndex].id;
+      api.get<IntervalPreview>(`/study/preview?cardId=${cardId}`)
+        .then(res => setIntervalPreview(res.data))
+        .catch(() => setIntervalPreview(null));
+    } else {
+      setIntervalPreview(null);
+    }
+  }, [cards, currentIndex]);
+
+  // 상대 버전: 카드가 바뀔 때마다 앞면으로 초기화 (안전장치)
+  useEffect(() => {
+    setIsFlipped(false);
+  }, [currentIndex]);
 
   const fetchDecks = () => {
       setLoading(true);
@@ -72,6 +105,7 @@ export default function StudyPage() {
         });
         setCurrentIndex(0);
         setIsFlipped(false);
+        setIntervalPreview(null);
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
@@ -79,31 +113,37 @@ export default function StudyPage() {
 
   const currentCard = cards[currentIndex];
 
-  // 카드가 바뀔 때마다 앞면으로 초기화 (다음 카드에서 답이 보이지 않도록)
-  useEffect(() => {
-    setIsFlipped(false);
-  }, [currentIndex]);
-
   const handleReview = async (rating: string) => {
     if (!currentCard) return;
     try {
         await api.post("/study/review", { cardId: currentCard.id, rating });
 
-        // 카드 앞면으로 돌아가는 모션 재생 (0.6초)
+        // 상대 버전: 카드 앞면으로 돌아가는 모션 재생 대기 (0.6초)
         setIsFlipped(false);
         await new Promise(resolve => setTimeout(resolve, 600));
 
-        // If 'FAIL', re-queue the card at the end of the session
         let nextCards = [...cards];
+
         if (rating === 'FAIL') {
-            nextCards.push(currentCard);
+            // 내 버전: 재시도 횟수 카운트 & MAX_FAIL_RETRIES 이하일 때만 추가
+            const newFailCounts = new Map(failCounts);
+            const count = (newFailCounts.get(currentCard.id) ?? 0) + 1;
+            newFailCounts.set(currentCard.id, count);
+            setFailCounts(newFailCounts);
+
+            if (count < MAX_FAIL_RETRIES) {
+                nextCards.push(currentCard);
+            }
         }
 
-        if (currentIndex < nextCards.length - 1) {
-            setCards(nextCards); // Update queue if we added something (or just to be safe)
-            setCurrentIndex(prev => prev + 1);
+        // 내 버전: 현재 카드를 큐에서 제거하는 방식 채택
+        // (상대 버전의 key={currentCard.id} 덕분에 애니메이션은 문제없이 동작합니다)
+        const remaining = nextCards.filter((_, idx) => idx !== currentIndex);
+        if (remaining.length > 0) {
+            setCards(remaining);
+            setCurrentIndex(prev => Math.min(prev, remaining.length - 1));
         } else {
-            setCards([]); // Trigger session complete
+            setCards([]); // 세션 완료
         }
     } catch (err) {
         console.error(err);
@@ -148,7 +188,8 @@ export default function StudyPage() {
                     <h2 className="card-title">{t("study.daily_goal")} ({stats.newCardsStudiedToday}/{stats.dailyLimit})</h2>
                     <p className="muted">{t("study.daily_goal_msg")}</p>
                     <div style={{ marginTop: 20, display: 'flex', gap: 10, justifyContent: 'center' }}>
-                        <button className="secondary-btn" onClick={() => window.location.href = '/dashboard'}>{t("study.finish_btn")}</button>
+                        {/* 내 버전: useNavigate 라우팅 방식 적용 */}
+                        <button className="secondary-btn" onClick={() => navigate('/dashboard')}>{t("study.finish_btn")}</button>
                         <button className="primary-btn" onClick={() => fetchCards(true)}>{t("study.study_more")}</button>
                     </div>
                 </>
@@ -157,7 +198,7 @@ export default function StudyPage() {
                     <h2 className="card-title">{t("study.caught_up")}</h2>
                     <p className="muted">{t("study.no_due_cards")}</p>
                     <div style={{ marginTop: 20 }}>
-                        <button className="secondary-btn" onClick={() => window.location.href = '/dashboard'}>{t("study.return_dashboard")}</button>
+                        <button className="secondary-btn" onClick={() => navigate('/dashboard')}>{t("study.return_dashboard")}</button>
                     </div>
                 </>
             )}
@@ -168,7 +209,6 @@ export default function StudyPage() {
 
   return (
     <Layout pageTitle={t("study.title")}>
-      {/* Counters */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginBottom: 10, fontSize: '0.9rem', color: '#333' }}>
          <span>{t("study.due_label")}: {stats.dueCardsCount}</span>
          <span>|</span>
@@ -176,11 +216,12 @@ export default function StudyPage() {
       </div>
 
       <FlashCard
-        key={currentCard.id}
+        key={currentCard.id} /* 상대 버전: 카드 변경 시 마운트/애니메이션 강제 리셋 */
         card={currentCard}
         isFlipped={isFlipped}
         onFlip={() => setIsFlipped(!isFlipped)}
         onReview={handleReview}
+        intervalPreview={intervalPreview} /* 내 버전: 복습 주기 프리뷰 전달 */
       />
     </Layout>
   );

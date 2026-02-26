@@ -1,8 +1,10 @@
 package com.jpcard.service;
 
 import com.jpcard.controller.dto.DeckRequest;
+import com.jpcard.domain.card.Card;
 import com.jpcard.domain.deck.Deck;
 import com.jpcard.domain.user.User;
+import com.jpcard.repository.CardRepository;
 import com.jpcard.repository.DeckRepository;
 import com.jpcard.util.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import java.util.List;
 public class DeckService {
 
 	private final DeckRepository deckRepository;
+	private final CardRepository cardRepository;
 
 	/**
 	 * 관리자용: 모든 덱 목록 조회 (페이징)
@@ -90,14 +93,30 @@ public class DeckService {
 	@Transactional
 	public Deck forkDeck(Long deckId, User user) {
 		Deck source = findById(deckId);
-		Deck deck = new Deck();
-		deck.setName(source.getName() + " (복사)");
-		deck.setDescription(source.getDescription());
-		deck.setCategory(source.getCategory());
-		deck.setPublic(false);
-		deck.setOwner(user);
-		deck.setLearningSteps(source.getLearningSteps());
-		return deckRepository.save(deck);
+		Deck forked = new Deck();
+		forked.setName(source.getName() + " (복사)");
+		forked.setDescription(source.getDescription());
+		forked.setCategory(source.getCategory());
+		forked.setPublic(false);
+		forked.setOwner(user);
+		forked.setLearningSteps(source.getLearningSteps());
+		if (source.getCardTemplate() != null) {
+			forked.setCardTemplate(source.getCardTemplate());
+		}
+		Deck savedDeck = deckRepository.save(forked);
+
+		// 카드 전체 복사
+		for (Card src : source.getCards()) {
+			Card copy = new Card();
+			copy.setTerm(src.getTerm());
+			copy.setMeaning(src.getMeaning());
+			copy.setContentJson(src.getContentJson());
+			copy.setNoteId(src.getNoteId());
+			copy.setMemorized(false); // 새로 학습 시작
+			copy.setDeck(savedDeck);
+			cardRepository.save(copy);
+		}
+		return savedDeck;
 	}
 
 	@Transactional
