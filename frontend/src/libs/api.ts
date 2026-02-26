@@ -11,24 +11,56 @@ export const api = axios.create({
 
 // Interceptor to add Token
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  let token = localStorage.getItem("token");
+  if (token === 'null' || token === 'undefined') {
+    token = null;
+    localStorage.removeItem("token");
+  }
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
 
-// Interceptor to handle Token Expiry (Simple)
+// Interceptor to handle Token Expiry — auto refresh
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    // If 401, maybe redirect to login or refresh?
-    // For now just reject
-    if (error.response?.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("refreshToken");
-      // Not redirecting automatically to allow quiet failures on mount checks
+    const originalRequest = error.config;
+
+    // 401이고, 아직 재시도하지 않은 요청이며, refresh 전용 경로가 아닐 때만 갱신 시도
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url?.includes("/auth/refresh")
+    ) {
+      originalRequest._retry = true;
+      let refreshToken = localStorage.getItem("refreshToken");
+      if (refreshToken === 'null' || refreshToken === 'undefined') {
+        refreshToken = null;
+      }
+
+      if (refreshToken) {
+        try {
+          const res = await api.post(`/auth/refresh?refreshToken=${encodeURIComponent(refreshToken)}`);
+          const newToken: string = res.data.accessToken;
+          if (newToken && newToken !== 'undefined' && newToken !== 'null') {
+            localStorage.setItem("token", newToken);
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            return api(originalRequest); // 원래 요청 재시도
+          } else {
+            throw new Error("Invalid token received");
+          }
+        } catch {
+          // refresh 실패 → 완전 로그아웃
+          localStorage.removeItem("token");
+          localStorage.removeItem("refreshToken");
+        }
+      } else {
+        localStorage.removeItem("token");
+      }
     }
+
     return Promise.reject(error);
   }
 );

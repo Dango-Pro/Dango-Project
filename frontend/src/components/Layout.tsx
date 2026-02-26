@@ -183,16 +183,17 @@ export default function Layout({children}: LayoutProps) {
 					</div>
 
 					<div style = {{fontSize: '12px', fontWeight: '500'}}>
-                  <span style = {{
-	                  backgroundColor: '#e9ecef',
-	                  padding: '2px 8px',
-	                  borderRadius: '4px',
-	                  marginRight: '12px'
+                  <span style={{
+                    backgroundColor: '#e9ecef',
+                    padding: '2px 8px',
+                    borderRadius: '4px',
+                    marginRight: '12px'
                   }}>
-                    {t('footer.version')}
+                    {import.meta.env.VITE_APP_VERSION ?? 'Version 1.0.4'}
                   </span>
 						<span style = {{color: '#000'}}>
-                    <span style = {{color: 'crimson', fontWeight: 'bold'}}>{t('footer.latest_update')} :&nbsp;&nbsp;</span> 2026.02.04. 18:17
+                     <span style = {{color: 'crimson', fontWeight: 'bold'}}>{t('footer.latest_update')} :&nbsp;&nbsp;</span>
+                     {import.meta.env.VITE_BUILD_DATE ?? new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replaceAll('. ', '.').replace('.', '.')}
                   </span>
 					</div>
 				</footer>

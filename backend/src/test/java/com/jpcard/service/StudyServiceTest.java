@@ -55,10 +55,16 @@ class StudyServiceTest {
     }
 
     @Test
-    User user = new User();user.setId(1L);user.setDailyLimit(20);
+    void getDueCards_LimitReached() {
+        User user = new User();
+        user.setId(1L);
+        user.setDailyLimit(20);
+        user.setTimezone("UTC");
+        user.setReviewLimit(200);
 
-    when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(progressRepository.countNewCardsStudiedToday(anyLong(), anyLong(), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(20L);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(progressRepository.countNewCardsStudiedToday(anyLong(), anyLong(), any(LocalDateTime.class),
+                any(LocalDateTime.class))).thenReturn(20L);
 
         StudySessionResult result = studyService.getDueCards(1L, 1L, false);
 
@@ -74,7 +80,8 @@ class StudyServiceTest {
         user.setDailyLimit(20);
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(progressRepository.countNewCardsStudiedToday(anyLong(), anyLong(), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(20L);
+        when(progressRepository.countNewCardsStudiedToday(anyLong(), anyLong(), any(LocalDateTime.class),
+                any(LocalDateTime.class))).thenReturn(20L);
         when(cardRepository.findNewCards(anyLong(), anyLong(), any(Pageable.class))).thenReturn(List.of(new Card()));
 
         StudySessionResult result = studyService.getDueCards(1L, 1L, true);

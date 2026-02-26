@@ -1,6 +1,6 @@
 spring:
   application:
-    name: jpcard
+    name: dango
   profiles:
     active: dev # 기본은 'dev'(H2) 모드로 실행
 
@@ -10,20 +10,23 @@ spring:
       max-request-size: 10MB
 
   mail:
-   host: smtp.gmail.com
-   port: 587
-   username: inanasai1101@gmail.com
-   password: "ubdb vcuo dtom jyav"
-   properties:
-    mail:
-       smtp:
-         auth: true
-         starttls:
-          enable: true
-          required: true
-         connectiontimeout: 5000
-         timeout: 5000
-         writetimeout: 5000
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:inanasai1101@gmail.com}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+file:
+  upload-dir: uploads
 
 jwt:
   secret: ${JWT_SECRET_KEY:this_is_a_temporary_development_secret_key_32chars_long}
@@ -70,3 +73,6 @@ spring:
     hibernate:
       ddl-auto: validate
     show-sql: false
+  h2:
+    console:
+      enabled: false # 프로덕션에서 H2 콘솔 명시적 비활성화

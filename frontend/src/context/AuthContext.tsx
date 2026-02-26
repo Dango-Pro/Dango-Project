@@ -13,7 +13,10 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [token, setToken] = useState<string | null>(null); // Start logged out (ignore localStorage)
+  const [token, setToken] = useState<string | null>(() => {
+    const t = localStorage.getItem('token');
+    return (t === 'null' || t === 'undefined' || t === '') ? null : t;
+  });
   const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 

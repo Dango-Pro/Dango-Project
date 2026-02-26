@@ -2,14 +2,32 @@ import { useTranslation } from "react-i18next";
 import { speak } from "../libs/tts";
 import type { Card } from "../types/card";
 
+interface IntervalPreview {
+  failMinutes: number;
+  hardMinutes: number;
+  goodMinutes: number;
+  easyMinutes: number;
+}
+
 interface FlashCardProps {
   card: Card;
   isFlipped: boolean;
   onFlip: () => void;
   onReview: (rating: string) => void;
+  intervalPreview?: IntervalPreview | null;
 }
 
-export default function FlashCard({ card, isFlipped, onFlip, onReview }: FlashCardProps) {
+/** Convert minutes to a human-friendly string, e.g. "1분", "12시간", "3일" */
+function formatInterval(minutes: number): string {
+  if (minutes < 1) return "<1분";
+  if (minutes < 60) return `${minutes}분`;
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return `${hours}시간`;
+  const days = Math.round(minutes / 1440);
+  return `${days}일`;
+}
+
+export default function FlashCard({ card, isFlipped, onFlip, onReview, intervalPreview }: FlashCardProps) {
   const { t } = useTranslation();
 
   // Determine if this is a custom template card or a legacy card
@@ -36,6 +54,11 @@ export default function FlashCard({ card, isFlipped, onFlip, onReview }: FlashCa
 
   // Special handling for pronunciation (for Japanese cards)
   const pronunciationField = backFields.find(f => f.name.toLowerCase() === 'pronunciation');
+
+  const failLabel   = intervalPreview ? `${t("study.rate_again")} (${formatInterval(intervalPreview.failMinutes)})` : t("study.rate_again");
+  const hardLabel   = intervalPreview ? `${t("study.rate_hard")} (${formatInterval(intervalPreview.hardMinutes)})` : t("study.rate_hard");
+  const goodLabel   = intervalPreview ? `${t("study.rate_good")} (${formatInterval(intervalPreview.goodMinutes)})` : t("study.rate_good");
+  const easyLabel   = intervalPreview ? `${t("study.rate_easy")} (${formatInterval(intervalPreview.easyMinutes)})` : t("study.rate_easy");
 
   return (
     <div className="study-container">
@@ -106,16 +129,16 @@ export default function FlashCard({ card, isFlipped, onFlip, onReview }: FlashCa
       ) : (
           <div className="action-row" style={{ marginTop: 20, display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
              <button className="nav-btn" style={{ borderColor: '#ff4d4f', color: '#ff4d4f' }} onClick={() => onReview("FAIL")}>
-               {t("study.rate_again")}
+               {failLabel}
              </button>
              <button className="nav-btn" style={{ borderColor: '#faad14', color: '#faad14' }} onClick={() => onReview("HARD")}>
-               {t("study.rate_hard")}
+               {hardLabel}
              </button>
              <button className="nav-btn" style={{ borderColor: '#52c41a', color: '#52c41a' }} onClick={() => onReview("GOOD")}>
-               {t("study.rate_good")}
+               {goodLabel}
              </button>
              <button className="nav-btn" style={{ borderColor: '#1890ff', color: '#1890ff' }} onClick={() => onReview("EASY")}>
-               {t("study.rate_easy")}
+               {easyLabel}
              </button>
           </div>
       )}
