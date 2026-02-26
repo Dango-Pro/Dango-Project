@@ -79,12 +79,19 @@ export default function StudyPage() {
 
   const currentCard = cards[currentIndex];
 
+  // 카드가 바뀔 때마다 앞면으로 초기화 (다음 카드에서 답이 보이지 않도록)
+  useEffect(() => {
+    setIsFlipped(false);
+  }, [currentIndex]);
+
   const handleReview = async (rating: string) => {
     if (!currentCard) return;
     try {
         await api.post("/study/review", { cardId: currentCard.id, rating });
 
+        // 카드 앞면으로 돌아가는 모션 재생 (0.6초)
         setIsFlipped(false);
+        await new Promise(resolve => setTimeout(resolve, 600));
 
         // If 'FAIL', re-queue the card at the end of the session
         let nextCards = [...cards];
@@ -169,6 +176,7 @@ export default function StudyPage() {
       </div>
 
       <FlashCard
+        key={currentCard.id}
         card={currentCard}
         isFlipped={isFlipped}
         onFlip={() => setIsFlipped(!isFlipped)}
