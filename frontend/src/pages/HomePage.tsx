@@ -55,26 +55,39 @@ const Carousel = () => {
 			minHeight: '300px',
 			borderRadius: '24px',
 			overflow: 'hidden',
-			background: '#f8f9fa'
+			// 여백을 채워줄 배경색
+			background: 'linear-gradient(transparent, rgba(255,182,193,0))'
 		}}>
 			{slides.map((src, idx) => (
 				<div key = {idx} style = {{
 					position: 'absolute',
 					inset: 0,
 					opacity: idx === current ? 1 : 0,
-					transition: 'opacity 0.8s ease-in-out'
+					transition: 'opacity 0.8s ease-in-out',
+					display: 'flex',
+					alignItems: 'center',
+					justifyContent: 'center',
+					background: 'linear-gradient(transparent, rgba(255,182,193,0))' // 내부 슬라이드 배경
 				}}>
 					<img src = {src} alt = {`Slide ${idx + 1}`}
-					     style = {{width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center'}}/>
+					     style = {{
+						     width: '100%',
+						     height: '100%',
+						     objectFit: 'contain',
+						     objectPosition: 'center'
+					     }}/>
+
+					{/* 텍스트 시인성을 위한 연한 그라데이션 */}
 					<div style = {{
 						position: 'absolute',
 						bottom: 0,
 						left: 0,
 						right: 0,
-						height: '50%',
-						background: 'linear-gradient(transparent, rgba(0,0,0,0.4))',
+						height: '40%',
+						background: 'linear-gradient(transparent, rgba(255,182,193,0.1))', // 핑크톤 그라데이션
 						pointerEvents: 'none'
 					}}/>
+
 					<div style = {{
 						position: 'absolute',
 						bottom: 30,
@@ -82,24 +95,25 @@ const Carousel = () => {
 						background: 'rgba(255,255,255,0.95)',
 						padding: '12px 24px',
 						borderRadius: '12px',
-						boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+						boxShadow: '0 4px 12px rgba(255,182,193,0.2)' // 그림자에도 살짝 핑크빛 추가
 					}}>
 						<h2 style = {{
 							fontSize: '1.25rem',
-							color: '#1a1a2e',
+							color: '#4a154b', // 텍스트 컬러를 진한 퍼플/핑크 계열로 조정
 							margin: 0,
 							fontWeight: '700'
 						}}>{t('home.event')} {idx + 1}</h2>
 					</div>
 				</div>
 			))}
+
 			<div style = {{position: 'absolute', bottom: '24px', right: '30px', display: 'flex', gap: '8px'}}>
 				{slides.map((_, idx) => (
 					<button key = {idx} onClick = {() => setCurrent(idx)} style = {{
 						width: idx === current ? '24px' : '8px',
 						height: '8px',
 						borderRadius: '4px',
-						background: idx === current ? '#ff6b6b' : 'rgba(255,255,255,0.6)',
+						background: idx === current ? '#ffb6c1' : 'rgba(74,21,75,0.1)', // 인디케이터도 핑크톤으로 조화
 						border: 'none',
 						cursor: 'pointer',
 						padding: 0,
@@ -146,11 +160,11 @@ const NoticeWidget = () => {
 									textOverflow: 'ellipsis',
 									marginRight: '10px'
 								}}>
-									<span style = {{
-										color: '#ff6b6b',
-										marginRight: '6px',
-										fontWeight: 'bold'
-									}}>{t('home.notice_tag')}</span>{p.title}
+                            <span style = {{
+	                            color: '#ff6b6b',
+	                            marginRight: '6px',
+	                            fontWeight: 'bold'
+                            }}>{t('home.notice_tag')}</span>{p.title}
 								</Link>
 								<span className = "muted" style = {{
 									fontSize: '0.8rem',
@@ -238,7 +252,6 @@ const LoginWidget = () => {
 
 	useEffect(() => {
 		if (token) {
-			// any 제거 및 Deck 타입 명시 (254행 해결)
 			api.get<Deck[]>('/decks/my').then(async res => {
 				const decks = res.data || [];
 				let dueDecks = 0;
@@ -246,7 +259,6 @@ const LoginWidget = () => {
 
 				await Promise.all(decks.map(async (deck: Deck) => {
 					try {
-						// any 제거 및 DueResponse 타입 명시 (261행 해결)
 						const dueRes = await api.get<DueResponse>(`/study/due?deckId=${deck.id}`);
 						const cards = dueRes.data.cards || [];
 						if (cards.length > 0) {
@@ -364,7 +376,6 @@ export default function HomePage() {
 		to: '/study'
 	}, {label: t('nav.community'), to: '/posts'}];
 
-	// 암시적 any 제거를 위해 r의 타입을 UserRole | string으로 정의 (460행 해결)
 	const isAdmin = user?.roles?.some((r: UserRole | string) => {
 		const roleName = typeof r === 'string' ? r : r.name || r.toString();
 		return roleName === 'ROLE_ADMIN' || roleName === 'ROLE_MANAGER';
