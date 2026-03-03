@@ -23,14 +23,14 @@ interface Deck {
 }
 
 interface DueResponse {
-	cards?: string[]; // 또는 구체적인 카드 객체 타입
+	cards?: string[];
 }
 
 interface UserRole {
 	name?: string;
 }
 
-// --- 컴포넌트 시작 ---
+// --- 1. Carousel 컴포넌트 (이미지 깨짐 방지 및 높이 100% 유지) ---
 const Carousel = () => {
 	const {t} = useTranslation();
 	const [current, setCurrent] = useState(0);
@@ -52,11 +52,9 @@ const Carousel = () => {
 		<div style = {{
 			position: 'relative',
 			height: '100%',
-			minHeight: '300px',
 			borderRadius: '24px',
 			overflow: 'hidden',
-			// 여백을 채워줄 배경색
-			background: 'linear-gradient(transparent, rgba(255,182,193,0))'
+			background: '#f8f9fa'
 		}}>
 			{slides.map((src, idx) => (
 				<div key = {idx} style = {{
@@ -66,8 +64,7 @@ const Carousel = () => {
 					transition: 'opacity 0.8s ease-in-out',
 					display: 'flex',
 					alignItems: 'center',
-					justifyContent: 'center',
-					background: 'linear-gradient(transparent, rgba(255,182,193,0))' // 내부 슬라이드 배경
+					justifyContent: 'center'
 				}}>
 					<img src = {src} alt = {`Slide ${idx + 1}`}
 					     style = {{
@@ -77,14 +74,13 @@ const Carousel = () => {
 						     objectPosition: 'center'
 					     }}/>
 
-					{/* 텍스트 시인성을 위한 연한 그라데이션 */}
 					<div style = {{
 						position: 'absolute',
 						bottom: 0,
 						left: 0,
 						right: 0,
 						height: '40%',
-						background: 'linear-gradient(transparent, rgba(255,182,193,0.1))', // 핑크톤 그라데이션
+						background: 'linear-gradient(transparent, rgba(0,0,0,0.4))',
 						pointerEvents: 'none'
 					}}/>
 
@@ -95,11 +91,11 @@ const Carousel = () => {
 						background: 'rgba(255,255,255,0.95)',
 						padding: '12px 24px',
 						borderRadius: '12px',
-						boxShadow: '0 4px 12px rgba(255,182,193,0.2)' // 그림자에도 살짝 핑크빛 추가
+						boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
 					}}>
 						<h2 style = {{
 							fontSize: '1.25rem',
-							color: '#4a154b', // 텍스트 컬러를 진한 퍼플/핑크 계열로 조정
+							color: '#1a1a2e',
 							margin: 0,
 							fontWeight: '700'
 						}}>{t('home.event')} {idx + 1}</h2>
@@ -113,7 +109,7 @@ const Carousel = () => {
 						width: idx === current ? '24px' : '8px',
 						height: '8px',
 						borderRadius: '4px',
-						background: idx === current ? '#ffb6c1' : 'rgba(74,21,75,0.1)', // 인디케이터도 핑크톤으로 조화
+						background: idx === current ? '#ff6b6b' : 'rgba(255,255,255,0.6)',
 						border: 'none',
 						cursor: 'pointer',
 						padding: 0,
@@ -125,6 +121,7 @@ const Carousel = () => {
 	);
 };
 
+// --- 2. NoticeWidget (공지사항) ---
 const NoticeWidget = () => {
 	const {t} = useTranslation();
 	const [posts, setPosts] = useState<Post[]>([]);
@@ -160,32 +157,20 @@ const NoticeWidget = () => {
 									textOverflow: 'ellipsis',
 									marginRight: '10px'
 								}}>
-                            <span style = {{
-	                            color: '#ff6b6b',
-	                            marginRight: '6px',
-	                            fontWeight: 'bold'
-                            }}>{t('home.notice_tag')}</span>{p.title}
+									<span style = {{ color: '#ff6b6b', marginRight: '6px', fontWeight: 'bold' }}>{t('home.notice_tag')}</span>{p.title}
 								</Link>
-								<span className = "muted" style = {{
-									fontSize: '0.8rem',
-									whiteSpace: 'nowrap',
-									color: '#222'
-								}}>{t('home.new_tag')}</span>
+								<span className = "muted" style = {{ fontSize: '0.8rem', whiteSpace: 'nowrap', color: '#222' }}>{t('home.new_tag')}</span>
 							</li>
 						))}
 					</ul>
 				)}
 			</div>
-			<div style = {{marginTop: '16px', textAlign: 'right'}}><Link to = "/posts?tab=notice" className = "muted"
-			                                                             style = {{
-				                                                             fontSize: '0.85rem',
-				                                                             textDecoration: 'underline',
-				                                                             color: '#222'
-			                                                             }}>{t('home.view_all')}</Link></div>
+			<div style = {{marginTop: '16px', textAlign: 'right'}}><Link to = "/posts?tab=notice" className = "muted" style = {{ fontSize: '0.85rem', textDecoration: 'underline', color: '#222' }}>{t('home.view_all')}</Link></div>
 		</div>
 	);
 };
 
+// --- 3. CommunityWidget (커뮤니티) ---
 const CommunityWidget = () => {
 	const {t} = useTranslation();
 	const [posts, setPosts] = useState<Post[]>([]);
@@ -211,35 +196,19 @@ const CommunityWidget = () => {
 						{posts.map((p) => (
 							<li key = {p.id}
 							    style = {{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-								<Link to = {`/posts/${p.id}`} style = {{
-									textDecoration: 'none',
-									color: '#111',
-									fontSize: '0.95rem',
-									flex: 1,
-									whiteSpace: 'nowrap',
-									overflow: 'hidden',
-									textOverflow: 'ellipsis',
-									marginRight: '10px'
-								}}>{p.title}</Link>
-								<span className = "muted" style = {{
-									fontSize: '0.8rem',
-									whiteSpace: 'nowrap',
-									color: '#666'
-								}}>{p.authorName || 'Anonymous'}</span>
+								<Link to = {`/posts/${p.id}`} style = {{ textDecoration: 'none', color: '#111', fontSize: '0.95rem', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginRight: '10px' }}>{p.title}</Link>
+								<span className = "muted" style = {{ fontSize: '0.8rem', whiteSpace: 'nowrap', color: '#666' }}>{p.authorName || 'Anonymous'}</span>
 							</li>
 						))}
 					</ul>
 				)}
 			</div>
-			<div style = {{marginTop: '16px', textAlign: 'right'}}><Link to = "/posts" className = "muted" style = {{
-				fontSize: '0.85rem',
-				textDecoration: 'underline',
-				color: '#222'
-			}}>{t('home.view_all')}</Link></div>
+			<div style = {{marginTop: '16px', textAlign: 'right'}}><Link to = "/posts" className = "muted" style = {{ fontSize: '0.85rem', textDecoration: 'underline', color: '#222' }}>{t('home.view_all')}</Link></div>
 		</div>
 	);
 };
 
+// --- 4. LoginWidget (좌우/상하 완전 고정) ---
 const LoginWidget = () => {
 	const {t} = useTranslation();
 	const {token, user, login, logout} = useAuth();
@@ -265,8 +234,7 @@ const LoginWidget = () => {
 							dueDecks++;
 							dueCards += cards.length;
 						}
-					} catch { /* ignore */
-					}
+					} catch { /* ignore */ }
 				}));
 				setStats({dueDecks, dueCards, loading: false});
 			}).catch(() => setStats({dueDecks: 0, dueCards: 0, loading: false}));
@@ -292,89 +260,83 @@ const LoginWidget = () => {
 		return gradients[userId % gradients.length];
 	};
 
+	const commonStyles = (
+		<style>{`
+            .profile-card { 
+                width: 100%; height: 100%; display: flex; flex-direction: column; padding: 24px;
+                background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85)); 
+                backdrop-filter: blur(10px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.5); 
+                box-shadow: 0 8px 32px rgba(0,0,0,0.08); box-sizing: border-box; 
+            }
+            .profile-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; width: 100%; } 
+            .profile-avatar { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: #fff; flex-shrink: 0; } 
+            .profile-info { flex: 1; overflow: hidden; }
+            .profile-name { margin: 0; font-size: 18px; font-weight: 700; color: #1a1a2e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } 
+            .profile-stats { width: 100%; display: flex; flex-direction: column; align-items: center; padding: 14px; background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1)); border-radius: 14px; margin-bottom: 18px; box-sizing: border-box; } 
+            .profile-actions { display: flex; flex-direction: column; gap: 10px; flex: 1; width: 100%; } 
+            .action-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 16px; border-radius: 12px; font-size: 14px; font-weight: 600; text-decoration: none; box-sizing: border-box; transition: all 0.2s; } 
+            .text-input { width: 100%; box-sizing: border-box; padding: 14px; border-radius: 12px; border: 1px solid #ddd; }
+            .primary-btn { width: 100%; box-sizing: border-box; padding: 16px; border-radius: 12px; font-size: 1rem; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border: none; cursor: pointer; }
+        `}</style>
+	);
+
 	if (token && user) {
 		return (
 			<div className = "profile-card">
-				<Toast isOpen = {showToast} message = {toastMessage} type = "success"
-				       onClose = {() => setShowToast(false)}/>
+				{commonStyles}
+				<Toast isOpen = {showToast} message = {toastMessage} type = "success" onClose = {() => setShowToast(false)}/>
 				<div className = "profile-header">
-					<div className = "profile-avatar" style = {{
-						background: user?.profileImageUrl ? 'transparent' : getAvatarGradient(),
-						overflow: 'hidden'
-					}}>
-						{user?.profileImageUrl ? <img src = {user.profileImageUrl} alt = "Profile" style = {{
-							width: '100%',
-							height: '100%',
-							objectFit: 'cover'
-						}}/> : getInitials()}
+					<div className = "profile-avatar" style = {{ background: user?.profileImageUrl ? 'transparent' : getAvatarGradient(), overflow: 'hidden' }}>
+						{user?.profileImageUrl ? <img src = {user.profileImageUrl} alt = "Profile" style = {{ width: '100%', height: '100%', objectFit: 'cover' }} /> : getInitials()}
 					</div>
 					<div className = "profile-info">
 						<h3 className = "profile-name">{user?.nickname || user?.username}</h3>
-						<span
-							className = "profile-role">{user?.roles?.includes('ROLE_ADMIN') ? '👑 관리자' : '📚 학습자'}</span>
+						<span className = "profile-role">{user?.roles?.includes('ROLE_ADMIN') ? '👑 관리자' : '📚 학습자'}</span>
 					</div>
 				</div>
 				<div className = "profile-stats">
-					<div className = "stats-header">📅 오늘의 학습</div>
-					{stats.loading ? <div className = "stats-loading">확인 중...</div> : stats.dueCards === 0 ? (
-						<div className = "stats-complete"><span
-							className = "complete-icon">✅</span><span>오늘 학습 완료!</span></div>
+					<div style={{fontSize: '12px', fontWeight: 600, color: '#667eea', marginBottom: '10px'}}>📅 오늘의 학습</div>
+					{stats.loading ? <div style={{fontSize: '13px', color: '#888', padding: '8px 0'}}>확인 중...</div> : stats.dueCards === 0 ? (
+						<div style={{display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: '#10b981', fontWeight: 600, padding: '6px 0'}}><span style={{fontSize: '18px'}}>✅</span><span>오늘 학습 완료!</span></div>
 					) : (
-						<div className = "stats-content">
-							<div className = "stat-item"><span className = "stat-value">{stats.dueDecks}</span><span
-								className = "stat-label">덱</span></div>
-							<div className = "stat-divider"></div>
-							<div className = "stat-item"><span className = "stat-value">{stats.dueCards}</span><span
-								className = "stat-label">카드</span></div>
+						<div style={{display: 'flex', alignItems: 'center', gap: '24px'}}>
+							<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px'}}><span style={{fontSize: '24px', fontWeight: 700, color: '#667eea'}}>{stats.dueDecks}</span><span style={{fontSize: '11px', color: '#888'}}>덱</span></div>
+							<div style={{width: '1px', height: '36px', background: 'rgba(0,0,0,0.1)'}}></div>
+							<div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px'}}><span style={{fontSize: '24px', fontWeight: 700, color: '#667eea'}}>{stats.dueCards}</span><span style={{fontSize: '11px', color: '#888'}}>카드</span></div>
 						</div>
 					)}
 				</div>
 				<div className = "profile-actions">
-					<Link to = "/dashboard" className = "action-btn primary"><span>📊</span> {t('nav.dashboard')}</Link>
-					<Link to = "/study" className = "action-btn secondary"><span>📖</span> 학습하기</Link>
+					<Link to = "/dashboard" className = "action-btn primary" style={{background: 'linear-gradient(135deg, #667eea, #764ba2)', color: '#fff'}}><span>📊</span> {t('nav.dashboard')}</Link>
+					<Link to = "/study" className = "action-btn secondary" style={{background: 'rgba(102,126,234,0.1)', color: '#667eea', border: '1px solid rgba(102,126,234,0.2)'}}><span>📖</span> 학습하기</Link>
 				</div>
-				<button className = "logout-btn" onClick = {() => {
-					setToastMessage(t('auth.logout_success'));
-					setShowToast(true);
-					logout();
-				}}>로그아웃
-				</button>
-				<style>{`.profile-card { height: 100%; display: flex; flex-direction: column; padding: 24px; background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85)); backdrop-filter: blur(10px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 8px 32px rgba(0,0,0,0.08); } .profile-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; } .profile-avatar { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.15); } .profile-info { flex: 1; } .profile-name { margin: 0; font-size: 18px; font-weight: 700; color: #1a1a2e; } .profile-role { font-size: 12px; color: #666; } .profile-stats { display: flex; flex-direction: column; align-items: center; padding: 14px; background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1)); border-radius: 14px; margin-bottom: 18px; } .stats-header { font-size: 12px; font-weight: 600; color: #667eea; margin-bottom: 10px; } .stats-loading { font-size: 13px; color: #888; padding: 8px 0; } .stats-complete { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #10b981; font-weight: 600; padding: 6px 0; } .complete-icon { font-size: 18px; } .stats-content { display: flex; align-items: center; gap: 24px; } .stat-item { display: flex; flex-direction: column; align-items: center; gap: 2px; } .stat-value { font-size: 24px; font-weight: 700; color: #667eea; } .stat-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; } .stat-divider { width: 1px; height: 36px; background: rgba(0,0,0,0.1); } .profile-actions { display: flex; flex-direction: column; gap: 10px; flex: 1; } .action-btn { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 16px; border-radius: 12px; font-size: 14px; font-weight: 600; text-decoration: none; transition: all 0.2s ease; } .action-btn.primary { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; box-shadow: 0 4px 12px rgba(102,126,234,0.3); } .action-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,0.4); } .action-btn.secondary { background: rgba(102,126,234,0.1); color: #667eea; border: 1px solid rgba(102,126,234,0.2); } .action-btn.secondary:hover { background: rgba(102,126,234,0.15); } .logout-btn { margin-top: auto; padding: 10px; background: transparent; border: none; color: #999; font-size: 13px; cursor: pointer; transition: color 0.2s; } .logout-btn:hover { color: #ff6b6b; }`}</style>
+				<button style={{marginTop: 'auto', padding: '10px', background: 'transparent', border: 'none', color: '#999', fontSize: '13px', cursor: 'pointer'}} onClick = {() => { setToastMessage(t('auth.logout_success')); setShowToast(true); logout(); }}>로그아웃</button>
 			</div>
 		);
 	}
 
 	return (
-		<div className = "glass-card" style = {{height: '100%'}}>
-			<h3 className = "card-title"
-			    style = {{fontSize: '1.2rem', marginBottom: '16px', color: '#111'}}>{t('home.quick_login')}</h3>
-			<div style = {{display: 'flex', flexDirection: 'column', gap: '12px'}}>
-				<input className = "text-input" placeholder = {t('auth.username_placeholder')} value = {username}
-				       onChange = {(e) => setUsername(e.target.value)}
-				       onKeyDown = {(e) => e.key === 'Enter' && handleLogin()}/>
-				<input className = "text-input" type = "password" placeholder = {t('auth.password_placeholder')}
-				       value = {password} onChange = {(e) => setPassword(e.target.value)}
-				       onKeyDown = {(e) => e.key === 'Enter' && handleLogin()}/>
+		<div className = "profile-card">
+			{commonStyles}
+			<h3 className = "card-title" style = {{fontSize: '1.25rem', marginBottom: '24px', color: '#111', fontWeight: '700'}}>{t('home.quick_login')}</h3>
+			<div style = {{display: 'flex', flexDirection: 'column', gap: '16px', flex: 1, justifyContent: 'center', width: '100%'}}>
+				<input className = "text-input" placeholder = {t('auth.username_placeholder')} value = {username} onChange = {(e) => setUsername(e.target.value)} onKeyDown = {(e) => e.key === 'Enter' && handleLogin()}/>
+				<input className = "text-input" type = "password" placeholder = {t('auth.password_placeholder')} value = {password} onChange = {(e) => setPassword(e.target.value)} onKeyDown = {(e) => e.key === 'Enter' && handleLogin()}/>
 				<button className = "primary-btn" onClick = {handleLogin}>{t('auth.login_btn')}</button>
-				{error && <p style = {{color: '#ff6b6b', fontSize: '0.85rem', margin: 0}}>{error}</p>}
-				<div style = {{textAlign: 'center', fontSize: '0.85rem'}}><Link to = "/register" className = "muted"
-				                                                                style = {{
-					                                                                textDecoration: 'underline',
-					                                                                color: '#222'
-				                                                                }}>{t('auth.create_account')}</Link>
-				</div>
+				{error && <p style = {{color: '#ff6b6b', fontSize: '0.85rem', margin: 0, textAlign: 'center'}}>{error}</p>}
+			</div>
+			<div style = {{textAlign: 'center', fontSize: '0.9rem', marginTop: '20px'}}>
+				<Link to = "/register" className = "muted" style = {{textDecoration: 'underline', color: '#666'}}>{t('auth.create_account')}</Link>
 			</div>
 		</div>
 	);
 };
 
+// --- 5. HomePage 메인 페이지 ---
 export default function HomePage() {
 	const {t} = useTranslation();
 	const {user} = useAuth();
-	const shortcuts = [{label: t('nav.my_decks'), to: '/decks'}, {
-		label: t('nav.study'),
-		to: '/study'
-	}, {label: t('nav.community'), to: '/posts'}];
+	const shortcuts = [{label: t('nav.my_decks'), to: '/decks'}, { label: t('nav.study'), to: '/study' }, {label: t('nav.community'), to: '/posts'}];
 
 	const isAdmin = user?.roles?.some((r: UserRole | string) => {
 		const roleName = typeof r === 'string' ? r : r.name || r.toString();
@@ -386,28 +348,21 @@ export default function HomePage() {
 	return (
 		<Layout>
 			<div style = {{
-				display: 'grid',
-				gridTemplateColumns: '3fr 1fr',
-				gap: '20px',
-				marginBottom: '20px',
-				height: '350px'
+				display: 'grid', gridTemplateColumns: '3fr 1fr', gap: '20px', marginBottom: '20px',
+				height: '420px', alignItems: 'stretch'
 			}}>
-				<Carousel/><LoginWidget/>
+				<div style={{ height: '100%', width: '100%' }}><Carousel/></div>
+				<div style={{ height: '100%', width: '100%' }}><LoginWidget/></div>
 			</div>
 			<div style = {{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '30px'}}>
 				<NoticeWidget/><CommunityWidget/>
 			</div>
 			<div style = {{
-				display: 'flex',
-				gap: '12px',
-				justifyContent: 'center',
-				flexWrap: 'wrap',
-				borderTop: '1px solid rgba(255,255,255,0.1)',
-				paddingTop: '20px'
+				display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap',
+				borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px'
 			}}>
 				{shortcuts.map((s) => (
-					<Link key = {s.to} to = {s.to} className = "secondary-btn"
-					      style = {{padding: '10px 24px', minWidth: '120px', textAlign: 'center'}}>{s.label}</Link>
+					<Link key = {s.to} to = {s.to} className = "secondary-btn" style = {{padding: '10px 24px', minWidth: '120px', textAlign: 'center'}}>{s.label}</Link>
 				))}
 			</div>
 		</Layout>
