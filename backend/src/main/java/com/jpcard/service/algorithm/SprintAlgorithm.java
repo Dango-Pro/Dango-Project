@@ -93,10 +93,11 @@ public class SprintAlgorithm implements SpacedRepetitionAlgorithm {
 
     private void handleEasy(UserCardProgress p, LocalDateTime now) {
         if (p.getStatus() == StudyStatus.NEW || p.getStatus() == StudyStatus.LEARNING) {
-            // Skip to last learning step or graduate
-            p.setStatus(StudyStatus.LEARNING);
-            p.setLearningStep(LEARNING_STEPS.length - 1);
-            p.setIntervalMinutes(LEARNING_STEPS[LEARNING_STEPS.length - 1]); // 1 hour
+            // Graduate immediately
+            p.setStatus(StudyStatus.REVIEW);
+            p.setLearningStep(0);
+            p.setIntervalMinutes(1440 * 4); // 4 days like default easy
+            p.setRepetitions(1);
         } else {
             // In review: larger increase (1.5x multiplier) but still capped
             int newInterval = (int) (p.getIntervalMinutes() * 1.5);

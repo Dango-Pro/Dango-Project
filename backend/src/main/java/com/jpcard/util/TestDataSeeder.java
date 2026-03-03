@@ -91,7 +91,9 @@ public class TestDataSeeder {
     private List<Card> createDeck(User user, String name, String description, String category,
             List<SampleDataFactory.CardData> cardDataList) {
         Deck deck = deckService.create(
-                new DeckRequest(name, description, null, true, "1,10", category), user);
+                new DeckRequest(name, description, null, true, "1,10", category,
+                        com.jpcard.domain.study.AlgorithmType.SM2, 20),
+                user);
 
         List<Card> createdCards = new ArrayList<>();
         for (SampleDataFactory.CardData data : cardDataList) {

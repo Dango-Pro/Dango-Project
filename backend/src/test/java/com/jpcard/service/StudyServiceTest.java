@@ -31,6 +31,10 @@ class StudyServiceTest {
     private CardRepository cardRepository;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private com.jpcard.repository.DeckRepository deckRepository;
+    @Mock
+    private com.jpcard.service.algorithm.AlgorithmFactory algorithmFactory;
 
     @InjectMocks
     private StudyService studyService;
@@ -45,6 +49,7 @@ class StudyServiceTest {
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(cardRepository.findById(1L)).thenReturn(Optional.of(card));
         when(progressRepository.findByUserIdAndCardId(1L, 1L)).thenReturn(Optional.empty());
+        when(algorithmFactory.getAlgorithm(any())).thenReturn(new com.jpcard.service.algorithm.SM2Algorithm());
 
         studyService.processReview(1L, 1L, "FAIL");
 

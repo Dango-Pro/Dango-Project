@@ -38,6 +38,9 @@ class PostServiceTest {
 
         when(postRepository.save(any(Post.class))).thenReturn(post);
 
+        com.jpcard.domain.user.User user = new com.jpcard.domain.user.User();
+        Post created = postService.create("Test Title", "Content", false, "Author", "127.0.0.1", null, user,
+                com.jpcard.domain.post.PostCategory.FREE, null, null);
 
         assertNotNull(created);
         assertEquals("Test Title", created.getTitle());
@@ -52,6 +55,11 @@ class PostServiceTest {
 
         when(postRepository.findById(1L)).thenReturn(Optional.of(post));
 
+        com.jpcard.domain.user.User user = new com.jpcard.domain.user.User();
+        user.setId(1L); // user must be owner to update, but post in test doesn't have an owner set
+                        // properly, let's just use admin role
+        user.setRole("ROLE_ADMIN");
+        Post updated = postService.update(1L, "New Title", "New Content", true, user);
 
         assertEquals("New Title", updated.getTitle());
         assertEquals(true, updated.isNotice());

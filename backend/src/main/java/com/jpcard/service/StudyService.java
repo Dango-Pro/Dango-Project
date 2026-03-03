@@ -9,8 +9,11 @@ import com.jpcard.domain.user.User;
 import com.jpcard.repository.CardRepository;
 import com.jpcard.repository.StudyLogRepository;
 import com.jpcard.repository.UserCardProgressRepository;
+import com.jpcard.repository.DeckRepository;
 import com.jpcard.repository.UserRepository;
 import com.jpcard.util.ResourceNotFoundException;
+import com.jpcard.service.algorithm.AlgorithmFactory;
+import com.jpcard.service.algorithm.SpacedRepetitionAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -38,6 +41,8 @@ public class StudyService {
     private final CardRepository cardRepository;
     private final UserRepository userRepository;
     private final StudyLogRepository studyLogRepository;
+    private final DeckRepository deckRepository;
+    private final AlgorithmFactory algorithmFactory;
     private final PlatformTransactionManager transactionManager;
     private final Random random = new Random();
 
@@ -109,6 +114,11 @@ public class StudyService {
 
         // 3. Get NEW cards with limits
         int dailyLimit = user.getDailyLimit();
+        if (deckId != null) {
+            dailyLimit = deckRepository.findById(deckId).map(com.jpcard.domain.deck.Deck::getDailyNewCardLimit)
+                    .orElse(dailyLimit);
+        }
+
         long newCardsStudiedToday = progressRepository.countNewCardsStudiedToday(userId, deckId, startParam, endParam);
 
         int remainingNewLimit = dailyLimit - (int) newCardsStudiedToday;
@@ -196,6 +206,8 @@ public class StudyService {
             sim.setRepetitions(base.getRepetitions());
             sim.setLearningStep(base.getLearningStep());
             sim.setLapses(base.getLapses());
+            sim.setDifficulty(base.getDifficulty());
+            sim.setStability(base.getStability());
         } else {
             // Brand-new card defaults
             sim.setStatus(StudyStatus.NEW);
@@ -205,73 +217,10 @@ public class StudyService {
             sim.setLearningStep(0);
             sim.setLapses(0);
         }
-        applyAlgorithmNoFuzz(sim, rating);
+
+        SpacedRepetitionAlgorithm algo = algorithmFactory.getAlgorithm(card.getDeck().getAlgorithmType());
+        algo.processReview(sim, rating, LocalDateTime.now());
         return sim.getIntervalMinutes();
-    }
-
-    /**
-     * Same logic as applyAlgorithm but WITHOUT random fuzzing (for deterministic
-     * preview).
-     */
-    private void applyAlgorithmNoFuzz(UserCardProgress p, String rating) {
-        int[] learningSteps = parseLearningSteps(p.getCard().getDeck().getLearningSteps());
-
-        switch (rating.toUpperCase()) {
-            case "FAIL":
-                p.setStatus(StudyStatus.LEARNING);
-                p.setLearningStep(0);
-                p.setIntervalMinutes(learningSteps[0]);
-                p.setEase(Math.max(1.3, p.getEase() - 0.2));
-                p.setRepetitions(0);
-                break;
-
-            case "HARD":
-                if (p.getStatus() == StudyStatus.REVIEW) {
-                    int newInterval = (int) (p.getIntervalMinutes() * 1.2);
-                    p.setIntervalMinutes(Math.max(1, newInterval));
-                    p.setEase(Math.max(1.3, p.getEase() - 0.15));
-                } else {
-                    int currentStepInterval = (p.getLearningStep() < learningSteps.length)
-                            ? learningSteps[p.getLearningStep()]
-                            : GRADUATING_INTERVAL;
-                    p.setIntervalMinutes(currentStepInterval);
-                }
-                break;
-
-            case "GOOD":
-                if (p.getStatus() == StudyStatus.NEW || p.getStatus() == StudyStatus.LEARNING) {
-                    if (p.getLearningStep() < learningSteps.length - 1) {
-                        p.setLearningStep(p.getLearningStep() + 1);
-                        p.setIntervalMinutes(learningSteps[p.getLearningStep()]);
-                        p.setStatus(StudyStatus.LEARNING);
-                    } else {
-                        p.setStatus(StudyStatus.REVIEW);
-                        p.setLearningStep(0);
-                        p.setIntervalMinutes(GRADUATING_INTERVAL);
-                        p.setRepetitions(1);
-                    }
-                } else {
-                    int goodInterval = (p.getRepetitions() > 0)
-                            ? (int) (p.getIntervalMinutes() * p.getEase())
-                            : GRADUATING_INTERVAL;
-                    p.setIntervalMinutes(Math.max(GRADUATING_INTERVAL, goodInterval));
-                    p.setRepetitions(p.getRepetitions() + 1);
-                }
-                break;
-
-            case "EASY":
-                if (p.getStatus() == StudyStatus.NEW || p.getStatus() == StudyStatus.LEARNING) {
-                    p.setStatus(StudyStatus.REVIEW);
-                    p.setIntervalMinutes(EASY_INTERVAL);
-                    p.setRepetitions(1);
-                } else {
-                    int easyInterval = (int) (p.getIntervalMinutes() * p.getEase() * 1.3);
-                    p.setIntervalMinutes(Math.max(EASY_INTERVAL, easyInterval));
-                    p.setRepetitions(p.getRepetitions() + 1);
-                    p.setEase(p.getEase() + 0.15);
-                }
-                break;
-        }
     }
 
     public void processReview(Long userId, Long cardId, String rating) {
@@ -343,107 +292,8 @@ public class StudyService {
     }
 
     private void applyAlgorithm(UserCardProgress p, String rating) {
-        LocalDateTime now = LocalDateTime.now();
-        int[] learningSteps = parseLearningSteps(p.getCard().getDeck().getLearningSteps());
-
-        switch (rating.toUpperCase()) {
-            case "FAIL": // Again
-                // Reset to first step
-                p.setStatus(StudyStatus.LEARNING);
-                p.setLearningStep(0);
-                p.setIntervalMinutes(learningSteps[0]); // First step
-                p.setNextReview(now.plusMinutes(p.getIntervalMinutes()));
-
-                // Penalty
-                p.setEase(Math.max(1.3, p.getEase() - 0.2));
-                // Do not reset repetitions completely if it was mature?
-                // SM-2 says reset reps to 0 on lapse.
-                p.setRepetitions(0);
-                break;
-
-            case "HARD":
-                // 2. Improved Hard Logic
-                if (p.getStatus() == StudyStatus.REVIEW) {
-                    // 1.2x multiplier (smaller than Good's ease)
-                    int newInterval = (int) (p.getIntervalMinutes() * 1.2);
-                    p.setIntervalMinutes(Math.max(1, newInterval)); // Ensure at least 1 min increase? No, keep logic
-                                                                    // simple.
-                    p.setNextReview(now.plusMinutes(p.getIntervalMinutes()));
-                    p.setEase(Math.max(1.3, p.getEase() - 0.15));
-                    // Do not reset repetitions
-                } else {
-                    // In learning, Hard means "repeat current step" or avg
-                    // We just keep current step interval
-                    int currentStepInterval = (p.getLearningStep() < learningSteps.length)
-                            ? learningSteps[p.getLearningStep()]
-                            : GRADUATING_INTERVAL;
-                    p.setIntervalMinutes(currentStepInterval);
-                    p.setNextReview(now.plusMinutes(currentStepInterval));
-                }
-                break;
-
-            case "GOOD":
-                if (p.getStatus() == StudyStatus.NEW || p.getStatus() == StudyStatus.LEARNING) {
-                    // 3. Multi-step Learning
-                    if (p.getLearningStep() < learningSteps.length - 1) {
-                        // Advance to next learning step
-                        p.setLearningStep(p.getLearningStep() + 1);
-                        p.setIntervalMinutes(learningSteps[p.getLearningStep()]);
-                        p.setStatus(StudyStatus.LEARNING);
-                    } else {
-                        // Graduate
-                        p.setStatus(StudyStatus.REVIEW);
-                        p.setLearningStep(0); // Reset for future lapses
-                        p.setIntervalMinutes(GRADUATING_INTERVAL); // 1 day
-                        p.setRepetitions(1);
-                    }
-                } else {
-                    // Review mode
-                    int goodInterval = 1440; // fallback
-                    if (p.getRepetitions() > 0) {
-                        goodInterval = (int) (p.getIntervalMinutes() * p.getEase());
-                    }
-                    // 1. Fuzzing
-                    goodInterval = applyFuzz(goodInterval);
-
-                    p.setIntervalMinutes(Math.max(1440, goodInterval));
-                    p.setRepetitions(p.getRepetitions() + 1);
-                    p.setStatus(StudyStatus.REVIEW);
-                }
-                p.setNextReview(now.plusMinutes(p.getIntervalMinutes()));
-                break;
-
-            case "EASY":
-                // Immediate graduation or bonus
-                if (p.getStatus() == StudyStatus.NEW || p.getStatus() == StudyStatus.LEARNING) {
-                    p.setStatus(StudyStatus.REVIEW);
-                    p.setIntervalMinutes(EASY_INTERVAL); // 4 days
-                    p.setRepetitions(1);
-                } else {
-                    int easyInterval = (int) (p.getIntervalMinutes() * p.getEase() * 1.3); // Bonus multiplier
-
-                    // 1. Fuzzing
-                    easyInterval = applyFuzz(easyInterval);
-
-                    p.setIntervalMinutes(Math.max(EASY_INTERVAL, easyInterval));
-                    p.setRepetitions(p.getRepetitions() + 1);
-                    p.setEase(p.getEase() + 0.15);
-                }
-                p.setNextReview(now.plusMinutes(p.getIntervalMinutes()));
-                break;
-        }
-    }
-
-    // 1. Fuzzing: +0-5% variation for intervals > 2 days (Prevents "too soon"
-    // regressions)
-    private int applyFuzz(int intervalMinutes) {
-        if (intervalMinutes < 2 * 1440)
-            return intervalMinutes; // No fuzz for < 2 days
-
-        // Only extend the interval (1.0 ~ 1.05) to avoid showing cards sooner than
-        // algorithm intended
-        double fuzzFactor = 1.0 + (random.nextDouble() * 0.05);
-        return (int) (intervalMinutes * fuzzFactor);
+        SpacedRepetitionAlgorithm algo = algorithmFactory.getAlgorithm(p.getCard().getDeck().getAlgorithmType());
+        algo.processReview(p, rating, LocalDateTime.now());
     }
 
     // 4. Sibling Burying

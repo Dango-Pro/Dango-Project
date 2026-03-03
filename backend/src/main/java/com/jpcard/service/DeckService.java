@@ -69,6 +69,10 @@ public class DeckService {
 		deck.setPublic(request.isPublic() != null ? request.isPublic() : false);
 		deck.setOwner(owner);
 		deck.setLearningSteps(request.learningSteps() != null ? request.learningSteps() : "1,10");
+		if (request.algorithmType() != null)
+			deck.setAlgorithmType(request.algorithmType());
+		if (request.dailyNewCardLimit() != null)
+			deck.setDailyNewCardLimit(request.dailyNewCardLimit());
 		return deckRepository.save(deck);
 	}
 
@@ -87,6 +91,10 @@ public class DeckService {
 		deck.setCategory(request.category());
 		deck.setPublic(request.isPublic() != null ? request.isPublic() : deck.isPublic());
 		deck.setLearningSteps(request.learningSteps() != null ? request.learningSteps() : deck.getLearningSteps());
+		if (request.algorithmType() != null)
+			deck.setAlgorithmType(request.algorithmType());
+		if (request.dailyNewCardLimit() != null)
+			deck.setDailyNewCardLimit(request.dailyNewCardLimit());
 		return deck;
 	}
 
@@ -100,6 +108,8 @@ public class DeckService {
 		forked.setPublic(false);
 		forked.setOwner(user);
 		forked.setLearningSteps(source.getLearningSteps());
+		forked.setAlgorithmType(source.getAlgorithmType());
+		forked.setDailyNewCardLimit(source.getDailyNewCardLimit());
 		if (source.getCardTemplate() != null) {
 			forked.setCardTemplate(source.getCardTemplate());
 		}

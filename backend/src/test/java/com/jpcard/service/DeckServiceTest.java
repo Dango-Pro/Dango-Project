@@ -53,8 +53,9 @@ class DeckServiceTest {
 		when(deckRepository.save(any(Deck.class))).thenReturn(deck);
 
 		// When
-		// 파라미터 4개로 맞춤
-		Deck created = deckService.create("Test Deck", "Description", null, user);
+		com.jpcard.controller.dto.DeckRequest req = new com.jpcard.controller.dto.DeckRequest("Test Deck",
+				"Description", null, true, "1,10", "Test Category", com.jpcard.domain.study.AlgorithmType.SM2, 20);
+		Deck created = deckService.create(req, user);
 
 		// Then
 		assertNotNull(created);

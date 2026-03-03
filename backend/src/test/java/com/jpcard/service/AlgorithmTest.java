@@ -30,13 +30,23 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class AlgorithmTest {
 
-    @Mock private UserCardProgressRepository progressRepository;
-    @Mock private CardRepository cardRepository;
-    @Mock private UserRepository userRepository;
-    @Mock private StudyLogRepository studyLogRepository;
-    @Mock private PlatformTransactionManager transactionManager;
+    @Mock
+    private UserCardProgressRepository progressRepository;
+    @Mock
+    private CardRepository cardRepository;
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private StudyLogRepository studyLogRepository;
+    @Mock
+    private com.jpcard.repository.DeckRepository deckRepository;
+    @Mock
+    private com.jpcard.service.algorithm.AlgorithmFactory algorithmFactory;
+    @Mock
+    private PlatformTransactionManager transactionManager;
 
-    @InjectMocks private StudyService studyService;
+    @InjectMocks
+    private StudyService studyService;
 
     private User user;
     private Card card;
@@ -44,13 +54,19 @@ class AlgorithmTest {
 
     @BeforeEach
     void setup() {
-        user = new User(); user.setId(1L);
-        deck = new Deck(); deck.setLearningSteps("1,10");
-        card = new Card(); card.setId(100L); card.setDeck(deck);
+        user = new User();
+        user.setId(1L);
+        deck = new Deck();
+        deck.setLearningSteps("1,10");
+        card = new Card();
+        card.setId(100L);
+        card.setDeck(deck);
 
         lenient().when(transactionManager.getTransaction(any())).thenReturn(mock(TransactionStatus.class));
         lenient().when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         lenient().when(cardRepository.findById(100L)).thenReturn(Optional.of(card));
+        lenient().when(algorithmFactory.getAlgorithm(any()))
+                .thenReturn(new com.jpcard.service.algorithm.SM2Algorithm());
     }
 
     @Test
@@ -77,8 +93,10 @@ class AlgorithmTest {
         // Expected interval without fuzz: 14400 * 2.5 = 36000
         // Fuzzing factor: 1.0 to 1.05
         // Range: 36000 to 37800
-        assertTrue(saved.getIntervalMinutes() >= 36000, "Interval " + saved.getIntervalMinutes() + " should be >= 36000");
-        assertTrue(saved.getIntervalMinutes() <= 37800, "Interval " + saved.getIntervalMinutes() + " should be <= 37800");
+        assertTrue(saved.getIntervalMinutes() >= 36000,
+                "Interval " + saved.getIntervalMinutes() + " should be >= 36000");
+        assertTrue(saved.getIntervalMinutes() <= 37800,
+                "Interval " + saved.getIntervalMinutes() + " should be <= 37800");
     }
 
     @Test
@@ -117,7 +135,9 @@ class AlgorithmTest {
 
         UserCardProgress sibling = new UserCardProgress();
         sibling.setId(2L);
-        Card siblingCard = new Card(); siblingCard.setId(101L); siblingCard.setNoteId(999L);
+        Card siblingCard = new Card();
+        siblingCard.setId(101L);
+        siblingCard.setNoteId(999L);
         sibling.setCard(siblingCard);
 
         // Sibling due NOW
@@ -134,9 +154,9 @@ class AlgorithmTest {
 
         List<UserCardProgress> savedList = captor.getAllValues();
         UserCardProgress savedSibling = savedList.stream()
-            .filter(p -> p.getId() != null && p.getId().equals(2L))
-            .findFirst()
-            .orElseThrow(() -> new AssertionError("Sibling not saved"));
+                .filter(p -> p.getId() != null && p.getId().equals(2L))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Sibling not saved"));
 
         LocalDateTime tomorrow = LocalDate.now().plusDays(1).atStartOfDay().plusHours(4);
 
