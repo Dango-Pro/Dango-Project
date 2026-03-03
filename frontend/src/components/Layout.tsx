@@ -50,14 +50,14 @@ export default function Layout({children}: LayoutProps) {
 		display: 'inline-flex',
 		alignItems: 'center',
 		justifyContent: 'center',
-		width: '100px',
-		padding: '8px 0',
+		width: '120px',         // ✅ 100px → 120px 확대
+		padding: '10px 8px',    // ✅ 세로 패딩 확대
 		borderRadius: '12px',
 		textDecoration: 'none',
 		textAlign: 'center',
 		whiteSpace: 'nowrap',
 		transition: 'all 0.2s ease',
-		fontSize: '0.85rem',
+		fontSize: '0.9rem',     // ✅ 글자 크기 살짝 확대
 		fontWeight: pathname === to ? 'bold' : '500',
 		color: pathname === to ? '#d9534f' : '#222',
 		background: pathname === to ? 'rgba(255, 183, 178, 0.25)' : 'transparent',
