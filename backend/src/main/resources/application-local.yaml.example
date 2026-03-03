@@ -1,0 +1,14 @@
+# 이 파일을 application-local.yaml 로 복사한 뒤 실제 값을 입력하세요.
+# application-local.yaml 은 .gitignore 에 포함되어 커밋되지 않습니다.
+
+spring:
+  mail:
+    username: ${MAIL_USERNAME:your-email@gmail.com}
+    password: ${MAIL_PASSWORD:}
+
+jwt:
+  secret: ${JWT_SECRET_KEY:your-secret-key}
+
+groq:
+  ai:
+    api-key: ${GROQ_API_KEY:}

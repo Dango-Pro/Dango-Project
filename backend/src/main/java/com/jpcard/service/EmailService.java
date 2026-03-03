@@ -1,5 +1,6 @@
 package com.jpcard.service;
 
+import com.jpcard.repository.EmailVerificationRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,10 @@ public class EmailService {
 
 	private final JavaMailSender mailSender;
 
-	private final com.jpcard.repository.EmailVerificationRepository emailVerificationRepository;
+	private final EmailVerificationRepository emailVerificationRepository;
+
+	@org.springframework.beans.factory.annotation.Value("${spring.mail.username:inanasai1101@gmail.com}")
+	private String senderEmail;
 
 	// 인증번호 생성 (6자리)
 	public String createCode() {
@@ -37,6 +41,7 @@ public class EmailService {
 
 		try {
 			MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+			helper.setFrom(senderEmail, "DANGO");
 			helper.setTo(toEmail);
 			helper.setSubject("[DANGO] 회원가입 인증번호 안내");
 
@@ -73,7 +78,7 @@ public class EmailService {
 
 			mailSender.send(message);
 
-		} catch (MessagingException e) {
+		} catch (MessagingException | java.io.UnsupportedEncodingException e) {
 			throw new RuntimeException("메일 발송 실패", e);
 		}
 	}

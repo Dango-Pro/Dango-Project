@@ -6,3 +6,6 @@ backend/.gradle/
 backend/build/
 frontend/node_modules/
 frontend/dist/
+
+uploads/
+backend/src/main/resources/application-local.yaml

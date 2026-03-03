@@ -1,27 +1,48 @@
 html {
     /* 스크롤바가 생겨도 레이아웃이 밀리지 않도록 공간을 미리 확보합니다. */
     scrollbar-gutter: stable;
+    overflow-x: auto; /* ✅ 가로 스크롤을 html/body 레벨에서 담당 */
 }
 
+/*
+ * ✅ app-shell은 overflow 관여하지 않음
+ * 가로 스크롤은 html 레벨에서 처리 → 스크롤바가 푸터를 가리는 문제 해결
+ */
 .app-shell {
     position: relative;
     min-height: 100vh;
     padding: 28px;
+    overflow-x: visible;    /* ✅ hidden/auto 제거 → html이 스크롤 담당 */
+    overflow-y: visible;
+    padding-right: 0;
 }
 
-/* Removed the dark overlay to show the pastel body gradient */
+.app-frame {
+    padding-right: 28px;    /* ✅ 오른쪽 여백을 app-frame 안으로 이동 */
+}
+
 .app-shell::before {
     display: none;
 }
 
+/*
+ * ✅ 수정 2: app-frame max-width 제거 → minWidth로 교체
+ * max-width: 1200px은 큰 화면에서 레이아웃을 제한하지만
+ * 작은 화면에서는 오히려 내용물이 밖으로 밀려나옵니다.
+ * min-width로 바꿔서 "이 너비 이하로는 절대 줄어들지 않음"을 보장합니다.
+ */
 .app-frame {
     position: relative;
-    max-width: 1200px;
+    min-width: 900px;
+    width: 100%;
+    max-width: 1400px;
     margin: 0 auto;
     z-index: 1;
+    box-sizing: border-box;
+    padding-right: 40px;    /* ✅ 오른쪽 여백 넉넉하게 확보 */
 }
 
-/* 폰트 설정: 윈도우/맥 어디서든 단단하고 가독성 좋은 조합 */
+/* 폰트 설정 */
 body, button, input, select, textarea {
     font-family: "Pretendard Variable",
     Pretendard,
@@ -32,15 +53,11 @@ body, button, input, select, textarea {
     "Malgun Gothic",
     "Noto Sans JP",
     sans-serif;
-
-    /* 폰트 렌더링을 더 선명하고 뚜렷하게 */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-
-    /* 얇은 느낌을 없애기 위해 기본 두께(weight)를 500으로 상향 */
     font-weight: 500;
     color: #333333;
-    line-height: 1.6; /* 가독성을 위해 줄간격 확보 */
+    line-height: 1.6;
 }
 
 /* TOP NAVIGATION */
@@ -48,6 +65,7 @@ body, button, input, select, textarea {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: nowrap;      /* ✅ 수정 3: 헤더 줄바꿈 절대 금지 */
     padding: 16px 22px;
     border: 1px solid rgba(255, 255, 255, 0.6);
     border-radius: 18px;
@@ -55,6 +73,8 @@ body, button, input, select, textarea {
     backdrop-filter: blur(12px);
     box-shadow: 0 10px 30px rgba(200, 200, 200, 0.15);
     margin-bottom: 28px;
+    min-height: 80px;       /* ✅ 세로 찌그러짐 방지 */
+    box-sizing: border-box;
 }
 
 .brand {
@@ -65,6 +85,8 @@ body, button, input, select, textarea {
     align-items: center;
     gap: 8px;
     color: #333333;
+    flex-shrink: 0;         /* ✅ 로고 크기 유지 */
+    margin-right: 20px;
 }
 
 .brand-logo {
@@ -74,15 +96,15 @@ body, button, input, select, textarea {
 }
 
 .nav-links {
-    /* 영상에서 본 흔들림을 잡는 핵심! */
     flex: 1;
     display: flex;
     justify-content: flex-end;
     align-items: center;
+    flex-shrink: 0;         /* ✅ nav 메뉴 찌그러짐 방지 */
 }
 
 .nav-link {
-    display: inline-flex;  /* 너비 적용을 위해 inline-flex로 변경 */
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 10px 14px;
@@ -91,26 +113,15 @@ body, button, input, select, textarea {
     transition: all 0.2s ease;
     color: #222222;
     font-weight: 500;
-
-    /* 💡 핵심: 언어 변경 시 흔들림 방지 */
     min-width: 100px;
     text-align: center;
-    white-space: nowrap;  /* 글자가 길어져도 줄바꿈 방지 */
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: 1px solid transparent;
-  transition: all 0.2s ease;
-  color: #222222;
-  font-weight: 500;
-  white-space: nowrap; /* Prevent text wrapping */
+    white-space: nowrap;
 }
 
 .nav-link:hover {
-  border-color: rgba(255, 183, 178, 0.4);
-  background: rgba(255, 183, 178, 0.15);
-  /* Soft pink tint */
-  color: #d9534f;
-  /* Darker pink for text */
+    border-color: rgba(255, 183, 178, 0.4);
+    background: rgba(255, 183, 178, 0.15);
+    color: #d9534f;
 }
 
 /* CONTENT AREA */
@@ -118,11 +129,11 @@ body, button, input, select, textarea {
     display: grid;
     grid-template-columns: 1fr;
     gap: 20px;
-    /* 헤더(약 80px)와 패딩, 푸터를 제외한 화면 전체 높이를 최소한으로 가져갑니다. */
     min-height: calc(100vh - 250px);
+    overflow: visible;      /* ✅ content-area overflow 명시 */
 }
 
-/* GLASS CARD (Main Container) */
+/* GLASS CARD */
 .glass-card {
     border-radius: 24px;
     padding: 26px;
@@ -138,20 +149,18 @@ body, button, input, select, textarea {
 }
 
 .card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 18px;
-  position: relative;
-  z-index: 2;
-  /* Ensure header is above background effects */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+    position: relative;
+    z-index: 2;
 }
 
-/* 제목(Title) 등 강조가 필요한 부분은 더 뚜렷하게 */
 .card-title, .item-title, .subtitle, b, strong {
     font-weight: 700 !important;
-    letter-spacing: -0.01em; /* 자간을 살짝 조여주면 폰트가 더 단단해 보입니다 */
+    letter-spacing: -0.01em;
 }
 
 .muted {
@@ -198,11 +207,10 @@ body, button, input, select, textarea {
 }
 
 .action-card:hover {
-  transform: translateY(-2px);
-  border-color: #ffb7b2;
-  /* Pink border on hover */
-  background: #ffffff;
-  box-shadow: 0 10px 30px rgba(255, 183, 178, 0.15);
+    transform: translateY(-2px);
+    border-color: #ffb7b2;
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(255, 183, 178, 0.15);
 }
 
 /* FORMS */
@@ -274,16 +282,14 @@ select.text-input option {
 }
 
 .secondary-btn {
-  padding: 12px 18px;
-  border-radius: 14px;
-  border: 1px solid #b5ead7;
-  /* Mint border */
-  background: transparent;
-  color: #00796b;
-  /* Darker teal/mint */
-  font-weight: 600;
-  cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease;
+    padding: 12px 18px;
+    border-radius: 14px;
+    border: 1px solid #b5ead7;
+    background: transparent;
+    color: #00796b;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
 }
 
 .secondary-btn:hover {
@@ -367,19 +373,27 @@ select.text-input option {
     flex-wrap: wrap;
 }
 
+/*
+ * ✅ 수정 4: 미디어 쿼리에서 flex-direction: column 제거
+ * 이 한 줄이 720px 이하에서 헤더를 세로로 무너뜨리던 핵심 원인이었습니다.
+ */
 @media (max-width: 720px) {
-    .top-nav {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-
+    /* top-nav flex-direction: column 완전 제거 → 가로 스크롤로 대응 */
     .content-area {
         padding: 0;
     }
 }
 
-/* Quill Overrides for Light Mode */
+/* 언어 버튼 개별 너비 고정 */
+.lang-switcher {
+    min-width: 110px;
+    display: flex;
+    justify-content: center;
+    margin-right: 20px;
+    flex-shrink: 0;         /* ✅ 언어 버튼 영역 찌그러짐 방지 */
+}
+
+/* Quill Overrides */
 .quill-wrapper {
     background: #ffffff;
     border-radius: 14px;
@@ -406,30 +420,21 @@ select.text-input option {
     font-style: normal;
 }
 
-/* Quill Toolbar Icons - Dark for visibility */
 .ql-snow.ql-toolbar button,
 .ql-snow .ql-toolbar button,
 .ql-snow.ql-toolbar .ql-picker-label,
 .ql-snow .ql-toolbar .ql-picker-label {
-  color: #222 !important;
+    color: #222 !important;
 }
 
-.ql-snow.ql-toolbar button:hover,
-.ql-snow .ql-toolbar button:hover,
-.ql-snow.ql-toolbar button:focus,
-.ql-snow .ql-toolbar button:focus,
-.ql-snow.ql-toolbar button.ql-active,
-.ql-snow .ql-toolbar button.ql-active,
-.ql-snow.ql-toolbar .ql-picker-label:hover,
-.ql-snow .ql-toolbar .ql-picker-label:hover,
-.ql-snow.ql-toolbar .ql-picker-label.ql-active,
-.ql-snow .ql-toolbar .ql-picker-label.ql-active,
-.ql-snow.ql-toolbar .ql-picker-item:hover,
-.ql-snow .ql-toolbar .ql-picker-item:hover,
-.ql-snow.ql-toolbar .ql-picker-item.ql-selected,
-.ql-snow .ql-toolbar .ql-picker-item.ql-selected {
-  color: #ffb7b2 !important;
-  /* Pink on hover/active */
+.ql-snow.ql-toolbar button:hover .ql-stroke,
+.ql-snow.ql-toolbar button.ql-active .ql-stroke {
+    stroke: #ffb7b2 !important;
+}
+
+.ql-snow.ql-toolbar button:hover .ql-fill,
+.ql-snow.ql-toolbar button.ql-active .ql-fill {
+    fill: #ffb7b2 !important;
 }
 
 .ql-snow .ql-stroke {
@@ -444,41 +449,22 @@ select.text-input option {
     color: #333 !important;
 }
 
-/* Hover state overrides for SVG icons in Quill */
-.ql-snow.ql-toolbar button:hover .ql-stroke,
-.ql-snow.ql-toolbar button.ql-active .ql-stroke {
-  stroke: #ffb7b2 !important;
-}
-
-.ql-snow.ql-toolbar button:hover .ql-fill,
-.ql-snow.ql-toolbar button.ql-active .ql-fill {
-  fill: #ffb7b2 !important;
-}
-
 /* Post Detail Content Styles */
-.post-content h1,
-.post-content h2,
-.post-content h3 {
+.post-content h1, .post-content h2, .post-content h3 {
     margin-top: 1.5em;
     margin-bottom: 0.5em;
     line-height: 1.3;
     color: #333;
 }
 
-.post-content ul,
-.post-content ol {
+.post-content ul, .post-content ol {
     padding-left: 1.5em;
     margin-bottom: 1em;
     color: #333;
 }
 
-.post-content ul {
-    list-style-type: disc;
-}
-
-.post-content ol {
-    list-style-type: decimal;
-}
+.post-content ul { list-style-type: disc; }
+.post-content ol { list-style-type: decimal; }
 
 .post-content p {
     margin-bottom: 1em;
@@ -487,12 +473,11 @@ select.text-input option {
 
 .post-content blockquote {
     border-left: 4px solid #ffb7b2;
-    padding-left: 1em;
+    padding: 12px;
     margin-left: 0;
     color: #333;
     font-style: italic;
     background: rgba(255, 183, 178, 0.1);
-    padding: 12px;
     border-radius: 0 8px 8px 0;
 }
 
@@ -504,19 +489,4 @@ select.text-input option {
     font-family: monospace;
     color: #333;
     border: 1px solid #e0e0e0;
-}
-
-/* 언어 버튼 개별 너비 고정 */
-.lang-switcher {
-    /* 언어 선택 영역이 늘었다 줄었다 하지 않게 고정 */
-    min-width: 110px;
-    display: flex;
-    justify-content: center;
-    margin-right: 20px;
-}
-
-/* --- 로고 영역이 찌그러지지 않게 고정 --- */
-.brand {
-    flex-shrink: 0;       /* 메뉴가 많아져도 로고 크기 유지 */
-    margin-right: 20px;
 }

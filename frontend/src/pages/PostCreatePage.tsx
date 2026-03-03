@@ -30,12 +30,17 @@ export default function PostCreatePage() {
   const onCreate = async () => {
     if (!title.trim() || !content.trim()) return alert(t("post.validation_title_content"));
     try {
-      await postService.createPost({
+      const res = await postService.createPost({
         title, content, isNotice, files, category,
         studyType: category === "STUDY" ? studyType : undefined,
         contactLink: category === "STUDY" ? contactLink : undefined,
       });
-      navigate("/posts");
+      const createdId = res.data?.id;
+      if (createdId) {
+        navigate(`/posts/${createdId}`);
+      } else {
+        navigate("/posts");
+      }
     } catch (err) { alert(t("post.create_fail")); }
   };
 

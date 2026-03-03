@@ -1,5 +1,6 @@
 package com.jpcard.service;
 
+import com.jpcard.controller.dto.UserUpdateRequest;
 import com.jpcard.domain.user.*;
 import com.jpcard.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class UserService {
 
 	@Transactional(readOnly = true)
 	public Optional<User> findByUsername(String username) {
-		return userRepository.findByEmail(username);
+		return userRepository.findByUsername(username);
 	}
 
 	@Transactional
@@ -45,7 +46,7 @@ public class UserService {
 
 	@Transactional
 	public User adminUpdateUser(Long id, String email, String password, UserStatus status, String role) {
-		User user = userRepository.findById(id).orElseThrow();
+		User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
 		if (email != null)
 			user.setEmail(email);
 		if (password != null && !password.isBlank())
@@ -63,12 +64,23 @@ public class UserService {
 	}
 
 	@Transactional
-	public User updateSettings(Long userId, int dailyLimit, int reviewLimit, String timezone) {
-		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
-		user.setDailyLimit(dailyLimit > 0 ? dailyLimit : 20);
-		user.setReviewLimit(reviewLimit > 0 ? reviewLimit : 200);
-		if (timezone != null && !timezone.isBlank())
-			user.setTimezone(timezone);
+	public User updateSettings(Long userId, UserUpdateRequest request) {
+		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
+		if (request.dailyLimit() != null && request.dailyLimit() > 0) user.setDailyLimit(request.dailyLimit());
+		if (request.reviewLimit() != null && request.reviewLimit() > 0) user.setReviewLimit(request.reviewLimit());
+		if (request.timezone() != null && !request.timezone().isBlank()) user.setTimezone(request.timezone());
+		
+		if (request.name() != null) user.setName(request.name());
+		if (request.phone() != null) user.setPhone(request.phone());
+		if (request.birthdate() != null) user.setBirthdate(request.birthdate().toString());
+		if (request.gender() != null) user.setGender(request.gender());
+		
 		return user;
+	}
+
+	@Transactional
+	public void updateProfileImage(Long userId, String profileImageUrl) {
+		User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다."));
+		user.setProfileImageUrl(profileImageUrl);
 	}
 }

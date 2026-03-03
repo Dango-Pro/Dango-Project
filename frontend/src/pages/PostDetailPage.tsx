@@ -152,6 +152,33 @@ export default function PostDetailPage() {
         {/* 본문 영역 */}
         <div className="post-content" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }} style={{ minHeight: 200, marginBottom: 40 }} />
 
+        {/* 첨부파일 영역 */}
+        {post.attachmentUrls && post.attachmentUrls.length > 0 && (
+          <div style={{ marginBottom: 40 }}>
+            <h3 style={{ margin: '0 0 12px', fontSize: '1rem', color: '#666' }}>{t("post_detail.attachments")}</h3>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+              {post.attachmentUrls.map((url, idx) => {
+                const filename = url.split('/').pop() || `file-${idx + 1}`;
+                const isImage = /\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(filename);
+                return (
+                  <div key={idx} style={{ border: '1px solid #e2e8f0', borderRadius: 8, overflow: 'hidden', maxWidth: 200 }}>
+                    {isImage ? (
+                      <a href={url} target="_blank" rel="noreferrer" style={{ display: 'block' }}>
+                        <img src={url} alt={filename} style={{ width: '100%', height: 120, objectFit: 'cover', display: 'block' }} />
+                        <span style={{ display: 'block', padding: '8px 10px', fontSize: '0.85rem', color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{filename}</span>
+                      </a>
+                    ) : (
+                      <a href={url} target="_blank" rel="noreferrer" style={{ display: 'block', padding: '12px 16px', color: '#2563eb', textDecoration: 'none', fontSize: '0.9rem' }}>
+                        📎 {filename}
+                      </a>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* [디자인 핵심] 스터디 관리 섹션 */}
         {post.category === 'STUDY' && (
             <div style={{ backgroundColor: '#f8fafc', padding: 24, borderRadius: 16, border: '1px solid #e2e8f0', marginBottom: 40 }}>
@@ -178,7 +205,7 @@ export default function PostDetailPage() {
                         <ul style={{ listStyle: 'none', padding: 0 }}>
                             {applicants.map((app: any) => (
                                 <li key={app.id} style={{ padding: '10px', background: 'white', borderRadius: 8, marginBottom: 8, border: '1px solid #e2e8f0' }}>
-                                    <strong>{app.applicantName}</strong>: {app.message} <span className="muted">({app.contactInfo})</span>
+                                    <strong>{app.applicantEmail ?? "-"} ({app.applicantName})</strong>: {app.message} <span className="muted">({app.contactInfo})</span>
                                 </li>
                             ))}
                             {applicants.length === 0 && <p className="muted">{t("post_detail.no_applicants")}</p>}

@@ -5,6 +5,7 @@ import com.jpcard.domain.user.User;
 import com.jpcard.domain.user.UserStatus;
 import com.jpcard.repository.RefreshTokenRepository;
 import com.jpcard.repository.UserRepository;
+import com.jpcard.controller.dto.SignupRequest;
 import com.jpcard.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +28,12 @@ public class AuthService {
 	private final com.jpcard.repository.EmailVerificationRepository emailVerificationRepository;
 
 	@Transactional
-	public void signup(String email, String password, String nickname, String verificationCode) {
+	public void signup(SignupRequest req) {
+		String email = req.email();
+		String password = req.password();
+		String nickname = req.nicknameOrEmailPrefix();
+		String verificationCode = req.verificationCode();
+
 		// [보안 기능] 0. 이메일 인증 코드 검증
 		com.jpcard.domain.auth.EmailVerification verification = emailVerificationRepository.findByEmail(email)
 				.orElseThrow(() -> new IllegalArgumentException("인증번호가 발송되지 않았거나 만료되었습니다."));
@@ -59,6 +65,10 @@ public class AuthService {
 				nickname,
 				"ROLE_USER" // 기본 권한 부여
 		);
+		user.setName(req.name());
+		user.setPhone(req.phone());
+		user.setBirthdate(req.birthdate());
+		user.setGender(req.gender());
 		userRepository.save(user); // DB에 저장
 	}
 

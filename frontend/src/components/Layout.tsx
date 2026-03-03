@@ -15,15 +15,11 @@ export default function Layout({children}: LayoutProps) {
 	const {pathname} = useLocation();
 	const navigate = useNavigate();
 
-	// 3. useAuth() 호출하여 logout, token 가져오기
 	const {logout: authLogout, token} = useAuth();
 
 	const [showToast, setShowToast] = useState(false);
 	const [toastMessage, setToastMessage] = useState('');
 
-
-
-	// 6. 언어 변경 함수 정의 (changeLanguage 에러 해결)
 	const changeLanguage = (lng: string) => {
 		i18n.changeLanguage(lng);
 	};
@@ -54,14 +50,14 @@ export default function Layout({children}: LayoutProps) {
 		display: 'inline-flex',
 		alignItems: 'center',
 		justifyContent: 'center',
-		width: '100px',
-		padding: '8px 0',
+		width: '120px',         // ✅ 100px → 120px 확대
+		padding: '10px 8px',    // ✅ 세로 패딩 확대
 		borderRadius: '12px',
 		textDecoration: 'none',
 		textAlign: 'center',
 		whiteSpace: 'nowrap',
 		transition: 'all 0.2s ease',
-		fontSize: '0.85rem',
+		fontSize: '0.9rem',     // ✅ 글자 크기 살짝 확대
 		fontWeight: pathname === to ? 'bold' : '500',
 		color: pathname === to ? '#d9534f' : '#222',
 		background: pathname === to ? 'rgba(255, 183, 178, 0.25)' : 'transparent',
@@ -71,132 +67,172 @@ export default function Layout({children}: LayoutProps) {
 	});
 
 	return (
-		<div className = "app-shell">
-			<div className = "app-frame">
-				<Toast
-					isOpen = {showToast}
-					message = {toastMessage}
-					type = "success"
-					onClose = {() => setShowToast(false)}
-				/>
+		/*
+		 * ✅ 수정 핵심:
+		 * app-shell / app-frame 클래스가 overflow: hidden 또는 max-width를 강제할 수 있어
+		 * 인라인 스타일로 명시적으로 override합니다.
+		 *
+		 * ✅ 푸터 수정:
+		 * 푸터를 app-frame(min-width: 900px) 밖으로 꺼내어
+		 * 가로 스크롤과 완전히 분리 → 항상 뷰포트 하단에 고정되어 보임
+		 */
+		<div style={{display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
+			{/* 스크롤 영역: 헤더 + 콘텐츠만 포함 */}
+			<div className="app-shell" style={{
+				overflowX: 'visible',
+				overflowY: 'visible',
+				flex: '1',
+			}}>
+				<div className="app-frame" style={{
+					minWidth: '900px',
+					width: '100%',
+					boxSizing: 'border-box',
+				}}>
+					<Toast
+						isOpen={showToast}
+						message={toastMessage}
+						type="success"
+						onClose={() => setShowToast(false)}
+					/>
 
-				<header className = "top-nav" style = {{
+					{/* ✅ 헤더도 minWidth 설정 → 창이 좁아져도 찌그러지지 않음 */}
+					<header className="top-nav" style={{
+						display: 'flex',
+						alignItems: 'center',
+						flexWrap: 'nowrap',     // ✅ 절대 줄바꿈 금지
+						padding: '16px 22px',
+						height: '80px',
+						minHeight: '80px',      // ✅ 세로 찌그러짐 방지
+						backgroundColor: '#fff',
+						minWidth: 'max-content', // ✅ 모든 메뉴가 다 보일 만큼 너비 자동 확장
+						boxSizing: 'border-box',
+						overflow: 'visible',
+					}}>
+						<div className="brand" onClick={() => navigate('/')} style={{
+							display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer',
+							width: '180px', flexShrink: 0, userSelect: 'none'
+						}}>
+							<img src="/dango.svg" alt="Dango Logo" style={{height: '42px', width: 'auto'}}/>
+							<span style={{
+								fontFamily: '"Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif',
+								color: '#d9534f', fontSize: '1.6rem', fontWeight: 'bold', fontStyle: 'italic'
+							}}>DANGO</span>
+						</div>
+
+						<div className="lang-switcher" style={{
+							display: 'flex', gap: '4px', width: '120px', justifyContent: 'center', flexShrink: 0
+						}}>
+							{['ko', 'en', 'ja'].map((lng) => (
+								<button
+									key={lng}
+									onClick={() => changeLanguage(lng)}
+									style={{
+										background: 'none', border: 'none', cursor: 'pointer', width: '35px',
+										color: i18n.language === lng ? '#333' : '#aaa',
+										fontWeight: i18n.language === lng ? 'bold' : 'normal',
+										fontSize: '0.85rem'
+									}}
+								>
+									{lng.toUpperCase()}
+								</button>
+							))}
+						</div>
+
+						<nav style={{
+							display: 'flex', flexGrow: 1, justifyContent: 'flex-end', gap: '0px', alignItems: 'center',
+							flexShrink: 0,   // ✅ nav가 줄어들며 메뉴가 겹치는 현상 방지
+						}}>
+							{links.map((link) => (
+								<Link key={link.to} to={link.to} style={fixedMenuItemStyle(link.to)}>
+									{link.label}
+								</Link>
+							))}
+
+							{!token ? (
+								<Link to="/login" style={fixedMenuItemStyle('/login')}>{t('nav.login')}</Link>
+							) : (
+								<button onClick={handleLogout} style={{
+									...fixedMenuItemStyle(''),
+									border: 'none',
+									cursor: 'pointer',
+									fontFamily: 'inherit'
+								}}>
+									{t('nav.logout')}
+								</button>
+							)}
+						</nav>
+					</header>
+
+					{/* ✅ main에 overflow 명시 → CSS 클래스의 hidden 가능성 차단 */}
+					<main className="content-area" style={{
+						overflowX: 'visible',
+						overflowY: 'visible',
+						width: '100%',
+						boxSizing: 'border-box',
+					}}>
+						{children}
+					</main>
+
+				</div>{/* app-frame 끝 */}
+			</div>{/* app-shell 끝 */}
+
+			{/* ✅ 푸터: app-frame(min-width: 900px) 완전 분리 → 가로 스크롤과 무관하게 항상 전체 너비로 표시 */}
+			<footer style={{
+				padding: '30px 20px',
+				backgroundColor: '#f8f9fa',
+				borderTop: '1px solid #e9ecef',
+				textAlign: 'center',
+				color: '#000',
+				fontSize: '14px',
+				lineHeight: '1.6',
+				width: '100%',
+				boxSizing: 'border-box',
+				flexShrink: 0,
+			}}>
+				<div style={{
 					display: 'flex',
+					justifyContent: 'center',
 					alignItems: 'center',
-					padding: '16px 22px',
-					height: '80px',
-					backgroundColor: '#fff'
+					marginBottom: '12px'
 				}}>
-					<div className = "brand" onClick = {() => navigate('/')} style = {{
-						display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer',
-						width: '180px', flexShrink: 0, userSelect: 'none'
-					}}>
-						<img src = "/dango.svg" alt = "Dango Logo" style = {{height: '42px', width: 'auto'}}/>
-						<span style = {{
-							fontFamily: '"Comic Sans MS", "Chalkboard SE", "Comic Neue", sans-serif',
-							color: '#d9534f', fontSize: '1.6rem', fontWeight: 'bold', fontStyle: 'italic'
-						}}>DANGO</span>
-					</div>
+					<span style={{
+						fontSize: '18px',
+						marginRight: '8px',
+						display: 'flex',
+						alignItems: 'center'
+					}}>🍡</span>
+					<strong style={{fontSize: '15px', letterSpacing: '-0.3px'}}>
+						{t('footer.project_desc')}
+					</strong>
+				</div>
 
-					<div className = "lang-switcher" style = {{
-						display: 'flex', gap: '4px', width: '120px', justifyContent: 'center', flexShrink: 0
-					}}>
-						{['ko', 'en', 'ja'].map((lng) => (
-							<button
-								key = {lng}
-								onClick = {() => changeLanguage(lng)}
-								style = {{
-									background: 'none', border: 'none', cursor: 'pointer', width: '35px',
-									color: i18n.language === lng ? '#333' : '#aaa',
-									fontWeight: i18n.language === lng ? 'bold' : 'normal',
-									fontSize: '0.85rem'
-								}}
-							>
-								{lng.toUpperCase()}
-							</button>
-						))}
-					</div>
-
-					<nav style = {{
-						display: 'flex', flexGrow: 1, justifyContent: 'flex-end', gap: '0px', alignItems: 'center'
-					}}>
-						{links.map((link) => (
-							<Link key = {link.to} to = {link.to} style = {fixedMenuItemStyle(link.to)}>
-								{link.label}
-							</Link>
-						))}
-
-						{!token ? (
-							<Link to = "/login" style = {fixedMenuItemStyle('/login')}>{t('nav.login')}</Link>
-						) : (
-							<button onClick = {handleLogout} style = {{
-								...fixedMenuItemStyle(''),
-								border: 'none',
-								cursor: 'pointer',
-								fontFamily: 'inherit'
-							}}>
-								{t('nav.logout')}
-							</button>
-						)}
-					</nav>
-				</header>
-
-				<main className = "content-area">{children}</main>
-
-				<footer className = "footer" style = {{
-					marginTop: '50px',
-					padding: '30px 20px',
-					backgroundColor: '#f8f9fa',
-					borderTop: '1px solid #e9ecef',
-					textAlign: 'center',
-					color: '#000',
-					fontSize: '14px',
-					lineHeight: '1.6'
+				<div style={{
+					display: 'flex',
+					justifyContent: 'center',
+					alignItems: 'center',
+					marginBottom: '12px',
+					fontSize: '13px'
 				}}>
-					<div style = {{
-						display: 'flex',
-						justifyContent: 'center',
-						alignItems: 'center',
-						marginBottom: '12px'
-					}}>
-						<span style = {{
-							fontSize: '18px',
-							marginRight: '8px',
-							display: 'flex',
-							alignItems: 'center'
-						}}>🍡</span>
-						<strong style = {{fontSize: '15px', letterSpacing: '-0.3px'}}>
-							반복 간격 알고리즘 활용 일본어 지식 카드 관리 및 학습 플랫폼
-						</strong>
-					</div>
+					<span style={{margin: '0 10px'}}>👤 <b>{t('footer.team_leader')}</b> {t('footer.leader_name')}</span>
+					<span style={{color: '#dee2e6'}}>|</span>
+					<span style={{margin: '0 10px'}}>👥 <b>{t('footer.team_members')}</b> {t('footer.member_names')}</span>
+				</div>
 
-					<div style = {{
-						display: 'flex',
-						justifyContent: 'center',
-						alignItems: 'center',
-						marginBottom: '12px',
-						fontSize: '13px'
+				<div style={{fontSize: '12px', fontWeight: '500'}}>
+					<span style={{
+						backgroundColor: '#e9ecef',
+						padding: '2px 8px',
+						borderRadius: '4px',
+						marginRight: '12px'
 					}}>
-						<span style = {{margin: '0 10px'}}>👤 <b>조장</b> 박제하</span>
-						<span style = {{color: '#dee2e6'}}>|</span>
-						<span style = {{margin: '0 10px'}}>👥 <b>조원</b> 이산하, 임문현, 전민종</span>
-					</div>
-
-					<div style = {{fontSize: '12px', fontWeight: '500'}}>
-                  <span style = {{
-	                  backgroundColor: '#e9ecef',
-	                  padding: '2px 8px',
-	                  borderRadius: '4px',
-	                  marginRight: '12px'
-                  }}>
-                    Version 1.03
-                  </span>
-						<span style = {{color: '#000'}}>
-                    <span style = {{color: 'crimson', fontWeight: 'bold'}}>최신 업데이트 일자 :&nbsp;&nbsp;</span> 2026.02.04. 18:17
-                  </span>
-					</div>
-				</footer>
-			</div>
-		</div>
-	);
+						{import.meta.env.VITE_APP_VERSION ?? 'Version 1.0.4'}
+					</span>
+					<span style={{color: '#000'}}>
+						<span style={{color: 'crimson', fontWeight: 'bold'}}>{t('footer.latest_update')} :&nbsp;&nbsp;</span>
+						{import.meta.env.VITE_BUILD_DATE ?? new Date().toLocaleDateString('ko-KR', {year: 'numeric', month: '2-digit', day: '2-digit'}).replaceAll('. ', '.').replace('.', '.')}
+					</span>
+				</div>
+			</footer>
+		</div>/* 최상위 flex 컨테이너 끝 */
+);
 }
