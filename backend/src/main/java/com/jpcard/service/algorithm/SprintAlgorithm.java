@@ -96,7 +96,7 @@ public class SprintAlgorithm implements SpacedRepetitionAlgorithm {
             // Graduate immediately
             p.setStatus(StudyStatus.REVIEW);
             p.setLearningStep(0);
-            p.setIntervalMinutes(1440 * 4); // 4 days like default easy
+            p.setIntervalMinutes(MAX_REVIEW_INTERVAL); // 6 hours (Sprint is short-term)
             p.setRepetitions(1);
         } else {
             // In review: larger increase (1.5x multiplier) but still capped

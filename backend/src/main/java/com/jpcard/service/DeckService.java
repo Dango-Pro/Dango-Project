@@ -37,11 +37,6 @@ public class DeckService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<Deck> findAll(Long userId) {
-		return deckRepository.findByOwner_Id(userId);
-	}
-
-	@Transactional(readOnly = true)
 	public List<Deck> findMyDecks(Long userId) {
 		return deckRepository.findByOwner_Id(userId);
 	}

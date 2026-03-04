@@ -43,6 +43,8 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(Authentication auth) {
+        if (auth == null)
+            return ResponseEntity.status(401).build();
         User user = (User) auth.getPrincipal();
         authService.logout(user.getEmail());
         SecurityContextHolder.clearContext();

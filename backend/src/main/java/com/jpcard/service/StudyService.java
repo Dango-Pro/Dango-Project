@@ -46,26 +46,7 @@ public class StudyService {
     private final PlatformTransactionManager transactionManager;
     private final Random random = new Random();
 
-    // Default Fallback. Now we use deck-specific steps.
-    private static final int[] DEFAULT_LEARNING_STEPS = { 1, 10 };
-    private static final int GRADUATING_INTERVAL = 1440; // 1 day in minutes
-    private static final int EASY_INTERVAL = 4 * 1440; // 4 days
     private static final int LEECH_THRESHOLD = 8; // Fail count to suspend
-
-    private int[] parseLearningSteps(String steps) {
-        if (steps == null || steps.isEmpty())
-            return DEFAULT_LEARNING_STEPS;
-        try {
-            String[] parts = steps.split(",");
-            int[] result = new int[parts.length];
-            for (int i = 0; i < parts.length; i++) {
-                result[i] = Integer.parseInt(parts[i].trim());
-            }
-            return result;
-        } catch (NumberFormatException e) {
-            return DEFAULT_LEARNING_STEPS;
-        }
-    }
 
     @Transactional(readOnly = true)
     public StudySessionResult getDueCards(Long userId, Long deckId, boolean studyMore) {

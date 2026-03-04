@@ -45,7 +45,7 @@ public class DeckController {
                     .collect(Collectors.toList());
             return ResponseEntity.ok(responses);
         }
-        List<DeckResponse> responses = deckService.findAll(user.getId()).stream()
+        List<DeckResponse> responses = deckService.findMyDecks(user.getId()).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(responses);
