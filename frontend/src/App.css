@@ -1,18 +1,20 @@
 html {
     /* 스크롤바가 생겨도 레이아웃이 밀리지 않도록 공간을 미리 확보합니다. */
     scrollbar-gutter: stable;
+    overflow-x: auto; /* ✅ 가로 스크롤을 html/body 레벨에서 담당 */
 }
 
 /*
- * ✅ 수정 1: app-shell에 가로 스크롤 허용
- * 창이 좁아지면 찌그러지는 대신 가로 스크롤이 생깁니다.
+ * ✅ app-shell은 overflow 관여하지 않음
+ * 가로 스크롤은 html 레벨에서 처리 → 스크롤바가 푸터를 가리는 문제 해결
  */
 .app-shell {
     position: relative;
     min-height: 100vh;
     padding: 28px;
-    overflow-x: auto;       /* ✅ 가로 스크롤 허용 */
-    padding-right: 0;       /* ✅ 오른쪽 잘림 방지 */
+    overflow-x: visible;    /* ✅ hidden/auto 제거 → html이 스크롤 담당 */
+    overflow-y: visible;
+    padding-right: 0;
 }
 
 .app-frame {

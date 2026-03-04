@@ -53,7 +53,6 @@ const Carousel = () => {
 			position: 'relative',
 			width: '100%',
 			height: '100%',
-			minHeight: '240px',
 			borderRadius: '24px',
 			overflow: 'hidden',
 			background: '#f8f9fa'
@@ -439,42 +438,35 @@ export default function HomePage() {
 
 	return (
 		<Layout>
-			{/*
-			 * ✅ 핵심 수정 포인트:
-			 * 1. 바깥 래퍼: overflow-x: auto → 창이 좁아지면 가로 스크롤 생성
-			 * 2. 안쪽 컨테이너: minWidth: 900px → 이 너비 이하로 절대 줄어들지 않음
-			 * 3. 상단 그리드: height 고정 제거 → minHeight로 교체 (내용물에 따라 유연하게)
-			 * 4. 그리드 컬럼: minmax 사용 → 최소 너비 보장
-			 */}
 			<div style={{
-				overflowX: 'auto',   // ✅ 전체 페이지에 가로 스크롤 부여
+				overflowX: 'auto',
 				overflowY: 'visible',
 				width: '100%',
 			}}>
 				<div style={{
-					minWidth: '900px',       // ✅ 이 너비 이하로 줄어들지 않음 (레이아웃 보호)
+					minWidth: '900px', // ✅ 가로 비율 유지
 					width: '100%',
 					margin: '0 auto',
 					boxSizing: 'border-box',
 					padding: '0 4px',
 				}}>
-					{/* 상단 섹션: 캐러셀 + 로그인 */}
+					{/* 상단 섹션: 고정 높이를 400px로 설정하여 로그인 전후 상하 이동 차단 */}
 					<div style={{
 						display: 'grid',
-						gridTemplateColumns: 'minmax(0, 3fr) minmax(260px, 1fr)', // ✅ 로그인 위젯 최소 260px 보장
+						gridTemplateColumns: 'minmax(0, 3fr) minmax(260px, 1fr)',
 						gap: '20px',
 						marginBottom: '20px',
-						minHeight: '380px',   // ✅ 고정 height 대신 minHeight 사용
+						height: '400px',   // ✅ minHeight 대신 height로 고정
 						alignItems: 'stretch',
 					}}>
-						<div style={{height: '100%', minHeight: '380px'}}><Carousel/></div>
-						<div style={{height: '100%', minHeight: '380px'}}><LoginWidget/></div>
+						<div style={{height: '100%'}}><Carousel/></div>
+						<div style={{height: '100%'}}><LoginWidget/></div>
 					</div>
 
 					{/* 중단 섹션: 공지사항 & 커뮤니티 */}
 					<div style={{
 						display: 'grid',
-						gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', // ✅ 양쪽 균등 분할, 넘침 방지
+						gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
 						gap: '20px',
 						marginBottom: '30px'
 					}}>
@@ -482,7 +474,7 @@ export default function HomePage() {
 						<CommunityWidget/>
 					</div>
 
-					{/* 하단 섹션: 바로가기 버튼 */}
+					{/* 하단 섹션: 카테고리 바로가기 */}
 					<div style={{
 						width: '100%',
 						overflowX: 'auto',
