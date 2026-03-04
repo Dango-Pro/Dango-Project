@@ -47,7 +47,8 @@ public class PostController {
 		Long authorId = null;
 		if (myPosts) {
 			User user = getCurrentUser();
-			if (user != null) authorId = user.getId();
+			if (user != null)
+				authorId = user.getId();
 		}
 		Page<Post> posts = postService.search(q, category, authorId, pageable);
 		return ResponseEntity.ok(posts.map(this::mapToResponse));
@@ -114,10 +115,13 @@ public class PostController {
 		return ResponseEntity.noContent().build();
 	}
 
-	// 6. 좋아요
+	// 6. 좋아요 (토글 방식 - 로그인 필수)
 	@PostMapping("/{id}/like")
 	public ResponseEntity<PostResponse> like(@PathVariable Long id) {
-		return ResponseEntity.ok(mapToResponse(postService.likePost(id)));
+		User user = getCurrentUser();
+		if (user == null)
+			return ResponseEntity.status(401).build();
+		return ResponseEntity.ok(mapToResponse(postService.likePost(id, user)));
 	}
 
 	// 7. 스터디 신청하기

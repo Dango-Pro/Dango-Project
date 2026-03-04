@@ -30,7 +30,8 @@ class CardServiceTest {
         card.setMeaning("Meaning");
 
         when(cardRepository.save(any(Card.class))).thenReturn(card);
-
+        com.jpcard.domain.user.User user = new com.jpcard.domain.user.User();
+        Card created = cardService.create("Test", "Meaning", 1L, new java.util.HashMap<>(), user);
 
         assertNotNull(created);
         assertEquals("Test", created.getTerm());
@@ -45,11 +46,13 @@ class CardServiceTest {
         card.setMeaning("Old Meaning");
 
         when(cardRepository.findById(1L)).thenReturn(Optional.of(card));
-
+        com.jpcard.domain.user.User user = new com.jpcard.domain.user.User();
+        Card updated = cardService.update(1L, "New", "New Meaning", null, new java.util.HashMap<>(), user);
 
         assertEquals("New", updated.getTerm());
         assertEquals("New Meaning", updated.getMeaning());
-        // Service just updates the entity object and returns it (transactional handles save)
+        // Service just updates the entity object and returns it (transactional handles
+        // save)
         // But verifying findById was called
         verify(cardRepository).findById(1L);
     }
@@ -57,7 +60,8 @@ class CardServiceTest {
     @Test
     void deleteCard() {
         doNothing().when(cardRepository).deleteById(1L);
-
+        com.jpcard.domain.user.User user = new com.jpcard.domain.user.User();
+        cardService.delete(1L, user);
 
         verify(cardRepository).deleteById(1L);
     }
@@ -69,7 +73,8 @@ class CardServiceTest {
         card.setMemorized(false);
 
         when(cardRepository.findById(1L)).thenReturn(Optional.of(card));
-
+        com.jpcard.domain.user.User user = new com.jpcard.domain.user.User();
+        Card updated = cardService.changeMemorizedStatus(1L, true, user);
 
         assertTrue(updated.isMemorized());
         verify(cardRepository).findById(1L);

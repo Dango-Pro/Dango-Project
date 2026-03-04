@@ -84,7 +84,8 @@ public class DataInitializer implements CommandLineRunner {
                 .anyMatch(d -> d.getName().equals(name));
 
         if (!exists) {
-            Deck deck = deckService.create(new DeckRequest(name, description, null, true, "1,10", null), user);
+            Deck deck = deckService.create(new DeckRequest(name, description, null, true, "1,10", null,
+                    com.jpcard.domain.study.AlgorithmType.SM2, 20), user);
             for (CardData item : data) {
                 Map<String, String> content = new HashMap<>();
                 content.put("pronunciation", item.reading());

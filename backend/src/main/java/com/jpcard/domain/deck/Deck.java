@@ -42,6 +42,13 @@ public class Deck {
     @Column(nullable = false)
     private String learningSteps = "1,10";
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private com.jpcard.domain.study.AlgorithmType algorithmType = com.jpcard.domain.study.AlgorithmType.SM2;
+
+    @Column(nullable = false)
+    private int dailyNewCardLimit = 20;
+
     @OneToMany(mappedBy = "deck", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Card> cards = new ArrayList<>();
 }

@@ -4,6 +4,7 @@ import com.jpcard.controller.dto.StudyApplicationResponse;
 import com.jpcard.domain.post.*;
 import com.jpcard.domain.user.User;
 import com.jpcard.repository.PostAttachmentRepository;
+import com.jpcard.repository.PostLikeRepository;
 import com.jpcard.repository.PostRepository;
 import com.jpcard.repository.StudyApplicationRepository;
 import com.jpcard.util.ResourceNotFoundException;
@@ -33,6 +34,7 @@ public class PostService {
 
 	private final PostRepository postRepository;
 	private final PostAttachmentRepository postAttachmentRepository;
+	private final PostLikeRepository postLikeRepository;
 	private final StudyApplicationRepository studyApplicationRepository;
 
 	@Transactional(readOnly = true)
@@ -112,9 +114,21 @@ public class PostService {
 	}
 
 	@Transactional
-	public Post likePost(Long id) {
+	public Post likePost(Long id, User user) {
 		Post post = findById(id);
-		post.setLikeCount(post.getLikeCount() + 1);
+		if (user == null) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+		}
+
+		// Toggle: 이미 좋아요했으면 취소, 아니면 추가
+		var existing = postLikeRepository.findByPostIdAndUserId(id, user.getId());
+		if (existing.isPresent()) {
+			postLikeRepository.delete(existing.get());
+			post.setLikeCount(Math.max(0, post.getLikeCount() - 1));
+		} else {
+			postLikeRepository.save(new PostLike(post, user));
+			post.setLikeCount(post.getLikeCount() + 1);
+		}
 		return post;
 	}
 
