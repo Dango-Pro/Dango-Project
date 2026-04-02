@@ -67,14 +67,11 @@ spring:
     activate:
       on-profile: prod
   datasource:
-    url: jdbc:mysql://localhost:3306/jpcard?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://192.168.111.200:3306/dango?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: root # 필요하면 이것도 환경변수(${DB_PASSWORD})로 변경 가능
+    password: root
   jpa:
     hibernate:
-      ddl-auto: validate
-    show-sql: false
-  h2:
-    console:
-      enabled: false # 프로덕션에서 H2 콘솔 명시적 비활성화
+      ddl-auto: update
+    show-sql: true
